@@ -334,7 +334,7 @@ let ptypes = [
 let uinfo = function(ctx,msg,args){
     ctx.utils.lookupUser(ctx,msg,args || msg.member.mention)
     .then(async u=>{
-        let req = await ctx.libs.superagent.get("https://endpwn.cathoderay.tube/goodies.json");
+        let req = await ctx.libs.superagent.get("https://endpwn.cathoderay.tube/goodies.json").catch(x=>{});
         let goodies = req ? req.body : {};
         if(msg.channel.guild && msg.channel.guild.members.get(u.id)){
             u = msg.channel.guild.members.get(u.id);
@@ -419,7 +419,7 @@ let sinfo = async function(ctx,msg,args){
         "russia":":flag_ru:"
     }
 
-    let req = await ctx.libs.superagent.get("https://endpwn.cathoderay.tube/goodies.json");
+    let req = await ctx.libs.superagent.get("https://endpwn.cathoderay.tube/goodies.json").catch(x=>{});
     let goodies = req ? req.body : {};
 
     if(msg.channel.guild){
@@ -801,7 +801,8 @@ module.exports = [
         name:"convertflake",
         desc:"Converts a Discord snowflake to a readable time.",
         func:cflake,
-        group:"utils"
+        group:"utils",
+        aliases:["cflake","snowflake"]
     },
     {
         name:"slist",

@@ -252,11 +252,11 @@ function timeString(){
 
 utils.safeString = function(str){
 	let s = str ? str.toString() : "";
-	s = s.replace("`", "'");
-	s = s.replace("<@", "<@\u200b");
-	s = s.replace("<#", "<#\u200b");
-	s = s.replace("<&", "<&\u200b");
-	s = s.replace("\n"," ");
+	s = s.replace(/`/g, "'");
+	s = s.replace(/<@/g, "<@\u200b");
+	s = s.replace(/<#/g, "<#\u200b");
+	s = s.replace(/<&/g, "<&\u200b");
+	s = s.replace(/\n/g," ");
 	return s;
 }
 
