@@ -241,7 +241,7 @@ let info = function(ctx, msg, args) {
         {
             id: "151344471957569536",
             name: "Sammy",
-            contribs: "Contributor"
+            contribs: "Host, Co-developer"
         },
         {
             id: "123601647258697730",
