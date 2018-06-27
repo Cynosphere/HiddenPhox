@@ -142,16 +142,59 @@ let info = function(ctx,msg,args){
 
     let u = ctx.bot.users;
 
+
+    const contributors = [
+        {
+            id: "132297363233570816",
+            name: "Brianna",
+            contribs: "Ex-host, Contributor"
+        },
+        {
+            id: "151344471957569536",
+            name: "Sammy",
+            contribs: "Contributor"
+        },
+        {
+            id: "123601647258697730",
+	    name: "Jane",
+            contribs: "Contributor"
+        },
+        {
+            id: "162819866682851329",
+            name: "Luna",
+            contribs: "Contributor"
+        },
+        {
+            id: "137584770145058817",
+            name: "Ave",
+            contribs: "Ex-host, Contributor"
+        },
+        {
+            id: "107827535479353344",
+            name: "homonovus",
+            contribs: "Ex-host"
+        }
+    ];
+
+    const contributorPrettyText = contributors.map(({id, name, contribs}) => {
+        const user = u.get(id);
+        return `**${user.username}#${user.discriminator}** (${name}) - ${contribs}`;
+    }).join("\n");
+
+    const owner = u.get("150745989836308480");
+
     msg.channel.createMessage({embed:{
         title:"HiddenPhox, a general use and utility bot",
-        description:`Written by **Cynthia Foxwell** \`${u.get("150745989836308480").username}#${u.get("150745989836308480").discriminator}\`.`,
+        description:`Written by **Cynthia Foxwell** \`${owner.username}#${owner.discriminator}\`.`,
         color:0x50596D,
         fields:[
             {name:"Language",value:"JavaScript",inline:true},
             {name:"Library",value:`Eris v${erisv}`,inline:true},
             {name:"Node.js Version",value:process.version,inline:true},
-            {name:"Contributors",value:`**${u.get("132297363233570816").username}#${u.get("132297363233570816").discriminator}** (Brianna) - Ex-host, Contributor\n**${u.get("151344471957569536").username}#${u.get("151344471957569536").discriminator}** (Sammy) - Host, ex-co-developer\n**${u.get("123601647258697730").username}#${u.get("123601647258697730").discriminator}** (Jane) - Contributor\n**${u.get("162819866682851329").username}#${u.get("162819866682851329").discriminator}** (Luna) - Contributor\n**${u.get("137584770145058817").username}#${u.get("137584770145058817").discriminator}** (Ave) - Ex-host, Contributor\n**${u.get("107827535479353344").username}#${u.get("107827535479353344").discriminator}** (homonovus) - Ex-host\n**Memework\u2122** - Ideas, general help, bugfixes.`},
-            {name:"Honorable Mentions",value:`**oplexz** - Running support for FlexBot\n**Discord Bots** - A once great community that had great people who helped once in a while and gave ideas`},
+            {name:"Contributors",value:`${contributorPrettyText}
+**Memework\u2122** - Ideas, general help, bugfixes.`},
+            {name:"Honorable Mentions",value:`**oplexz** - Running support for FlexBot
+**Discord Bots** - A once great community that had great people who helped once in a while and gave ideas`},
             {name:"Links",value:"[GitHub](https://github.com/Cynosphere/HiddenPhox)"}
         ]
     }});
