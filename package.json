@@ -1,50 +1,48 @@
 {
-  "name": "hiddenphox",
-  "version": "9.0.0",
-  "description": "A discord bot",
-  "main": "bot.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Cynosphere/HiddenPhox.git"
-  },
-  "keywords": [
-    "discord"
-  ],
-  "author": "Flex",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Cynosphere/HiddenPhox/issues"
-  },
-  "homepage": "https://github.com/Cynosphere/HiddenPhox#readme",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.2",
-    "colorcolor": "^1.1.1",
-    "deep-extend": "^0.5.1",
-    "eris": "github:abalabahaha/eris#dev",
-    "expr-eval": "^1.0.1",
-    "google": "^2.1.0",
-    "google-images": "^2.1.0",
-    "jimp": "^0.2.28",
-    "lodash": "^4.17.5",
-    "moment": "^2.22.1",
-    "node-ffprobe": "^1.2.2",
-    "node-opus": "^0.2.7",
-    "opusscript": "0.0.6",
-    "require-reload": "^0.2.2",
-    "sequelize": "^4.37.6",
-    "sodium-native": "^2.1.5",
-    "sourcequery": "0.0.2",
-    "sqlite3": "^4.0.1",
-    "steam-web-api2": "^2.0.3",
-    "superagent": "^3.8.3",
-    "svg2png": "^4.1.1",
-    "tweetnacl": "^1.0.0",
-    "xmldom": "^0.1.27",
-    "xpath": "0.0.24",
-    "youtube-dl": "^1.12.2",
-    "ytdl-core": "^0.20.2"
-  }
+    "name": "hiddenphox",
+    "version": "9.0.0",
+    "description": "A discord bot",
+    "main": "bot.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Cynosphere/HiddenPhox.git"
+    },
+    "keywords": ["discord"],
+    "author": "Flex",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Cynosphere/HiddenPhox/issues"
+    },
+    "homepage": "https://github.com/Cynosphere/HiddenPhox#readme",
+    "dependencies": {
+        "cheerio": "^1.0.0-rc.2",
+        "colorcolor": "^1.1.1",
+        "deep-extend": "^0.5.1",
+        "eris": "github:abalabahaha/eris#dev",
+        "expr-eval": "^1.0.1",
+        "google": "^2.1.0",
+        "google-images": "^2.1.0",
+        "jimp": "^0.2.28",
+        "lodash": "^4.17.5",
+        "moment": "^2.22.1",
+        "node-ffprobe": "^1.2.2",
+        "node-opus": "^0.2.7",
+        "opusscript": "0.0.6",
+        "require-reload": "^0.2.2",
+        "sequelize": "^4.37.6",
+        "sodium-native": "^2.1.5",
+        "sourcequery": "0.0.2",
+        "sqlite3": "^4.0.1",
+        "steam-web-api2": "^2.0.3",
+        "superagent": "^3.8.3",
+        "svg2png": "^4.1.1",
+        "tweetnacl": "^1.0.0",
+        "xmldom": "^0.1.27",
+        "xpath": "0.0.24",
+        "youtube-dl": "^1.12.2",
+        "ytdl-core": "^0.20.2"
+    }
 }
