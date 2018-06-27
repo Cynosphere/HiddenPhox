@@ -2,426 +2,801 @@ var ytdl = require("ytdl-core");
 var scdl = require("youtube-dl");
 var probe = require("node-ffprobe");
 
-var ytregex = new RegExp("(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$");
-var plregex = new RegExp("(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist.+$");
-var mp3regex = new RegExp("(https?\:\/\/)?.*\..*\/.+\.(mp3|ogg|flac)$");
-var scregex = new RegExp("(https?\:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/.+$");
-var scregex2 = new RegExp("sc\:.+\/.+$");
+var ytregex = new RegExp("(https?://)?(www.)?(youtube.com|youtu.?be)/.+$");
+var plregex = new RegExp(
+    "(https?://)?(www.)?(youtube.com|youtu.?be)/playlist.+$"
+);
+var mp3regex = new RegExp("(https?://)?.*..*/.+.(mp3|ogg|flac)$");
+var scregex = new RegExp("(https?://)?(www.|m.)?soundcloud.com/.+/.+$");
+var scregex2 = new RegExp("sc:.+/.+$");
 
-let createEndFunction = function(id,url,type,msg,ctx){
-    if(ctx.vc.get(id).evntEnd) return;
+let createEndFunction = function(id, url, type, msg, ctx) {
+    if (ctx.vc.get(id).evntEnd) return;
     ctx.vc.get(id).queue = ctx.vc.get(id).queue ? ctx.vc.get(id).queue : [];
 
-    ctx.vc.get(id).evntEnd = function(){
-        if(ctx.vc.get(id).iwastoldtoleave === false){msg.channel.createMessage(`:musical_note: Items in queue remaining: ${ctx.vc.get(id).queue.length}`)}
-        if(ctx.vc.get(id).queue.length > 0){
+    ctx.vc.get(id).evntEnd = function() {
+        if (ctx.vc.get(id).iwastoldtoleave === false) {
+            msg.channel.createMessage(
+                `:musical_note: Items in queue remaining: ${
+                    ctx.vc.get(id).queue.length
+                }`
+            );
+        }
+        if (ctx.vc.get(id).queue.length > 0) {
             let item = ctx.vc.get(id).queue[0];
-            doMusicThingsOk(id,item.url,item.type,msg,ctx);
-            ctx.vc.get(id).queue = ctx.vc.get(id).queue.splice(1,ctx.vc.get(id).queue.length);
-        }else{
+            doMusicThingsOk(id, item.url, item.type, msg, ctx);
+            ctx.vc.get(id).queue = ctx.vc
+                .get(id)
+                .queue.splice(1, ctx.vc.get(id).queue.length);
+        } else {
             let conn = ctx.vc.get(id);
             conn.disconnect();
-            if(ctx.vc.get(id).iwastoldtoleave === false){msg.channel.createMessage(":musical_note: Queue is empty, leaving voice channel.")}
-            conn.removeListener("error",e=>ctx.utils.logWarn(ctx,`[music] error catching: ${e}`));
-            conn.removeListener("warn",e=>ctx.utils.logWarn(ctx,`[music] warn catching: ${e}`));
+            if (ctx.vc.get(id).iwastoldtoleave === false) {
+                msg.channel.createMessage(
+                    ":musical_note: Queue is empty, leaving voice channel."
+                );
+            }
+            conn.removeListener("error", e =>
+                ctx.utils.logWarn(ctx, `[music] error catching: ${e}`)
+            );
+            conn.removeListener("warn", e =>
+                ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`)
+            );
             ctx.vc.delete(id);
         }
-    }
+    };
 
-    ctx.vc.get(id).on("end",ctx.vc.get(id).evntEnd);
-    ctx.vc.get(id).on("error",e=>ctx.utils.logWarn(ctx,`[music] error catching: ${e}`));
-    ctx.vc.get(id).on("warn",e=>ctx.utils.logWarn(ctx,`[music] warn catching: ${e}`));
-}
+    ctx.vc.get(id).on("end", ctx.vc.get(id).evntEnd);
+    ctx.vc
+        .get(id)
+        .on("error", e =>
+            ctx.utils.logWarn(ctx, `[music] error catching: ${e}`)
+        );
+    ctx.vc
+        .get(id)
+        .on("warn", e => ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`));
+};
 
-let doPlaylistThingsOk = async function(ctx,msg,url){
+let doPlaylistThingsOk = async function(ctx, msg, url) {
     let pl = scdl(url);
-    pl.on("info",(info)=>{
-        doMusicThingsOk(msg.member.voiceState.channelID, "https://youtu.be/"+info.id, "yt", msg, ctx);
+    pl.on("info", info => {
+        doMusicThingsOk(
+            msg.member.voiceState.channelID,
+            "https://youtu.be/" + info.id,
+            "yt",
+            msg,
+            ctx
+        );
     });
 
-    pl.on("next",async u=>{ctx.utils.logInfo(ctx,"next in playlist"); await doPlaylistThingsOk(ctx,msg,u)});
-}
+    pl.on("next", async u => {
+        ctx.utils.logInfo(ctx, "next in playlist");
+        await doPlaylistThingsOk(ctx, msg, u);
+    });
+};
 
-let doMusicThingsOk = async function(id,url,type,msg,ctx){
-    if(type == "yt"){
-        if(ctx.vc.get(id)){
+let doMusicThingsOk = async function(id, url, type, msg, ctx) {
+    if (type == "yt") {
+        if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
-            if(conn.playing){
+            if (conn.playing) {
                 ytdl.getInfo(url, {}, function(err, info) {
-                    ctx.vc.get(msg.member.voiceState.channelID).queue.push({url:url,type:"yt",title:info.title,len:info.length_seconds*1000,addedBy:msg.author.id});
-                    if(info == null || info.title == null){
-                        msg.channel.createMessage(`:musical_note: Added \`${url}\` to queue.`);
-                    }else{
-                        msg.channel.createMessage(`:musical_note: Added \`${info.title}\` to queue.`);
+                    ctx.vc
+                        .get(msg.member.voiceState.channelID)
+                        .queue.push({
+                            url: url,
+                            type: "yt",
+                            title: info.title,
+                            len: info.length_seconds * 1000,
+                            addedBy: msg.author.id
+                        });
+                    if (info == null || info.title == null) {
+                        msg.channel.createMessage(
+                            `:musical_note: Added \`${url}\` to queue.`
+                        );
+                    } else {
+                        msg.channel.createMessage(
+                            `:musical_note: Added \`${info.title}\` to queue.`
+                        );
                     }
                 });
-            }else{
-                conn.play(ytdl(url,{quality:"highestaudio"}),{inlineVolume:true});
+            } else {
+                conn.play(ytdl(url, { quality: "highestaudio" }), {
+                    inlineVolume: true
+                });
                 ytdl.getInfo(url, {}, function(err, info) {
-                    if(info == null || info.title == null){
-                        msg.channel.createMessage(`:musical_note: Now playing: \`${url}\``);
+                    if (info == null || info.title == null) {
+                        msg.channel.createMessage(
+                            `:musical_note: Now playing: \`${url}\``
+                        );
                         ctx.vc.get(id).np = url;
-                    }else{
-                        msg.channel.createMessage(`:musical_note: Now playing: \`${info.title}\``);
-                        ctx.vc.get(id).np = {title:info.title,addedBy:msg.author.id};
-                        ctx.vc.get(id).len = info.length_seconds*1000;
+                    } else {
+                        msg.channel.createMessage(
+                            `:musical_note: Now playing: \`${info.title}\``
+                        );
+                        ctx.vc.get(id).np = {
+                            title: info.title,
+                            addedBy: msg.author.id
+                        };
+                        ctx.vc.get(id).len = info.length_seconds * 1000;
                     }
                 });
             }
-        }else{
-            ctx.bot.joinVoiceChannel(id).then(conn=>{
-                ctx.vc.set(id,conn);
+        } else {
+            ctx.bot.joinVoiceChannel(id).then(conn => {
+                ctx.vc.set(id, conn);
                 ctx.vc.get(id).iwastoldtoleave = false;
-                conn.play(ytdl(url,{quality:"highestaudio"}),{inlineVolume:true});
+                conn.play(ytdl(url, { quality: "highestaudio" }), {
+                    inlineVolume: true
+                });
                 ytdl.getInfo(url, {}, function(err, info) {
-                    if(info == null || info.title == null){
-                        msg.channel.createMessage(`:musical_note: Now playing: \`${url}\``);
-                        if(ctx.vc.get(id)) ctx.vc.get(id).np = url;
-                    }else{
-                        msg.channel.createMessage(`:musical_note: Now playing: \`${info.title}\``);
-                        ctx.vc.get(id).np = {title:info.title,addedBy:msg.author.id};
-                        ctx.vc.get(id).len = info.length_seconds*1000;
+                    if (info == null || info.title == null) {
+                        msg.channel.createMessage(
+                            `:musical_note: Now playing: \`${url}\``
+                        );
+                        if (ctx.vc.get(id)) ctx.vc.get(id).np = url;
+                    } else {
+                        msg.channel.createMessage(
+                            `:musical_note: Now playing: \`${info.title}\``
+                        );
+                        ctx.vc.get(id).np = {
+                            title: info.title,
+                            addedBy: msg.author.id
+                        };
+                        ctx.vc.get(id).len = info.length_seconds * 1000;
                     }
                 });
-                createEndFunction(id,url,type,msg,ctx);
+                createEndFunction(id, url, type, msg, ctx);
             });
         }
-    }else if(type == "sc"){
-        if(url.startsWith("sc:")){ url = "https://soundcloud.com/"+url.split("sc:").splice(1); }
-        if(ctx.vc.get(id)){
+    } else if (type == "sc") {
+        if (url.startsWith("sc:")) {
+            url = "https://soundcloud.com/" + url.split("sc:").splice(1);
+        }
+        if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
-            if(conn.playing){
+            if (conn.playing) {
                 let scstream = scdl(url);
-                await scstream.on("info",(info)=>{
-                    ctx.vc.get(msg.member.voiceState.channelID).queue.push({url:url,type:"sc",title:info.title,len:info._duration_raw*1000,addedBy:msg.author.id});
-                    msg.channel.createMessage(`:musical_note: Added \`${info.title}\` to queue.`);
+                await scstream.on("info", info => {
+                    ctx.vc
+                        .get(msg.member.voiceState.channelID)
+                        .queue.push({
+                            url: url,
+                            type: "sc",
+                            title: info.title,
+                            len: info._duration_raw * 1000,
+                            addedBy: msg.author.id
+                        });
+                    msg.channel.createMessage(
+                        `:musical_note: Added \`${info.title}\` to queue.`
+                    );
                 });
-            }else{
+            } else {
                 let scstream = scdl(url);
-                await scstream.on("info",(info)=>{
-                    msg.channel.createMessage(`:musical_note: Now playing: \`${info.title}\``);
-                    ctx.vc.get(id).np = {title:info.title,addedBy:msg.author.id};
-                    ctx.vc.get(id).len = info._duration_raw*1000;
+                await scstream.on("info", info => {
+                    msg.channel.createMessage(
+                        `:musical_note: Now playing: \`${info.title}\``
+                    );
+                    ctx.vc.get(id).np = {
+                        title: info.title,
+                        addedBy: msg.author.id
+                    };
+                    ctx.vc.get(id).len = info._duration_raw * 1000;
 
-                    conn.play(info.url,{inlineVolume:true});
+                    conn.play(info.url, { inlineVolume: true });
                 });
             }
-        }else{
-            ctx.bot.joinVoiceChannel(id).then(async conn=>{
-                ctx.vc.set(id,conn);
+        } else {
+            ctx.bot.joinVoiceChannel(id).then(async conn => {
+                ctx.vc.set(id, conn);
                 ctx.vc.get(id).iwastoldtoleave = false;
                 let scstream = scdl(url);
-                await scstream.on("info",(info)=>{
-                    msg.channel.createMessage(`:musical_note: Now playing: \`${info.title}\``);
-                    ctx.vc.get(id).np = {title:info.title,addedBy:msg.author.id};
-                    ctx.vc.get(id).len = info._duration_raw*1000;
+                await scstream.on("info", info => {
+                    msg.channel.createMessage(
+                        `:musical_note: Now playing: \`${info.title}\``
+                    );
+                    ctx.vc.get(id).np = {
+                        title: info.title,
+                        addedBy: msg.author.id
+                    };
+                    ctx.vc.get(id).len = info._duration_raw * 1000;
 
-                    conn.play(info.url,{inlineVolume:true});
+                    conn.play(info.url, { inlineVolume: true });
                 });
-                createEndFunction(id,url,type,msg,ctx);
+                createEndFunction(id, url, type, msg, ctx);
             });
         }
-    }else if(type == "mp3"){
-        if(ctx.vc.get(id)){
+    } else if (type == "mp3") {
+        if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
-            if(conn.playing){
-                probe(url,function(e,data){
-                    let title = data ? `${data.metadata ? (data.metadata.artist ? data.metadata.artist : "<no artist>") : "<no metadata>"} - ${data.metadata ? (data.metadata.title ? data.metadata.title : "<no title>") : "<no metadata>"}` : url;
-                    ctx.vc.get(id).queue.push({url:url,type:"mp3",title:title,len:data ? Math.floor(data.format.duration)*1000 : 0,addedBy:msg.author.id});
-                    msg.channel.createMessage(`:musical_note: Added \`${title}\` to queue.`);
+            if (conn.playing) {
+                probe(url, function(e, data) {
+                    let title = data
+                        ? `${
+                              data.metadata
+                                  ? data.metadata.artist
+                                    ? data.metadata.artist
+                                    : "<no artist>"
+                                  : "<no metadata>"
+                          } - ${
+                              data.metadata
+                                  ? data.metadata.title
+                                    ? data.metadata.title
+                                    : "<no title>"
+                                  : "<no metadata>"
+                          }`
+                        : url;
+                    ctx.vc
+                        .get(id)
+                        .queue.push({
+                            url: url,
+                            type: "mp3",
+                            title: title,
+                            len: data
+                                ? Math.floor(data.format.duration) * 1000
+                                : 0,
+                            addedBy: msg.author.id
+                        });
+                    msg.channel.createMessage(
+                        `:musical_note: Added \`${title}\` to queue.`
+                    );
                 });
-            }else{
-                probe(url,function(e,data){
-                    let title = data ? `${data.metadata ? (data.metadata.artist ? data.metadata.artist : "<no artist>") : "<no metadata>"} - ${data.metadata ? (data.metadata.title ? data.metadata.title : "<no title>") : "<no metadata>"}` : url;
-                    msg.channel.createMessage(`:musical_note: Now playing: \`${title}\``);
-                    conn.play(url,{inlineVolume:true});
-                    ctx.vc.get(id).np = {title:title,addedBy:msg.author.id};
-                    ctx.vc.get(id).len = data ? Math.floor(data.format.duration)*1000 : 0;
+            } else {
+                probe(url, function(e, data) {
+                    let title = data
+                        ? `${
+                              data.metadata
+                                  ? data.metadata.artist
+                                    ? data.metadata.artist
+                                    : "<no artist>"
+                                  : "<no metadata>"
+                          } - ${
+                              data.metadata
+                                  ? data.metadata.title
+                                    ? data.metadata.title
+                                    : "<no title>"
+                                  : "<no metadata>"
+                          }`
+                        : url;
+                    msg.channel.createMessage(
+                        `:musical_note: Now playing: \`${title}\``
+                    );
+                    conn.play(url, { inlineVolume: true });
+                    ctx.vc.get(id).np = {
+                        title: title,
+                        addedBy: msg.author.id
+                    };
+                    ctx.vc.get(id).len = data
+                        ? Math.floor(data.format.duration) * 1000
+                        : 0;
                 });
             }
-        }else{
-            ctx.bot.joinVoiceChannel(id).then(conn=>{
-                ctx.vc.set(id,conn);
+        } else {
+            ctx.bot.joinVoiceChannel(id).then(conn => {
+                ctx.vc.set(id, conn);
                 ctx.vc.get(id).iwastoldtoleave = false;
-                probe(url,function(e,data){
-                    let title = data ? `${data.metadata ? (data.metadata.artist ? data.metadata.artist : "<no artist>") : "<no metadata>"} - ${data.metadata ? (data.metadata.title ? data.metadata.title : "<no title>") : "<no metadata>"}` : url;
-                    msg.channel.createMessage(`:musical_note: Now playing: \`${title}\``);
-                    conn.play(url,{inlineVolume:true});
-                    ctx.vc.get(id).np = {title:title,addedBy:msg.author.id};
-                    ctx.vc.get(id).len = data ? Math.floor(data.format.duration)*1000 : 0;
+                probe(url, function(e, data) {
+                    let title = data
+                        ? `${
+                              data.metadata
+                                  ? data.metadata.artist
+                                    ? data.metadata.artist
+                                    : "<no artist>"
+                                  : "<no metadata>"
+                          } - ${
+                              data.metadata
+                                  ? data.metadata.title
+                                    ? data.metadata.title
+                                    : "<no title>"
+                                  : "<no metadata>"
+                          }`
+                        : url;
+                    msg.channel.createMessage(
+                        `:musical_note: Now playing: \`${title}\``
+                    );
+                    conn.play(url, { inlineVolume: true });
+                    ctx.vc.get(id).np = {
+                        title: title,
+                        addedBy: msg.author.id
+                    };
+                    ctx.vc.get(id).len = data
+                        ? Math.floor(data.format.duration) * 1000
+                        : 0;
                 });
-                createEndFunction(id,url,type,msg,ctx);
+                createEndFunction(id, url, type, msg, ctx);
             });
         }
-    }else{
-        msg.channel.createMessage("Unknown type passed, what. Report this kthx.")
+    } else {
+        msg.channel.createMessage(
+            "Unknown type passed, what. Report this kthx."
+        );
     }
-}
+};
 
-let doSearchThingsOk = async function(id,str,msg,ctx){
-    let req = await ctx.libs.superagent.get(`https://www.googleapis.com/youtube/v3/search?key=${ctx.apikeys.google}&maxResults=5&part=snippet&type=video&q=${encodeURIComponent(str)}`)
+let doSearchThingsOk = async function(id, str, msg, ctx) {
+    let req = await ctx.libs.superagent.get(
+        `https://www.googleapis.com/youtube/v3/search?key=${
+            ctx.apikeys.google
+        }&maxResults=5&part=snippet&type=video&q=${encodeURIComponent(str)}`
+    );
     let data = req.body.items;
 
     let m = "Please type a number to choose your selection\n```ini\n";
 
-    for(let i=0;i<data.length;i++){
-        m = m + `[${i+1}] ${data[i].snippet.title} from ${data[i].snippet.channelTitle}\n`;
+    for (let i = 0; i < data.length; i++) {
+        m =
+            m +
+            `[${i + 1}] ${data[i].snippet.title} from ${
+                data[i].snippet.channelTitle
+            }\n`;
     }
 
     m = m + "\n[c] Cancel\n```";
 
-    ctx.utils.awaitMessage(ctx,msg,m,async _msg=>{
-        let value = parseInt(_msg.content);
-        if(_msg.content == "c"){
-            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg).delete();
-            _msg.delete().catch(()=>{return;});
-            msg.channel.createMessage("Canceled.");
-            ctx.bot.removeListener("messageCreate",ctx.awaitMsgs.get(msg.channel.id)[msg.id].func);
-        }else if(_msg.content == value){
-            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg).delete();
-            _msg.delete().catch(()=>{return;});
-            let vid = data[value-1];
-            ctx.bot.removeListener("messageCreate",ctx.awaitMsgs.get(msg.channel.id)[msg.id].func);
+    ctx.utils.awaitMessage(
+        ctx,
+        msg,
+        m,
+        async _msg => {
+            let value = parseInt(_msg.content);
+            if (_msg.content == "c") {
+                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                    .botmsg).delete();
+                _msg.delete().catch(() => {
+                    return;
+                });
+                msg.channel.createMessage("Canceled.");
+                ctx.bot.removeListener(
+                    "messageCreate",
+                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                );
+            } else if (_msg.content == value) {
+                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                    .botmsg).delete();
+                _msg.delete().catch(() => {
+                    return;
+                });
+                let vid = data[value - 1];
+                ctx.bot.removeListener(
+                    "messageCreate",
+                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                );
 
-            doMusicThingsOk(id,"https://youtu.be/"+vid.id.videoId,"yt",msg,ctx);
-        }
-        clearTimeout(ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer);
-    },30000);
-}
+                doMusicThingsOk(
+                    id,
+                    "https://youtu.be/" + vid.id.videoId,
+                    "yt",
+                    msg,
+                    ctx
+                );
+            }
+            clearTimeout(ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer);
+        },
+        30000
+    );
+};
 
-let doQueueRemovalThingsOk = async function(ctx,msg,data){
+let doQueueRemovalThingsOk = async function(ctx, msg, data) {
     let m = "Please type a number to choose your selection\n```ini\n";
 
-    for(let i=0;i<data.length;i++){
-        m = m + `[${i+1}] ${data[i].title}\n`;
+    for (let i = 0; i < data.length; i++) {
+        m = m + `[${i + 1}] ${data[i].title}\n`;
     }
 
     m = m + "\n[c] Cancel\n```";
 
-    ctx.utils.awaitMessage(ctx,msg,m,async _msg=>{
-        let value = parseInt(_msg.content);
-        if(_msg.content == "c"){
-            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg).delete();
-            _msg.delete().catch(()=>{return;});
-            msg.channel.createMessage("Canceled.");
-            ctx.bot.removeListener("messageCreate",ctx.awaitMsgs.get(msg.channel.id)[msg.id].func);
-        }else if(_msg.content == value){
-            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg).delete();
-            _msg.delete().catch(()=>{return;});
-            let torem = data[value-1];
-            ctx.bot.removeListener("messageCreate",ctx.awaitMsgs.get(msg.channel.id)[msg.id].func);
+    ctx.utils.awaitMessage(
+        ctx,
+        msg,
+        m,
+        async _msg => {
+            let value = parseInt(_msg.content);
+            if (_msg.content == "c") {
+                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                    .botmsg).delete();
+                _msg.delete().catch(() => {
+                    return;
+                });
+                msg.channel.createMessage("Canceled.");
+                ctx.bot.removeListener(
+                    "messageCreate",
+                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                );
+            } else if (_msg.content == value) {
+                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                    .botmsg).delete();
+                _msg.delete().catch(() => {
+                    return;
+                });
+                let torem = data[value - 1];
+                ctx.bot.removeListener(
+                    "messageCreate",
+                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                );
 
-            msg.channel.createMessage(`:x: Removed \`${torem.title}\` from queue.`);
-            ctx.vc.get(msg.member.voiceState.channelID).queue = ctx.vc.get(msg.member.voiceState.channelID).queue.filter(x=>x.url !== torem.url);
-        }
-        clearTimeout(ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer);
-    },30000);
-}
+                msg.channel.createMessage(
+                    `:x: Removed \`${torem.title}\` from queue.`
+                );
+                ctx.vc.get(msg.member.voiceState.channelID).queue = ctx.vc
+                    .get(msg.member.voiceState.channelID)
+                    .queue.filter(x => x.url !== torem.url);
+            }
+            clearTimeout(ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer);
+        },
+        30000
+    );
+};
 
-let func = function(ctx,msg,args){
-    if(msg.channel.guild){
+let func = function(ctx, msg, args) {
+    if (msg.channel.guild) {
         let a = args.split(" ");
         let cmd = a[0];
-        let cargs = a.splice(1,a.length).join(" ");
+        let cargs = a.splice(1, a.length).join(" ");
 
-        if(cmd == "play" || cmd == "p"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID){
+        if (cmd == "play" || cmd == "p") {
+            if (msg.member.voiceState && msg.member.voiceState.channelID) {
                 let processed = false;
 
-                if(plregex.test(cargs)) {
-                    doPlaylistThingsOk(ctx,msg,cargs);
+                if (plregex.test(cargs)) {
+                    doPlaylistThingsOk(ctx, msg, cargs);
                     processed = true;
-                }else if(ytregex.test(cargs) && processed == false) {
-                    doMusicThingsOk(msg.member.voiceState.channelID,cargs,"yt",msg,ctx);
+                } else if (ytregex.test(cargs) && processed == false) {
+                    doMusicThingsOk(
+                        msg.member.voiceState.channelID,
+                        cargs,
+                        "yt",
+                        msg,
+                        ctx
+                    );
                     processed = true;
-                }else if(scregex.test(cargs) || scregex2.test(cargs)) {
-                    doMusicThingsOk(msg.member.voiceState.channelID,cargs,"sc",msg,ctx);
-                }else if(mp3regex.test(cargs)) {
-                    doMusicThingsOk(msg.member.voiceState.channelID,cargs,"mp3",msg,ctx);
-                }else{
-                    doSearchThingsOk(msg.member.voiceState.channelID,cargs,msg,ctx);
+                } else if (scregex.test(cargs) || scregex2.test(cargs)) {
+                    doMusicThingsOk(
+                        msg.member.voiceState.channelID,
+                        cargs,
+                        "sc",
+                        msg,
+                        ctx
+                    );
+                } else if (mp3regex.test(cargs)) {
+                    doMusicThingsOk(
+                        msg.member.voiceState.channelID,
+                        cargs,
+                        "mp3",
+                        msg,
+                        ctx
+                    );
+                } else {
+                    doSearchThingsOk(
+                        msg.member.voiceState.channelID,
+                        cargs,
+                        msg,
+                        ctx
+                    );
                 }
-            }else{
+            } else {
                 msg.channel.createMessage("You are not in a voice channel.");
             }
-        }else if(cmd == "playlist" || cmd == "pl"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID){
-                if(plregex.test(cargs)) {
-                    doPlaylistThingsOk(ctx,msg,cargs);
-                }else{
+        } else if (cmd == "playlist" || cmd == "pl") {
+            if (msg.member.voiceState && msg.member.voiceState.channelID) {
+                if (plregex.test(cargs)) {
+                    doPlaylistThingsOk(ctx, msg, cargs);
+                } else {
                     msg.channel.createMessage("Not a playlist");
                 }
-            }else{
+            } else {
                 msg.channel.createMessage("You are not in a voice channel.");
             }
-        }else if(cmd == "leave" || cmd == "l" || cmd == "d" || cmd == "disconnect"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID){
+        } else if (
+            cmd == "leave" ||
+            cmd == "l" ||
+            cmd == "d" ||
+            cmd == "disconnect"
+        ) {
+            if (msg.member.voiceState && msg.member.voiceState.channelID) {
                 let conn = ctx.vc.get(msg.member.voiceState.channelID);
-                if(conn){
-                    if(conn.skiplocked == true){
-                        if(msg.member.permission.has("manageMessages")){
+                if (conn) {
+                    if (conn.skiplocked == true) {
+                        if (msg.member.permission.has("manageMessages")) {
                             msg.channel.createMessage("ok bye :wave:");
                             conn.queue = {};
                             conn.iwastoldtoleave = true;
                             conn.stopPlaying();
-                            ctx.bot.leaveVoiceChannel(msg.member.voiceState.channelID);
-                        }else if(conn.np.addedBy == msg.member && conn.queue.length == 0){
+                            ctx.bot.leaveVoiceChannel(
+                                msg.member.voiceState.channelID
+                            );
+                        } else if (
+                            conn.np.addedBy == msg.member &&
+                            conn.queue.length == 0
+                        ) {
                             msg.channel.createMessage("ok bye :wave:");
                             conn.queue = {};
                             conn.iwastoldtoleave = true;
                             conn.stopPlaying();
-                            ctx.bot.leaveVoiceChannel(msg.member.voiceState.channelID);
-                        }else{
-                            msg.channel.createMessage(`Skips locked, cannot leave, you do not have Manage Messages nor is the queue empty.`);
+                            ctx.bot.leaveVoiceChannel(
+                                msg.member.voiceState.channelID
+                            );
+                        } else {
+                            msg.channel.createMessage(
+                                `Skips locked, cannot leave, you do not have Manage Messages nor is the queue empty.`
+                            );
                         }
-                    }else{
+                    } else {
                         msg.channel.createMessage("ok bye :wave:");
                         conn.queue = {};
                         conn.iwastoldtoleave = true;
                         conn.stopPlaying();
-                        ctx.bot.leaveVoiceChannel(msg.member.voiceState.channelID);
+                        ctx.bot.leaveVoiceChannel(
+                            msg.member.voiceState.channelID
+                        );
                     }
-                }else{
-                    msg.channel.createMessage("No voice connection found, brute forcing disconnect.");
+                } else {
+                    msg.channel.createMessage(
+                        "No voice connection found, brute forcing disconnect."
+                    );
                     ctx.bot.leaveVoiceChannel(msg.member.voiceState.channelID);
                 }
-            }else{
-                msg.channel.createMessage("You or the bot isn't in a voice channel.");
+            } else {
+                msg.channel.createMessage(
+                    "You or the bot isn't in a voice channel."
+                );
             }
-        }else if(cmd == "queue" || cmd == "q"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID && ctx.vc.get(msg.member.voiceState.channelID)){
-                ctx.vc.get(msg.member.voiceState.channelID).queue = ctx.vc.get(msg.member.voiceState.channelID).queue ? ctx.vc.get(msg.member.voiceState.channelID).queue : [];
-                if(cargs){
-                    if(plregex.test(cargs)) {
-                        doPlaylistThingsOk(ctx,msg,cargs);
-                    }else if(ytregex.test(cargs)) {
-                        doMusicThingsOk(msg.member.voiceState.channelID,cargs,"yt",msg,ctx);
-                    }else if(scregex.test(cargs) || scregex2.test(cargs)) {
-                        doMusicThingsOk(msg.member.voiceState.channelID,cargs,"sc",msg,ctx);
-                    }else if(mp3regex.test(cargs)) {
-                        doMusicThingsOk(msg.member.voiceState.channelID,cargs,"mp3",msg,ctx);
-                    }else{
-                        doSearchThingsOk(msg.member.voiceState.channelID,cargs,msg,ctx);
+        } else if (cmd == "queue" || cmd == "q") {
+            if (
+                msg.member.voiceState &&
+                msg.member.voiceState.channelID &&
+                ctx.vc.get(msg.member.voiceState.channelID)
+            ) {
+                ctx.vc.get(msg.member.voiceState.channelID).queue = ctx.vc.get(
+                    msg.member.voiceState.channelID
+                ).queue
+                    ? ctx.vc.get(msg.member.voiceState.channelID).queue
+                    : [];
+                if (cargs) {
+                    if (plregex.test(cargs)) {
+                        doPlaylistThingsOk(ctx, msg, cargs);
+                    } else if (ytregex.test(cargs)) {
+                        doMusicThingsOk(
+                            msg.member.voiceState.channelID,
+                            cargs,
+                            "yt",
+                            msg,
+                            ctx
+                        );
+                    } else if (scregex.test(cargs) || scregex2.test(cargs)) {
+                        doMusicThingsOk(
+                            msg.member.voiceState.channelID,
+                            cargs,
+                            "sc",
+                            msg,
+                            ctx
+                        );
+                    } else if (mp3regex.test(cargs)) {
+                        doMusicThingsOk(
+                            msg.member.voiceState.channelID,
+                            cargs,
+                            "mp3",
+                            msg,
+                            ctx
+                        );
+                    } else {
+                        doSearchThingsOk(
+                            msg.member.voiceState.channelID,
+                            cargs,
+                            msg,
+                            ctx
+                        );
                     }
-                }else{
+                } else {
                     let lqueue = [];
-                    for(let i in ctx.vc.get(msg.member.voiceState.channelID).queue){
-                        let item = ctx.vc.get(msg.member.voiceState.channelID).queue[i];
-                        lqueue.push(`${(parseInt(i)+1)}. ${(item.title ? item.title : "<no title given> - "+item.url)} [${ctx.utils.remainingTime(item.len)}]`);
+                    for (let i in ctx.vc.get(msg.member.voiceState.channelID)
+                        .queue) {
+                        let item = ctx.vc.get(msg.member.voiceState.channelID)
+                            .queue[i];
+                        lqueue.push(
+                            `${parseInt(i) + 1}. ${
+                                item.title
+                                    ? item.title
+                                    : "<no title given> - " + item.url
+                            } [${ctx.utils.remainingTime(item.len)}]`
+                        );
                     }
-                    msg.channel.createMessage(`Current Queue:\n\`\`\`md\n0. ${ctx.vc.get(msg.member.voiceState.channelID).np.title} [${ctx.utils.remainingTime(ctx.vc.get(msg.member.voiceState.channelID).sequence*20)}/${ctx.utils.remainingTime(ctx.vc.get(msg.member.voiceState.channelID).len)}]\n${lqueue.join("\n")}\n\`\`\``);
+                    msg.channel.createMessage(
+                        `Current Queue:\n\`\`\`md\n0. ${
+                            ctx.vc.get(msg.member.voiceState.channelID).np.title
+                        } [${ctx.utils.remainingTime(
+                            ctx.vc.get(msg.member.voiceState.channelID)
+                                .sequence * 20
+                        )}/${ctx.utils.remainingTime(
+                            ctx.vc.get(msg.member.voiceState.channelID).len
+                        )}]\n${lqueue.join("\n")}\n\`\`\``
+                    );
                 }
-            }else{
+            } else {
                 msg.channel.createMessage("You are not in a voice channel.");
             }
-        }else if(cmd == "skip" || cmd == "s"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID && ctx.vc.get(msg.member.voiceState.channelID)){
+        } else if (cmd == "skip" || cmd == "s") {
+            if (
+                msg.member.voiceState &&
+                msg.member.voiceState.channelID &&
+                ctx.vc.get(msg.member.voiceState.channelID)
+            ) {
                 let conn = ctx.vc.get(msg.member.voiceState.channelID);
-                if(conn.skiplocked == true){
-                    if(msg.member.permission.has("manageMessages")){
+                if (conn.skiplocked == true) {
+                    if (msg.member.permission.has("manageMessages")) {
                         conn.stopPlaying();
                         msg.channel.createMessage(`:musical_note: Skipped.`);
-                    }else if(conn.np.addedBy == msg.member){
+                    } else if (conn.np.addedBy == msg.member) {
                         conn.stopPlaying();
                         msg.channel.createMessage(`:musical_note: Skipped.`);
-                    }else{
-                        msg.channel.createMessage(`Skips locked, cannot skip, you do not have Manage Messages nor added the song.\n(vote skips soon:tm:)`);
+                    } else {
+                        msg.channel.createMessage(
+                            `Skips locked, cannot skip, you do not have Manage Messages nor added the song.\n(vote skips soon:tm:)`
+                        );
                     }
-                }else{
+                } else {
                     conn.stopPlaying();
                     msg.channel.createMessage(`:musical_note: Skipped.`);
                 }
-            }else{
+            } else {
                 msg.channel.createMessage("You are not in a voice channel.");
             }
-        }else if(cmd == "np"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID && ctx.vc.get(msg.member.voiceState.channelID)){
-                let conn = ctx.vc.get(msg.member.voiceState.channelID)
-                msg.channel.createMessage({embed:{
-                    title:`:musical_note: Now Playing`,
-                    fields:[
-                        {name:"Title",value:conn.np.title,inline:true},
-                        {name:"Remaining Time",value:`${ctx.utils.remainingTime(ctx.vc.get(msg.member.voiceState.channelID).sequence*20)}/${ctx.utils.remainingTime(conn.len)}`,inline:true},
-                        {name:"Added By",value:`<@${conn.np.addedBy}>`,inline:true}
-                    ],
-                    color:0xFF8800
-                }});
-            }else{
-                msg.channel.createMessage("You are not in a voice channel.");
-            }
-        }else if(cmd == "volume" || cmd == "v"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID && ctx.vc.get(msg.member.voiceState.channelID)){
+        } else if (cmd == "np") {
+            if (
+                msg.member.voiceState &&
+                msg.member.voiceState.channelID &&
+                ctx.vc.get(msg.member.voiceState.channelID)
+            ) {
                 let conn = ctx.vc.get(msg.member.voiceState.channelID);
-                if(cargs){
-                    let vol = parseInt(cargs);
-                    if(vol > 0 && vol < 151){
-                        conn.setVolume(vol/100);
-                        msg.channel.createMessage(`:musical_note: Set volume to ${vol}.`);
-                    }else{
-                        msg.channel.createMessage(`Volume not a number or not in the range of 1-150.`);
+                msg.channel.createMessage({
+                    embed: {
+                        title: `:musical_note: Now Playing`,
+                        fields: [
+                            {
+                                name: "Title",
+                                value: conn.np.title,
+                                inline: true
+                            },
+                            {
+                                name: "Remaining Time",
+                                value: `${ctx.utils.remainingTime(
+                                    ctx.vc.get(msg.member.voiceState.channelID)
+                                        .sequence * 20
+                                )}/${ctx.utils.remainingTime(conn.len)}`,
+                                inline: true
+                            },
+                            {
+                                name: "Added By",
+                                value: `<@${conn.np.addedBy}>`,
+                                inline: true
+                            }
+                        ],
+                        color: 0xff8800
                     }
-                }else{
-                    msg.channel.createMessage(`:musical_note: Current Volume: **${conn.volume*100}**`);
-                }
-            }else{
+                });
+            } else {
                 msg.channel.createMessage("You are not in a voice channel.");
             }
-        }else if(cmd == "queuerem" || cmd == "qr"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID && ctx.vc.get(msg.member.voiceState.channelID)){
+        } else if (cmd == "volume" || cmd == "v") {
+            if (
+                msg.member.voiceState &&
+                msg.member.voiceState.channelID &&
+                ctx.vc.get(msg.member.voiceState.channelID)
+            ) {
                 let conn = ctx.vc.get(msg.member.voiceState.channelID);
-                if(msg.member.permission.has("manageMessages")){
-                    doQueueRemovalThingsOk(ctx,msg,conn.queue);
-                }else if(conn.queue.filter(x=>x.addedBy == msg.member.id).length > 0){
-                    doQueueRemovalThingsOk(ctx,msg,conn.queue.filter(x=>x.addedBy == msg.member.id));
-                }else{
-                    msg.channel.createMessage("You do not have `Manage Messages` permission, nor have added anything to queue recently.");
+                if (cargs) {
+                    let vol = parseInt(cargs);
+                    if (vol > 0 && vol < 151) {
+                        conn.setVolume(vol / 100);
+                        msg.channel.createMessage(
+                            `:musical_note: Set volume to ${vol}.`
+                        );
+                    } else {
+                        msg.channel.createMessage(
+                            `Volume not a number or not in the range of 1-150.`
+                        );
+                    }
+                } else {
+                    msg.channel.createMessage(
+                        `:musical_note: Current Volume: **${conn.volume *
+                            100}**`
+                    );
                 }
-            }else{
+            } else {
                 msg.channel.createMessage("You are not in a voice channel.");
             }
-        }else if(cmd == "skiplock" || cmd == "\uD83D\uDD12"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID && ctx.vc.get(msg.member.voiceState.channelID)){
+        } else if (cmd == "queuerem" || cmd == "qr") {
+            if (
+                msg.member.voiceState &&
+                msg.member.voiceState.channelID &&
+                ctx.vc.get(msg.member.voiceState.channelID)
+            ) {
                 let conn = ctx.vc.get(msg.member.voiceState.channelID);
-                if(msg.member.permission.has("manageMessages")){
-                    if(conn.skiplocked == true) {
+                if (msg.member.permission.has("manageMessages")) {
+                    doQueueRemovalThingsOk(ctx, msg, conn.queue);
+                } else if (
+                    conn.queue.filter(x => x.addedBy == msg.member.id).length >
+                    0
+                ) {
+                    doQueueRemovalThingsOk(
+                        ctx,
+                        msg,
+                        conn.queue.filter(x => x.addedBy == msg.member.id)
+                    );
+                } else {
+                    msg.channel.createMessage(
+                        "You do not have `Manage Messages` permission, nor have added anything to queue recently."
+                    );
+                }
+            } else {
+                msg.channel.createMessage("You are not in a voice channel.");
+            }
+        } else if (cmd == "skiplock" || cmd == "\uD83D\uDD12") {
+            if (
+                msg.member.voiceState &&
+                msg.member.voiceState.channelID &&
+                ctx.vc.get(msg.member.voiceState.channelID)
+            ) {
+                let conn = ctx.vc.get(msg.member.voiceState.channelID);
+                if (msg.member.permission.has("manageMessages")) {
+                    if (conn.skiplocked == true) {
                         msg.channel.createMessage("Already skip locked.");
                         return;
                     }
-                    msg.channel.createMessage(":lock: Skips are now locked to users with manage messages or the person who queued the song.\n<:blankboi:393555375389016065> Run `hf!music skipunlock` to return to open it back up.");
+                    msg.channel.createMessage(
+                        ":lock: Skips are now locked to users with manage messages or the person who queued the song.\n<:blankboi:393555375389016065> Run `hf!music skipunlock` to return to open it back up."
+                    );
                     conn.skiplocked = true;
-                }else{
-                    msg.channel.createMessage("You do not have `Manage Messages` permission.");
+                } else {
+                    msg.channel.createMessage(
+                        "You do not have `Manage Messages` permission."
+                    );
                 }
-            }else{
+            } else {
                 msg.channel.createMessage("You are not in a voice channel.");
             }
-        }else if(cmd == "skipunlock" || cmd == "\uD83D\uDD13"){
-            if(msg.member.voiceState && msg.member.voiceState.channelID && ctx.vc.get(msg.member.voiceState.channelID)){
+        } else if (cmd == "skipunlock" || cmd == "\uD83D\uDD13") {
+            if (
+                msg.member.voiceState &&
+                msg.member.voiceState.channelID &&
+                ctx.vc.get(msg.member.voiceState.channelID)
+            ) {
                 let conn = ctx.vc.get(msg.member.voiceState.channelID);
-                if(msg.member.permission.has("manageMessages")){
-                    if(conn.skiplocked == false) {
+                if (msg.member.permission.has("manageMessages")) {
+                    if (conn.skiplocked == false) {
                         msg.channel.createMessage("Already unlocked.");
                         return;
                     }
-                    msg.channel.createMessage(":unlock: Skips are now open to all!");
+                    msg.channel.createMessage(
+                        ":unlock: Skips are now open to all!"
+                    );
                     conn.skiplocked = false;
-                }else{
-                    msg.channel.createMessage("You do not have `Manage Messages` permission.");
+                } else {
+                    msg.channel.createMessage(
+                        "You do not have `Manage Messages` permission."
+                    );
                 }
-            }else{
+            } else {
                 msg.channel.createMessage("You are not in a voice channel.");
             }
-        }else if(cmd == "forceurl"){
-            if(msg.member.id == "150745989836308480"){
-                if(msg.member.voiceState && msg.member.voiceState.channelID){
-                    doMusicThingsOk(msg.member.voiceState.channelID,cargs,"mp3",msg,ctx);
-                }else{
-                    msg.channel.createMessage("You are not in a voice channel.");
+        } else if (cmd == "forceurl") {
+            if (msg.member.id == "150745989836308480") {
+                if (msg.member.voiceState && msg.member.voiceState.channelID) {
+                    doMusicThingsOk(
+                        msg.member.voiceState.channelID,
+                        cargs,
+                        "mp3",
+                        msg,
+                        ctx
+                    );
+                } else {
+                    msg.channel.createMessage(
+                        "You are not in a voice channel."
+                    );
                 }
-            }else{
+            } else {
                 msg.channel.createMessage("Haha no. I'm not that trusting.");
             }
-        }else{
+        } else {
             msg.channel.createMessage(`**__Music Subcommands__**
 \u2022 **play/p/queue/q [url|search string]** - Play a song or add to queue (YouTube/SoundCloud/MP3/OGG/FLAC).
 \u2022 **queue/q (no args)** - List queue.
@@ -433,14 +808,14 @@ let func = function(ctx,msg,args){
 \u2022 **skiplock/:lock:** - Lock skipping.
 \u2022 **skipunlock/:unlock:** - Unlock skipping.`);
         }
-    }else{
+    } else {
         msg.channel.createMessage("This command can only be used in servers.");
     }
-}
+};
 
 module.exports = {
-    name:"music",
-    desc:"Do \"hf!music help\" for full list of subcommands.",
-    func:func,
-    group:"fun"
-}
+    name: "music",
+    desc: 'Do "hf!music help" for full list of subcommands.',
+    func: func,
+    group: "fun"
+};

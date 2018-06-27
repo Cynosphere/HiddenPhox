@@ -1,51 +1,53 @@
-const regex = /(?:\s|^)(gh|gl|a3|owo|sg|teknik|bb|yt|bc|bcu|sc|aur|bot|sw)\/([a-zA-Z0-9-_.#/]*)/g
+const regex = /(?:\s|^)(gh|gl|a3|owo|sg|teknik|bb|yt|bc|bcu|sc|aur|bot|sw)\/([a-zA-Z0-9-_.#/]*)/g;
 const reglinks = {
-    "gl": "https://gitlab.com/$link$",
-    "gh": "https://github.com/$link$",
-    "a3": "https://git.a3.pm/$link$",
-    "owo": "https://owo.codes/$link$",
-    "sg": "https://git.supernets.org/$link$",
-    "teknik": "https://git.teknik.io/$link$",
-    "bb": "https://bitbucket.org/$link$",
-    "yt": "https://youtu.be/$link$",
-    "bc": "https://$link$.bandcamp.com/",
-    "bcu": "https://bandcamp.com/$link$",
-    "sc": "https://soundcloud.com/$link$",
-    "aur": "https://aur.archlinux.org/packages/$link$",
-    "bot": "<https://discordapp.com/oauth2/authorize?client_id=$link$&scope=bot>",
-    "sw": "https://steamcommunity.com/sharedfiles/filedetails/?id=$link$"
-}
+    gl: "https://gitlab.com/$link$",
+    gh: "https://github.com/$link$",
+    a3: "https://git.a3.pm/$link$",
+    owo: "https://owo.codes/$link$",
+    sg: "https://git.supernets.org/$link$",
+    teknik: "https://git.teknik.io/$link$",
+    bb: "https://bitbucket.org/$link$",
+    yt: "https://youtu.be/$link$",
+    bc: "https://$link$.bandcamp.com/",
+    bcu: "https://bandcamp.com/$link$",
+    sc: "https://soundcloud.com/$link$",
+    aur: "https://aur.archlinux.org/packages/$link$",
+    bot: "<https://discordapp.com/oauth2/authorize?client_id=$link$&scope=bot>",
+    sw: "https://steamcommunity.com/sharedfiles/filedetails/?id=$link$"
+};
 
-let onMessage = async function(msg,ctx){
-	if(!msg) return;
-	if(!msg.channel.guild) return;
-    if(msg.author.bot) return;
+let onMessage = async function(msg, ctx) {
+    if (!msg) return;
+    if (!msg.channel.guild) return;
+    if (msg.author.bot) return;
 
-	const data = await ctx.db.models.sdata.findOrCreate({where:{id:msg.channel.guild.id}});
+    const data = await ctx.db.models.sdata.findOrCreate({
+        where: { id: msg.channel.guild.id }
+    });
     const enabled = data[0].dataValues.shortlinks;
 
-    if(enabled){
+    if (enabled) {
         let res = msg.content.match(regex);
-        if(!res) return;
-        res = res.map(x=>x.startsWith(" ") ? x.substring(1) : x);
+        if (!res) return;
+        res = res.map(x => (x.startsWith(" ") ? x.substring(1) : x));
         let links = [];
 
-      	for(const m in res){
-            Object.keys(reglinks).forEach(x=>{
+        for (const m in res) {
+            Object.keys(reglinks).forEach(x => {
                 let url = res[m];
-                if(!url.startsWith(x)) return;
-                url = url.replace(x+"/","");
-                url = reglinks[x].replace("$link$",url);
+                if (!url.startsWith(x)) return;
+                url = url.replace(x + "/", "");
+                url = reglinks[x].replace("$link$", url);
                 links.push(url);
             });
         }
 
         msg.channel.createMessage(links.join("\n"));
     }
-}
+};
 
 module.exports = {
-    event:"messageCreate",
-    name:"shortlinks",
-    func:onMessage
-}
+    event: "messageCreate",
+    name: "shortlinks",
+    func: onMessage
+};
