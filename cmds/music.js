@@ -6,7 +6,7 @@ var ytregex = new RegExp("(https?://)?(www.)?(youtube.com|youtu.?be)/.+$");
 var plregex = new RegExp(
     "(https?://)?(www.)?(youtube.com|youtu.?be)/playlist.+$"
 );
-var mp3regex = new RegExp("(https?://)?.*..*/.+.(mp3|ogg|flac)$");
+var mp3regex = new RegExp("(https?://)?.*..*/.+.(mp3|ogg|flac|wav)$");
 var scregex = new RegExp("(https?://)?(www.|m.)?soundcloud.com/.+/.+$");
 var scregex2 = new RegExp("sc:.+/.+$");
 
@@ -798,7 +798,7 @@ let func = function(ctx, msg, args) {
             }
         } else {
             msg.channel.createMessage(`**__Music Subcommands__**
-\u2022 **play/p/queue/q [url|search string]** - Play a song or add to queue (YouTube/SoundCloud/MP3/OGG/FLAC).
+\u2022 **play/p/queue/q [url|search string]** - Play a song or add to queue (YouTube/SoundCloud/MP3/OGG/FLAC/WAV).
 \u2022 **queue/q (no args)** - List queue.
 \u2022 **leave/l** - Leaves voice channel.
 \u2022 **np** - Gets now playing song.
