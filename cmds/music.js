@@ -68,15 +68,19 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
     );
     let data = req.body.items;
 
-    data.forEach(item => {
-        doMusicThingsOk(
-            msg.member.voiceState.channelID,
-            "https://youtu.be/" + item.snippet.resourceId.videoId,
-            "yt",
-            msg,
-            ctx
+    for (const item in data) {
+        setTimeout(
+            _ =>
+                doMusicThingsOk(
+                    msg.member.voiceState.channelID,
+                    "https://youtu.be/" + data[item].snippet.resourceId.videoId,
+                    "yt",
+                    msg,
+                    ctx
+                ),
+            100 * item
         );
-    });
+    }
 };
 
 let doMusicThingsOk = async function(id, url, type, msg, ctx) {
