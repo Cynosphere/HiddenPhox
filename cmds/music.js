@@ -619,7 +619,7 @@ let func = function(ctx, msg, args) {
                         `Current Queue:\n\`\`\`md\n0. ${
                             conn.np.title
                         } [${ctx.utils.remainingTime(
-                            conn.start - Date.now()
+                            Date.now() - conn.start
                         )}/${ctx.utils.remainingTime(conn.len)}]\n${lqueue.join(
                             "\n"
                         )}\n\`\`\``
@@ -673,7 +673,7 @@ let func = function(ctx, msg, args) {
                             {
                                 name: "Remaining Time",
                                 value: `${ctx.utils.remainingTime(
-                                    conn.start - Date.now()
+                                    Date.now() - conn.start
                                 )}/${ctx.utils.remainingTime(conn.len)}`,
                                 inline: true
                             },
