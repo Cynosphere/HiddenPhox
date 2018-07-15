@@ -1,14 +1,14 @@
-var ytdl = require("ytdl-core");
-var scdl = require("youtube-dl");
-var probe = require("node-ffprobe");
+const ytdl = require("ytdl-core");
+const scdl = require("youtube-dl");
+const probe = require("node-ffprobe");
 
-var ytregex = new RegExp("(https?://)?(www.)?(youtube.com|youtu.?be)/.+$");
-var plregex = new RegExp(
+const ytregex = new RegExp("(https?://)?(www.)?(youtube.com|youtu.?be)/.+$");
+const plregex = new RegExp(
     "(https?://)?(www.)?(youtube.com|youtu.?be)/playlist\\?list=(.+)$"
 );
-var mp3regex = new RegExp("(https?://)?.*..*/.+.(mp3|ogg|flac|wav)$");
-var scregex = new RegExp("(https?://)?(www.|m.)?soundcloud.com/.+/.+$");
-var scregex2 = new RegExp("sc:.+/.+$");
+const mp3regex = new RegExp("(https?://)?.*..*/.+.(mp3|ogg|flac|wav)$");
+const scregex = new RegExp("(https?://)?(www.|m.)?soundcloud.com/.+/.+$");
+const scregex2 = new RegExp("sc:.+/.+$");
 
 let createEndFunction = function(id, url, type, msg, ctx) {
     if (ctx.vc.get(id).evntEnd) return;
@@ -60,7 +60,7 @@ let createEndFunction = function(id, url, type, msg, ctx) {
 };
 
 let doPlaylistThingsOk = async function(ctx, msg, url) {
-    const plid = url.match(plregex)[3];
+    const plid = url.match(plregex)[4];
     let req = await ctx.libs.superagent.get(
         `https://www.googleapis.com/youtube/v3/playlistItems?key=${
             ctx.apikeys.google
