@@ -543,7 +543,7 @@ let func = function(ctx, msg, args) {
             }
         } else if (cmd == "playlist" || cmd == "pl") {
             if (msg.member.voiceState && msg.member.voiceState.channelID) {
-                if (plregex.test(cargs)) {
+                if (plregex.test(cargs) || plregex2.test(cargs)) {
                     doPlaylistThingsOk(ctx, msg, cargs);
                 } else {
                     msg.channel.createMessage("Not a playlist");
