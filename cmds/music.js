@@ -8,6 +8,7 @@ const ytregex = new RegExp(
 const plregex = new RegExp(
     "(https?://)?(www\\.)?(youtube\\.com|youtu\\.?be)/playlist\\?list=(.+)$"
 );
+const plregex2 = new RegExp("^PL[a-zA-Z0-9-_]{32}$");
 const mp3regex = new RegExp("(https?://)?.*\\..*/.+\\.(mp3|ogg|flac|wav)$");
 const scregex = new RegExp("(https?://)?(www\\.|m\\.)?soundcloud\\.com/.+/.+$");
 const scregex2 = new RegExp("sc:.+/.+$");
@@ -62,12 +63,21 @@ let createEndFunction = function(id, url, type, msg, ctx) {
 };
 
 let doPlaylistThingsOk = async function(ctx, msg, url) {
-    const plid = url.match(plregex)[5];
-    let req = await ctx.libs.superagent.get(
-        `https://www.googleapis.com/youtube/v3/playlistItems?key=${
-            ctx.apikeys.google
-        }&part=snippet&playlistId=${plid}&maxResults=50`
-    );
+    const plid = url.match(plregex)[5] || url.match(plregex2)[0];
+    let req = await ctx.libs.superagent
+        .get(
+            `https://www.googleapis.com/youtube/v3/playlistItems?key=${
+                ctx.apikeys.google
+            }&part=snippet&playlistId=${plid}&maxResults=50`
+        )
+        .catch(e =>
+            msg.channel.createMessage(
+                `:warning: Could not get playlist: \`${e.toString.replace(
+                    "Error: ",
+                    ""
+                )}\``
+            )
+        );
     let data = req.body.items;
 
     for (const item in data) {
@@ -490,7 +500,7 @@ let func = function(ctx, msg, args) {
             if (msg.member.voiceState && msg.member.voiceState.channelID) {
                 let processed = false;
 
-                if (plregex.test(cargs)) {
+                if (plregex.test(cargs) || plregex2.test(cargs)) {
                     doPlaylistThingsOk(ctx, msg, cargs);
                     processed = true;
                 } else if (ytregex.test(cargs) && processed == false) {
@@ -604,7 +614,7 @@ let func = function(ctx, msg, args) {
                 let conn = ctx.vc.get(msg.member.voiceState.channelID);
                 conn.queue = conn.queue || [];
                 if (cargs) {
-                    if (plregex.test(cargs)) {
+                    if (plregex.test(cargs) || plregex2.test(cargs)) {
                         doPlaylistThingsOk(ctx, msg, cargs);
                         processed = true;
                     } else if (ytregex.test(cargs) && processed == false) {
