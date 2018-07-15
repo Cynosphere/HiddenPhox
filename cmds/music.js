@@ -2,12 +2,14 @@ const ytdl = require("ytdl-core");
 const scdl = require("youtube-dl");
 const probe = require("node-ffprobe");
 
-const ytregex = new RegExp("(https?://)?(www.)?(youtube.com|youtu.?be)/.+$");
-const plregex = new RegExp(
-    "(https?://)?(www.)?(youtube.com|youtu.?be)/playlist\\?list=(.+)$"
+const ytregex = new RegExp(
+    "(https?://)?(www\\.)?(youtube\\.com|youtu\\.?be)/.+$"
 );
-const mp3regex = new RegExp("(https?://)?.*..*/.+.(mp3|ogg|flac|wav)$");
-const scregex = new RegExp("(https?://)?(www.|m.)?soundcloud.com/.+/.+$");
+const plregex = new RegExp(
+    "(https?://)?(www\\.)?(youtube\\.com|youtu\\.?be)/playlist\\?list=(.+)$"
+);
+const mp3regex = new RegExp("(https?://)?.*\\..*/.+\\.(mp3|ogg|flac|wav)$");
+const scregex = new RegExp("(https?://)?(www\\.|m\\.)?soundcloud\\.com/.+/.+$");
 const scregex2 = new RegExp("sc:.+/.+$");
 
 let createEndFunction = function(id, url, type, msg, ctx) {
@@ -16,16 +18,16 @@ let createEndFunction = function(id, url, type, msg, ctx) {
 
     ctx.vc.get(id).evntEnd = function() {
         if (!ctx.vc.get(id)) return;
-        if (ctx.vc.get(id).iwastoldtoleave === false) {
+        /*if (ctx.vc.get(id).iwastoldtoleave === false) {
             msg.channel.createMessage(
                 `:musical_note: Items in queue remaining: ${
                     ctx.vc.get(id).queue.length
                 }`
             );
-        }
+        }*/
         if (ctx.vc.get(id).queue.length > 0) {
             let item = ctx.vc.get(id).queue[0];
-            doMusicThingsOk(id, item.url, item.type, msg, ctx);
+            doMusicThingsOk(id, item.url, item.type, msg, ctx, item.addedBy);
             ctx.vc.get(id).queue = ctx.vc
                 .get(id)
                 .queue.splice(1, ctx.vc.get(id).queue.length);
@@ -60,7 +62,7 @@ let createEndFunction = function(id, url, type, msg, ctx) {
 };
 
 let doPlaylistThingsOk = async function(ctx, msg, url) {
-    const plid = url.match(plregex)[4];
+    const plid = url.match(plregex)[5];
     let req = await ctx.libs.superagent.get(
         `https://www.googleapis.com/youtube/v3/playlistItems?key=${
             ctx.apikeys.google
@@ -76,14 +78,15 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
                     "https://youtu.be/" + data[item].snippet.resourceId.videoId,
                     "yt",
                     msg,
-                    ctx
+                    ctx,
+                    msg.author.id
                 ),
             1000 * item
         );
     }
 };
 
-let doMusicThingsOk = async function(id, url, type, msg, ctx) {
+let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
     if (type == "yt") {
         if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
@@ -92,7 +95,9 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                 ytdl.getInfo(url, {}, function(err, info) {
                     if (err) {
                         msg.channel.createMessage(
-                            `Could not add video: \`${err}\``
+                            `:warning: Could not add video: \`${err.replace(
+                                "Error: "
+                            )}\``
                         );
                         return;
                     }
@@ -101,7 +106,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                         type: "yt",
                         title: info.title,
                         len: info.length_seconds * 1000,
-                        addedBy: msg.author.id
+                        addedBy: addedBy
                     });
                     if (info == null || info.title == null) {
                         msg.channel.createMessage(
@@ -120,7 +125,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                 ytdl.getInfo(url, {}, function(err, info) {
                     if (err) {
                         msg.channel.createMessage(
-                            `Could not add video: \`${err}\``
+                            `:warning: Could not add video: \`${err}\``
                         );
                         return;
                     }
@@ -138,7 +143,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                         );
                         conn.np = {
                             title: info.title,
-                            addedBy: msg.author.id
+                            addedBy: addedBy
                         };
                         conn.len = info.length_seconds * 1000;
                         conn.start = Date.now();
@@ -156,7 +161,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                 ytdl.getInfo(url, {}, function(err, info) {
                     if (err) {
                         msg.channel.createMessage(
-                            `Could not add video: \`${err}\``
+                            `:warning: Could not add video: \`${err}\``
                         );
                         return;
                     }
@@ -171,7 +176,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                         );
                         conn.np = {
                             title: info.title,
-                            addedBy: msg.author.id
+                            addedBy: addedBy
                         };
                         conn.len = info.length_seconds * 1000;
                         conn.start = Date.now();
@@ -196,7 +201,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                             type: "sc",
                             title: info.title,
                             len: info._duration_raw * 1000,
-                            addedBy: msg.author.id
+                            addedBy: addedBy
                         });
                         msg.channel.createMessage(
                             `:musical_note: Added \`${info.title}\` to queue.`
@@ -217,7 +222,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                     );
                     conn.np = {
                         title: info.title,
-                        addedBy: msg.author.id
+                        addedBy: addedBy
                     };
                     conn.len = info._duration_raw * 1000;
                     conn.start = Date.now();
@@ -237,7 +242,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                     );
                     conn.np = {
                         title: info.title,
-                        addedBy: msg.author.id
+                        addedBy: addedBy
                     };
                     conn.len = info._duration_raw * 1000;
                     conn.start = Date.now();
@@ -273,7 +278,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                         type: "mp3",
                         title: title,
                         len: data ? Math.floor(data.format.duration) * 1000 : 0,
-                        addedBy: msg.author.id
+                        addedBy: addedBy
                     });
                     msg.channel.createMessage(
                         `:musical_note: Added \`${title}\` to queue.`
@@ -301,7 +306,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                     );
                     conn.np = {
                         title: title,
-                        addedBy: msg.author.id
+                        addedBy: addedBy
                     };
                     conn.len = data
                         ? Math.floor(data.format.duration) * 1000
@@ -337,7 +342,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                     );
                     conn.np = {
                         title: title,
-                        addedBy: msg.author.id
+                        addedBy: addedBy
                     };
                     conn.len = data
                         ? Math.floor(data.format.duration) * 1000
@@ -490,7 +495,8 @@ let func = function(ctx, msg, args) {
                         cargs,
                         "yt",
                         msg,
-                        ctx
+                        ctx,
+                        msg.author.id
                     );
                     processed = true;
                 } else if (scregex.test(cargs) || scregex2.test(cargs)) {
@@ -499,7 +505,8 @@ let func = function(ctx, msg, args) {
                         cargs,
                         "sc",
                         msg,
-                        ctx
+                        ctx,
+                        msg.author.id
                     );
                 } else if (mp3regex.test(cargs)) {
                     doMusicThingsOk(
@@ -595,21 +602,25 @@ let func = function(ctx, msg, args) {
                 if (cargs) {
                     if (plregex.test(cargs)) {
                         doPlaylistThingsOk(ctx, msg, cargs);
-                    } else if (ytregex.test(cargs)) {
+                        processed = true;
+                    } else if (ytregex.test(cargs) && processed == false) {
                         doMusicThingsOk(
                             msg.member.voiceState.channelID,
                             cargs,
                             "yt",
                             msg,
-                            ctx
+                            ctx,
+                            msg.author.id
                         );
+                        processed = true;
                     } else if (scregex.test(cargs) || scregex2.test(cargs)) {
                         doMusicThingsOk(
                             msg.member.voiceState.channelID,
                             cargs,
                             "sc",
                             msg,
-                            ctx
+                            ctx,
+                            msg.author.id
                         );
                     } else if (mp3regex.test(cargs)) {
                         doMusicThingsOk(
