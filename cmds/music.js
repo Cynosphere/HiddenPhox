@@ -90,6 +90,12 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
             if (!conn) return;
             if (conn.playing) {
                 ytdl.getInfo(url, {}, function(err, info) {
+                    if (err) {
+                        msg.channel.createMessage(
+                            `Could not add video: \`${err}\``
+                        );
+                        return;
+                    }
                     ctx.vc.get(msg.member.voiceState.channelID).queue.push({
                         url: url,
                         type: "yt",
@@ -112,6 +118,12 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                     inlineVolume: true
                 });
                 ytdl.getInfo(url, {}, function(err, info) {
+                    if (err) {
+                        msg.channel.createMessage(
+                            `Could not add video: \`${err}\``
+                        );
+                        return;
+                    }
                     if (info == null || info.title == null) {
                         msg.channel.createMessage(
                             `:musical_note: Now playing: \`${url}\``
@@ -142,6 +154,12 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                     inlineVolume: true
                 });
                 ytdl.getInfo(url, {}, function(err, info) {
+                    if (err) {
+                        msg.channel.createMessage(
+                            `Could not add video: \`${err}\``
+                        );
+                        return;
+                    }
                     if (info == null || info.title == null) {
                         msg.channel.createMessage(
                             `:musical_note: Now playing: \`${url}\``
