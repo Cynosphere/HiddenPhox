@@ -70,15 +70,15 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
 
     for (const item in data) {
         setTimeout(
-            _ =>
-                doMusicThingsOk(
+            async () =>
+                await doMusicThingsOk(
                     msg.member.voiceState.channelID,
                     "https://youtu.be/" + data[item].snippet.resourceId.videoId,
                     "yt",
                     msg,
                     ctx
                 ),
-            100 * item
+            1000 * item
         );
     }
 };
