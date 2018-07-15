@@ -19,13 +19,6 @@ let createEndFunction = function(id, url, type, msg, ctx) {
 
     ctx.vc.get(id).evntEnd = function() {
         if (!ctx.vc.get(id)) return;
-        /*if (ctx.vc.get(id).iwastoldtoleave === false) {
-            msg.channel.createMessage(
-                `:musical_note: Items in queue remaining: ${
-                    ctx.vc.get(id).queue.length
-                }`
-            );
-        }*/
         if (ctx.vc.get(id).queue.length > 0) {
             let item = ctx.vc.get(id).queue[0];
             doMusicThingsOk(id, item.url, item.type, msg, ctx, item.addedBy);
@@ -63,7 +56,9 @@ let createEndFunction = function(id, url, type, msg, ctx) {
 };
 
 let doPlaylistThingsOk = async function(ctx, msg, url) {
-    const plid = url.match(plregex)[5] || url.match(plregex2)[0];
+    const plid =
+        (url.match(plregex) && url.match(plregex)[5]) ||
+        (url.match(plregex2) && url.match(plregex2)[0]);
     let req = await ctx.libs.superagent
         .get(
             `https://www.googleapis.com/youtube/v3/playlistItems?key=${
