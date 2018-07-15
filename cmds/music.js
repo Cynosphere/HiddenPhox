@@ -15,6 +15,7 @@ let createEndFunction = function(id, url, type, msg, ctx) {
     ctx.vc.get(id).queue = ctx.vc.get(id).queue ? ctx.vc.get(id).queue : [];
 
     ctx.vc.get(id).evntEnd = function() {
+        if (!ctx.vc.get(id)) return;
         if (ctx.vc.get(id).iwastoldtoleave === false) {
             msg.channel.createMessage(
                 `:musical_note: Items in queue remaining: ${
@@ -30,6 +31,7 @@ let createEndFunction = function(id, url, type, msg, ctx) {
                 .queue.splice(1, ctx.vc.get(id).queue.length);
         } else {
             let conn = ctx.vc.get(id);
+            if (!conn) return;
             conn.disconnect();
             if (ctx.vc.get(id).iwastoldtoleave === false) {
                 msg.channel.createMessage(
@@ -79,17 +81,16 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
     if (type == "yt") {
         if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
+            if (!conn) return;
             if (conn.playing) {
                 ytdl.getInfo(url, {}, function(err, info) {
-                    ctx.vc
-                        .get(msg.member.voiceState.channelID)
-                        .queue.push({
-                            url: url,
-                            type: "yt",
-                            title: info.title,
-                            len: info.length_seconds * 1000,
-                            addedBy: msg.author.id
-                        });
+                    ctx.vc.get(msg.member.voiceState.channelID).queue.push({
+                        url: url,
+                        type: "yt",
+                        title: info.title,
+                        len: info.length_seconds * 1000,
+                        addedBy: msg.author.id
+                    });
                     if (info == null || info.title == null) {
                         msg.channel.createMessage(
                             `:musical_note: Added \`${url}\` to queue.`
@@ -109,16 +110,21 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                         msg.channel.createMessage(
                             `:musical_note: Now playing: \`${url}\``
                         );
-                        ctx.vc.get(id).np = url;
+                        conn.np = url;
+                        conn.len = 0;
+                        conn.start = Date.now();
+                        conn.end = Date.now();
                     } else {
                         msg.channel.createMessage(
                             `:musical_note: Now playing: \`${info.title}\``
                         );
-                        ctx.vc.get(id).np = {
+                        conn.np = {
                             title: info.title,
                             addedBy: msg.author.id
                         };
-                        ctx.vc.get(id).len = info.length_seconds * 1000;
+                        conn.len = info.length_seconds * 1000;
+                        conn.start = Date.now();
+                        conn.end = Date.now() + conn.len;
                     }
                 });
             }
@@ -134,16 +140,18 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                         msg.channel.createMessage(
                             `:musical_note: Now playing: \`${url}\``
                         );
-                        if (ctx.vc.get(id)) ctx.vc.get(id).np = url;
+                        if (conn) conn.np = url;
                     } else {
                         msg.channel.createMessage(
                             `:musical_note: Now playing: \`${info.title}\``
                         );
-                        ctx.vc.get(id).np = {
+                        conn.np = {
                             title: info.title,
                             addedBy: msg.author.id
                         };
-                        ctx.vc.get(id).len = info.length_seconds * 1000;
+                        conn.len = info.length_seconds * 1000;
+                        conn.start = Date.now();
+                        conn.end = Date.now() + conn.len;
                     }
                 });
                 createEndFunction(id, url, type, msg, ctx);
@@ -156,32 +164,40 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
         if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
             if (conn.playing) {
-                let scstream = scdl(url);
-                await scstream.on("info", info => {
-                    ctx.vc
-                        .get(msg.member.voiceState.channelID)
-                        .queue.push({
+                try {
+                    let scstream = scdl(url);
+                    await scstream.on("info", info => {
+                        ctx.vc.get(msg.member.voiceState.channelID).queue.push({
                             url: url,
                             type: "sc",
                             title: info.title,
                             len: info._duration_raw * 1000,
                             addedBy: msg.author.id
                         });
-                    msg.channel.createMessage(
-                        `:musical_note: Added \`${info.title}\` to queue.`
+                        msg.channel.createMessage(
+                            `:musical_note: Added \`${info.title}\` to queue.`
+                        );
+                    });
+                } catch (e) {
+                    msg.channel.createMessage(`:warning: Error getting track.`);
+                    ctx.utils.logWarn(
+                        ctx,
+                        `[music] SoundCloud machine :b:roke: ${e}`
                     );
-                });
+                }
             } else {
                 let scstream = scdl(url);
                 await scstream.on("info", info => {
                     msg.channel.createMessage(
                         `:musical_note: Now playing: \`${info.title}\``
                     );
-                    ctx.vc.get(id).np = {
+                    conn.np = {
                         title: info.title,
                         addedBy: msg.author.id
                     };
-                    ctx.vc.get(id).len = info._duration_raw * 1000;
+                    conn.len = info._duration_raw * 1000;
+                    conn.start = Date.now();
+                    conn.end = Date.now() + conn.len;
 
                     conn.play(info.url, { inlineVolume: true });
                 });
@@ -195,11 +211,13 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                     msg.channel.createMessage(
                         `:musical_note: Now playing: \`${info.title}\``
                     );
-                    ctx.vc.get(id).np = {
+                    conn.np = {
                         title: info.title,
                         addedBy: msg.author.id
                     };
-                    ctx.vc.get(id).len = info._duration_raw * 1000;
+                    conn.len = info._duration_raw * 1000;
+                    conn.start = Date.now();
+                    conn.end = Date.now() + conn.len;
 
                     conn.play(info.url, { inlineVolume: true });
                 });
@@ -226,17 +244,13 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                                   : "<no metadata>"
                           }`
                         : url;
-                    ctx.vc
-                        .get(id)
-                        .queue.push({
-                            url: url,
-                            type: "mp3",
-                            title: title,
-                            len: data
-                                ? Math.floor(data.format.duration) * 1000
-                                : 0,
-                            addedBy: msg.author.id
-                        });
+                    ctx.vc.get(id).queue.push({
+                        url: url,
+                        type: "mp3",
+                        title: title,
+                        len: data ? Math.floor(data.format.duration) * 1000 : 0,
+                        addedBy: msg.author.id
+                    });
                     msg.channel.createMessage(
                         `:musical_note: Added \`${title}\` to queue.`
                     );
@@ -261,14 +275,17 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                     msg.channel.createMessage(
                         `:musical_note: Now playing: \`${title}\``
                     );
-                    conn.play(url, { inlineVolume: true });
-                    ctx.vc.get(id).np = {
+                    conn.np = {
                         title: title,
                         addedBy: msg.author.id
                     };
-                    ctx.vc.get(id).len = data
+                    conn.len = data
                         ? Math.floor(data.format.duration) * 1000
                         : 0;
+                    conn.start = Date.now();
+                    conn.end = Date.now() + conn.len;
+
+                    conn.play(url, { inlineVolume: true });
                 });
             }
         } else {
@@ -294,14 +311,17 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx) {
                     msg.channel.createMessage(
                         `:musical_note: Now playing: \`${title}\``
                     );
-                    conn.play(url, { inlineVolume: true });
-                    ctx.vc.get(id).np = {
+                    conn.np = {
                         title: title,
                         addedBy: msg.author.id
                     };
-                    ctx.vc.get(id).len = data
+                    conn.len = data
                         ? Math.floor(data.format.duration) * 1000
                         : 0;
+                    conn.start = Date.now();
+                    conn.end = Date.now() + conn.len;
+
+                    conn.play(url, { inlineVolume: true });
                 });
                 createEndFunction(id, url, type, msg, ctx);
             });
@@ -546,11 +566,8 @@ let func = function(ctx, msg, args) {
                 msg.member.voiceState.channelID &&
                 ctx.vc.get(msg.member.voiceState.channelID)
             ) {
-                ctx.vc.get(msg.member.voiceState.channelID).queue = ctx.vc.get(
-                    msg.member.voiceState.channelID
-                ).queue
-                    ? ctx.vc.get(msg.member.voiceState.channelID).queue
-                    : [];
+                let conn = ctx.vc.get(msg.member.voiceState.channelID);
+                conn.queue = conn.queue || [];
                 if (cargs) {
                     if (plregex.test(cargs)) {
                         doPlaylistThingsOk(ctx, msg, cargs);
@@ -588,10 +605,8 @@ let func = function(ctx, msg, args) {
                     }
                 } else {
                     let lqueue = [];
-                    for (let i in ctx.vc.get(msg.member.voiceState.channelID)
-                        .queue) {
-                        let item = ctx.vc.get(msg.member.voiceState.channelID)
-                            .queue[i];
+                    for (let i in conn.queue) {
+                        let item = conn.queue[i];
                         lqueue.push(
                             `${parseInt(i) + 1}. ${
                                 item.title
@@ -602,13 +617,12 @@ let func = function(ctx, msg, args) {
                     }
                     msg.channel.createMessage(
                         `Current Queue:\n\`\`\`md\n0. ${
-                            ctx.vc.get(msg.member.voiceState.channelID).np.title
+                            conn.np.title
                         } [${ctx.utils.remainingTime(
-                            ctx.vc.get(msg.member.voiceState.channelID)
-                                .sequence * 20
-                        )}/${ctx.utils.remainingTime(
-                            ctx.vc.get(msg.member.voiceState.channelID).len
-                        )}]\n${lqueue.join("\n")}\n\`\`\``
+                            conn.start - Date.now()
+                        )}/${ctx.utils.remainingTime(conn.len)}]\n${lqueue.join(
+                            "\n"
+                        )}\n\`\`\``
                     );
                 }
             } else {
@@ -659,8 +673,7 @@ let func = function(ctx, msg, args) {
                             {
                                 name: "Remaining Time",
                                 value: `${ctx.utils.remainingTime(
-                                    ctx.vc.get(msg.member.voiceState.channelID)
-                                        .sequence * 20
+                                    conn.start - Date.now()
                                 )}/${ctx.utils.remainingTime(conn.len)}`,
                                 inline: true
                             },

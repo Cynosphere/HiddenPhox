@@ -219,10 +219,6 @@ let linvite = async function(ctx, msg, args) {
         .set("User-Agent", "HiddenPhox (v9, Eris)")
         .set("Content-Type", "application/json")
         .set("Authorization", ctx.bot.token);
-    let req = await ctx.libs.superagent.get(
-        "https://endpwn.cathoderay.tube/goodies.json"
-    );
-    let goodies = req ? req.body : {};
     let inv = data.body;
 
     if (inv.message && inv.message == "Unknown Invite") {
@@ -262,10 +258,6 @@ let linvite = async function(ctx, msg, args) {
                         inv.guild.features.includes("VERIFIED")
                             ? "<:GreenTick:349381062176145408>"
                             : "<:RedTick:349381062054510604>"
-                    }${
-                        goodies.guilds.includes(inv.guild.id)
-                            ? "\t\t<:endpwn:442459680422363136>: <:GreenTick:349381062176145408>"
-                            : ""
                     }`,
                     inline: false
                 }
@@ -491,10 +483,6 @@ let uinfo = function(ctx, msg, args) {
     ctx.utils
         .lookupUser(ctx, msg, args || msg.member.mention)
         .then(async u => {
-            let req = await ctx.libs.superagent
-                .get("https://endpwn.cathoderay.tube/goodies.json")
-                .catch(x => {});
-            let goodies = req ? req.body : {};
             if (msg.channel.guild && msg.channel.guild.members.get(u.id)) {
                 u = msg.channel.guild.members.get(u.id);
                 let e = {
@@ -558,25 +546,6 @@ let uinfo = function(ctx, msg, args) {
                     }
                 };
 
-                if (
-                    (goodies.users && goodies.users[u.id]) ||
-                    (goodies.bots && goodies.bots.includes(u.id))
-                ) {
-                    e.fields.push({
-                        name: "EndPwn Goodies",
-                        value: `**Discrim:** ${goodies.users[u.id] ||
-                            "not set"}\t\t**Bot Tag:** ${
-                            goodies.bots.includes(u.id)
-                                ? "<:GreenTick:349381062176145408>"
-                                : "<:RedTick:349381062054510604>"
-                        }${
-                            goodies.devs.includes(u.id)
-                                ? "\t\t**Dev:** <:GreenTick:349381062176145408>"
-                                : ""
-                        }`
-                    });
-                }
-
                 e.fields.push({
                     name: "Avatar",
                     value:
@@ -624,25 +593,6 @@ let uinfo = function(ctx, msg, args) {
                     }
                 };
 
-                if (
-                    (goodies.users && goodies.users[u.id]) ||
-                    (goodies.bots && goodies.bots.includes(u.id))
-                ) {
-                    e.fields.push({
-                        name: "EndPwn Goodies",
-                        value: `**Discrim:** ${goodies.users[u.id] ||
-                            "not set"}\t\t**Bot Tag:** ${
-                            goodies.bots.includes(u.id)
-                                ? "<:GreenTick:349381062176145408>"
-                                : "<:RedTick:349381062054510604>"
-                        }${
-                            goodies.devs.includes(u.id)
-                                ? "\t\t**Dev:** <:GreenTick:349381062176145408>"
-                                : ""
-                        }`
-                    });
-                }
-
                 e.fields.push({
                     name: "Avatar",
                     value:
@@ -686,11 +636,6 @@ let sinfo = async function(ctx, msg, args) {
         frankfurt: ":flag_de:",
         russia: ":flag_ru:"
     };
-
-    let req = await ctx.libs.superagent
-        .get("https://endpwn.cathoderay.tube/goodies.json")
-        .catch(x => {});
-    let goodies = req ? req.body : {};
 
     if (msg.channel.guild) {
         let g = msg.channel.guild;
@@ -787,10 +732,6 @@ let sinfo = async function(ctx, msg, args) {
                 g.features && g.features.includes("VERIFIED")
                     ? "<:GreenTick:349381062176145408>"
                     : "<:RedTick:349381062054510604>"
-            }${
-                goodies.guilds.includes(g.id)
-                    ? "\t\t<:endpwn:442459680422363136>: <:GreenTick:349381062176145408>"
-                    : ""
             }`,
             inline: true
         });
