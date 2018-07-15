@@ -95,9 +95,9 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                 ytdl.getInfo(url, {}, function(err, info) {
                     if (err) {
                         msg.channel.createMessage(
-                            `:warning: Could not add video: \`${err.replace(
-                                "Error: "
-                            )}\``
+                            `:warning: Could not add video: \`${err
+                                .toString()
+                                .replace("Error: ", "")}\``
                         );
                         return;
                     }
@@ -125,7 +125,9 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                 ytdl.getInfo(url, {}, function(err, info) {
                     if (err) {
                         msg.channel.createMessage(
-                            `:warning: Could not add video: \`${err}\``
+                            `:warning: Could not add video: \`${err
+                                .toString()
+                                .replace("Error: ", "")}\``
                         );
                         return;
                     }
@@ -161,7 +163,9 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                 ytdl.getInfo(url, {}, function(err, info) {
                     if (err) {
                         msg.channel.createMessage(
-                            `:warning: Could not add video: \`${err}\``
+                            `:warning: Could not add video: \`${err
+                                .toString()
+                                .replace("Error: ", "")}\``
                         );
                         return;
                     }
