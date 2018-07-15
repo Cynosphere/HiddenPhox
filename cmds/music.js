@@ -4,7 +4,7 @@ var probe = require("node-ffprobe");
 
 var ytregex = new RegExp("(https?://)?(www.)?(youtube.com|youtu.?be)/.+$");
 var plregex = new RegExp(
-    "(https?://)?(www.)?(youtube.com|youtu.?be)/playlist.+$"
+    "(https?://)?(www.)?(youtube.com|youtu.?be)/playlist\\?list=(.+)$"
 );
 var mp3regex = new RegExp("(https?://)?.*..*/.+.(mp3|ogg|flac|wav)$");
 var scregex = new RegExp("(https?://)?(www.|m.)?soundcloud.com/.+/.+$");
@@ -60,20 +60,22 @@ let createEndFunction = function(id, url, type, msg, ctx) {
 };
 
 let doPlaylistThingsOk = async function(ctx, msg, url) {
-    let pl = scdl(url);
-    pl.on("info", info => {
-        doMusicThingsOk(
+    const plid = url.match(plregex)[3];
+    let req = await ctx.libs.superagent.get(
+        `https://www.googleapis.com/youtube/v3/playlistItems?key=${
+            ctx.apikeys.google
+        }&part=snippet&playlistId=${plid}&maxResults=50`
+    );
+    let data = req.body.items;
+
+    data.forEach(async item => {
+        await doMusicThingsOk(
             msg.member.voiceState.channelID,
-            "https://youtu.be/" + info.id,
+            "https://youtu.be/" + item.resourceId.videoId,
             "yt",
             msg,
             ctx
         );
-    });
-
-    pl.on("next", async u => {
-        ctx.utils.logInfo(ctx, "next in playlist");
-        await doPlaylistThingsOk(ctx, msg, u);
     });
 };
 
