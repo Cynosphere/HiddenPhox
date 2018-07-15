@@ -68,7 +68,7 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
     );
     let data = req.body.items;
 
-    data.forEach(async item => {
+    data.forEach(item => {
         doMusicThingsOk(
             msg.member.voiceState.channelID,
             "https://youtu.be/" + item.snippet.resourceId.videoId,
