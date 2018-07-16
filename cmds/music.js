@@ -55,7 +55,7 @@ let createEndFunction = function(id, url, type, msg, ctx) {
 
 let doPlaylistThingsOk = async function(ctx, msg, url) {
     const plid =
-        (url.match(plregex) && url.match(plregex)[5]) ||
+        (url.match(plregex) && url.match(plregex)[4]) ||
         (url.match(plregex2) && url.match(plregex2)[0]);
     let req = await ctx.libs.superagent
         .get(
