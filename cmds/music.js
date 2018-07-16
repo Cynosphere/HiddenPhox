@@ -674,9 +674,13 @@ let func = function(ctx, msg, args) {
                     conn.np.title
                 } [${ctx.utils.remainingTime(
                     Date.now() - conn.start
-                )}/${ctx.utils.remainingTime(conn.len)}]\n${lqueue.join(
-                    "\n"
-                )}\n\`\`\``
+                )}/${ctx.utils.remainingTime(conn.len)}]\n${lqueue
+                    .splice(0, 20)
+                    .join("\n")}\n${
+                    conn.queue.length > 20
+                        ? `\n# Showing 20/${conn.queue.length}.`
+                        : ""
+                }\`\`\``
             );
         } else {
             msg.channel
