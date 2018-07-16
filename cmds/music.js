@@ -74,19 +74,63 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
         );
     let data = req.body.items;
 
+    let processed = 0;
+    let out = await msg.channel.createMessage({
+        embed: {
+            title: "<a:typing:393848431413559296> Processing playlist...",
+            description: "Playlist processor init.",
+            footer: {
+                text: `Processed ${processed} of ${data.length} items.`
+            },
+            color: 0xff80c0
+        }
+    });
     for (const item in data) {
-        setTimeout(
-            async () =>
-                await doMusicThingsOk(
-                    msg.member.voiceState.channelID,
-                    "https://youtu.be/" + data[item].snippet.resourceId.videoId,
-                    "yt",
-                    msg,
-                    ctx,
-                    msg.author.id
-                ),
-            1000 * item
-        );
+        setTimeout(async () => {
+            processed++;
+            ytdl.getInfo(url, {}, function(err, info) {
+                if (err) return;
+                out.edit({
+                    embed: {
+                        title:
+                            "<a:typing:393848431413559296> Processing playlist...",
+                        description: `Processed **${
+                            info.title
+                        }** [${ctx.utils.remainingTime(
+                            info.length_seconds * 1000
+                        )}].`,
+                        footer: {
+                            text: `Processed ${processed} of ${
+                                data.length
+                            } items.`
+                        },
+                        color: 0xff80c0
+                    }
+                });
+            });
+
+            await doMusicThingsOk(
+                msg.member.voiceState.channelID,
+                "https://youtu.be/" + data[item].snippet.resourceId.videoId,
+                "yt",
+                msg,
+                ctx,
+                msg.author.id,
+                true
+            );
+
+            if (item >= data.length - 1) {
+                out
+                    .edit({
+                        embed: {
+                            title: ":white_check_mark Processed playlist",
+                            description: `Done processing!`,
+                            color: 0xff80c0
+                        }
+                    })
+                    .then(x => setTimeout(() => x.delete(), 10000));
+            }
+        }, 2500 * item);
     }
 };
 
@@ -123,6 +167,7 @@ let doMusicThingsOk = async function(
                         addedBy: addedBy
                     });
                     if (info == null || info.title == null) {
+                        if (playlist) return;
                         msg.channel
                             .createMessage({
                                 embed: {
@@ -152,6 +197,7 @@ let doMusicThingsOk = async function(
                             })
                             .then(x => setTimeout(() => x.delete(), 10000));
                     } else {
+                        if (playlist) return;
                         msg.channel
                             .createMessage({
                                 embed: {
