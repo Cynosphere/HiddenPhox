@@ -2,11 +2,11 @@ const ytdl = require("ytdl-core");
 const scdl = require("youtube-dl");
 const probe = require("node-ffprobe");
 
-const ytregex = /^(https?://)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
-const plregex = /^(https?://)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
+const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+const plregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
 const plregex2 = /^PL[a-zA-Z0-9-_]{32}$/;
-const mp3regex = /^(https?://)?.*\..*\/.+\.(mp3|ogg|flac|wav)$/;
-const scregex = /^(https?://)?(www\.|m\.)?soundcloud\.com\/.+\/.+$/;
+const mp3regex = /^(https?:\/\/)?.*\..*\/.+\.(mp3|ogg|flac|wav)$/;
+const scregex = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/.+$/;
 const scregex2 = /^sc:.+\/.+$/;
 
 let createEndFunction = function(id, url, type, msg, ctx) {
