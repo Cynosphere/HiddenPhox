@@ -78,35 +78,22 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
     let out = await msg.channel.createMessage({
         embed: {
             title: "<a:typing:393848431413559296> Processing playlist...",
-            description: "Playlist processor init.",
-            footer: {
-                text: `Processed ${processed} of ${data.length} items.`
-            },
+            description: `Processed ${processed} of ${data.length} items.`,
             color: 0xff80c0
         }
     });
     for (const item in data) {
         setTimeout(async () => {
             processed++;
-            ytdl.getInfo(url, {}, function(err, info) {
-                if (err) return;
-                out.edit({
-                    embed: {
-                        title:
-                            "<a:typing:393848431413559296> Processing playlist...",
-                        description: `Processed **${
-                            info.title
-                        }** [${ctx.utils.remainingTime(
-                            info.length_seconds * 1000
-                        )}].`,
-                        footer: {
-                            text: `Processed ${processed} of ${
-                                data.length
-                            } items.`
-                        },
-                        color: 0xff80c0
-                    }
-                });
+            out.edit({
+                embed: {
+                    title:
+                        "<a:typing:393848431413559296> Processing playlist...",
+                    description: `Processed ${processed} of ${
+                        data.length
+                    } items.`,
+                    color: 0xff80c0
+                }
             });
 
             await doMusicThingsOk(
@@ -123,7 +110,7 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
                 out
                     .edit({
                         embed: {
-                            title: ":white_check_mark Processed playlist",
+                            title: ":white_check_mark: Processed playlist",
                             description: `Done processing!`,
                             color: 0xff80c0
                         }
