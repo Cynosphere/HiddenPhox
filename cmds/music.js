@@ -90,7 +90,15 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
     }
 };
 
-let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
+let doMusicThingsOk = async function(
+    id,
+    url,
+    type,
+    msg,
+    ctx,
+    addedBy,
+    playlist
+) {
     if (type == "yt") {
         if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
@@ -116,17 +124,63 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                     });
                     if (info == null || info.title == null) {
                         msg.channel
-                            .createMessage(
-                                `:musical_note: Added \`${url}\` to queue.`
-                            )
+                            .createMessage({
+                                embed: {
+                                    title: `:white_check_mark: Added to queue`,
+                                    fields: [
+                                        {
+                                            name: "Title",
+                                            value: url,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Length",
+                                            value: "Unknown",
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Added By",
+                                            value: `<@${addedBy}>`,
+                                            inline: true
+                                        }
+                                    ],
+                                    color: 0x80ffc0,
+                                    thumbnail: {
+                                        url: info.thumbnail_url
+                                    }
+                                }
+                            })
                             .then(x => setTimeout(() => x.delete(), 10000));
                     } else {
                         msg.channel
-                            .createMessage(
-                                `:musical_note: Added \`${
-                                    info.title
-                                }\` to queue.`
-                            )
+                            .createMessage({
+                                embed: {
+                                    title: `:white_check_mark: Added to queue`,
+                                    fields: [
+                                        {
+                                            name: "Title",
+                                            value: info.title,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Length",
+                                            value: ctx.utils.remainingTime(
+                                                info.length_seconds * 1000
+                                            ),
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Added By",
+                                            value: `<@${addedBy}>`,
+                                            inline: true
+                                        }
+                                    ],
+                                    color: 0x80ffc0,
+                                    thumbnail: {
+                                        url: info.thumbnail_url
+                                    }
+                                }
+                            })
                             .then(x => setTimeout(() => x.delete(), 10000));
                     }
                 });
@@ -138,7 +192,7 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                     if (err) {
                         msg.channel
                             .createMessage(
-                                `:warning: Could not add video: \`${err
+                                `:warning: Could not play video: \`${err
                                     .toString()
                                     .replace("Error: ", "")}\``
                             )
@@ -147,9 +201,29 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                     }
                     if (info == null || info.title == null) {
                         msg.channel
-                            .createMessage(
-                                `:musical_note: Now playing: \`${url}\``
-                            )
+                            .createMessage({
+                                embed: {
+                                    title: `:musical_note: Now Playing`,
+                                    fields: [
+                                        {
+                                            name: "Title",
+                                            value: url,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Length",
+                                            value: "Unknown",
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Added By",
+                                            value: `<@${addedBy}>`,
+                                            inline: true
+                                        }
+                                    ],
+                                    color: 0x80c0ff
+                                }
+                            })
                             .then(x => setTimeout(() => x.delete(), 10000));
                         conn.np = url;
                         conn.len = 0;
@@ -157,13 +231,39 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                         conn.end = Date.now();
                     } else {
                         msg.channel
-                            .createMessage(
-                                `:musical_note: Now playing: \`${info.title}\``
-                            )
+                            .createMessage({
+                                embed: {
+                                    title: `:musical_note: Now Playing`,
+                                    fields: [
+                                        {
+                                            name: "Title",
+                                            value: info.title,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Length",
+                                            value: ctx.utils.remainingTime(
+                                                info.length_seconds * 1000
+                                            ),
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Added By",
+                                            value: `<@${addedBy}>`,
+                                            inline: true
+                                        }
+                                    ],
+                                    color: 0x80c0ff,
+                                    thumbnail: {
+                                        url: info.thumbnail_url
+                                    }
+                                }
+                            })
                             .then(x => setTimeout(() => x.delete(), 10000));
                         conn.np = {
                             title: info.title,
-                            addedBy: addedBy
+                            addedBy: addedBy,
+                            thumb: info.thumbnail_url
                         };
                         conn.len = info.length_seconds * 1000;
                         conn.start = Date.now();
@@ -191,20 +291,71 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                     }
                     if (info == null || info.title == null) {
                         msg.channel
-                            .createMessage(
-                                `:musical_note: Now playing: \`${url}\``
-                            )
+                            .createMessage({
+                                embed: {
+                                    title: `:musical_note: Now Playing`,
+                                    fields: [
+                                        {
+                                            name: "Title",
+                                            value: info.title,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Length",
+                                            value: ctx.utils.remainingTime(
+                                                info.length_seconds * 1000
+                                            ),
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Added By",
+                                            value: `<@${addedBy}>`,
+                                            inline: true
+                                        }
+                                    ],
+                                    color: 0x80c0ff,
+                                    thumbnail: {
+                                        url: info.thumbnail_url
+                                    }
+                                }
+                            })
                             .then(x => setTimeout(() => x.delete(), 10000));
                         if (conn) conn.np = url;
                     } else {
                         msg.channel
-                            .createMessage(
-                                `:musical_note: Now playing: \`${info.title}\``
-                            )
+                            .createMessage({
+                                embed: {
+                                    title: `:musical_note: Now Playing`,
+                                    fields: [
+                                        {
+                                            name: "Title",
+                                            value: info.title,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Length",
+                                            value: ctx.utils.remainingTime(
+                                                info.length_seconds * 1000
+                                            ),
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Added By",
+                                            value: `<@${addedBy}>`,
+                                            inline: true
+                                        }
+                                    ],
+                                    color: 0x80c0ff,
+                                    thumbnail: {
+                                        url: info.thumbnail_url
+                                    }
+                                }
+                            })
                             .then(x => setTimeout(() => x.delete(), 10000));
                         conn.np = {
                             title: info.title,
-                            addedBy: addedBy
+                            addedBy: addedBy,
+                            thumb: info.thumbnail_url
                         };
                         conn.len = info.length_seconds * 1000;
                         conn.start = Date.now();
@@ -232,11 +383,34 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                             addedBy: addedBy
                         });
                         msg.channel
-                            .createMessage(
-                                `:musical_note: Added \`${
-                                    info.title
-                                }\` to queue.`
-                            )
+                            .createMessage({
+                                embed: {
+                                    title: `:white_check_mark: Added to queue`,
+                                    fields: [
+                                        {
+                                            name: "Title",
+                                            value: info.title,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Length",
+                                            value: ctx.utils.remainingTime(
+                                                info._duration_raw * 1000
+                                            ),
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Added By",
+                                            value: `<@${addedBy}>`,
+                                            inline: true
+                                        }
+                                    ],
+                                    color: 0x80ffc0,
+                                    thumbnail: {
+                                        url: info.thumbnail
+                                    }
+                                }
+                            })
                             .then(x => setTimeout(() => x.delete(), 10000));
                     });
                 } catch (e) {
@@ -250,9 +424,34 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                 let scstream = scdl(url);
                 await scstream.on("info", info => {
                     msg.channel
-                        .createMessage(
-                            `:musical_note: Now playing: \`${info.title}\``
-                        )
+                        .createMessage({
+                            embed: {
+                                title: `:musical_note: Now Playing`,
+                                fields: [
+                                    {
+                                        name: "Title",
+                                        value: info.title,
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Length",
+                                        value: ctx.utils.remainingTime(
+                                            info._duration_raw * 1000
+                                        ),
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Added By",
+                                        value: `<@${addedBy}>`,
+                                        inline: true
+                                    }
+                                ],
+                                color: 0x80c0ff,
+                                thumbnail: {
+                                    url: info.thumbnail
+                                }
+                            }
+                        })
                         .then(x => setTimeout(() => x.delete(), 10000));
                     conn.np = {
                         title: info.title,
@@ -272,9 +471,34 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                 let scstream = scdl(url);
                 await scstream.on("info", info => {
                     msg.channel
-                        .createMessage(
-                            `:musical_note: Now playing: \`${info.title}\``
-                        )
+                        .createMessage({
+                            embed: {
+                                title: `:musical_note: Now Playing`,
+                                fields: [
+                                    {
+                                        name: "Title",
+                                        value: info.title,
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Length",
+                                        value: ctx.utils.remainingTime(
+                                            info._duration_raw * 1000
+                                        ),
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Added By",
+                                        value: `<@${addedBy}>`,
+                                        inline: true
+                                    }
+                                ],
+                                color: 0x80c0ff,
+                                thumbnail: {
+                                    url: info.thumbnail
+                                }
+                            }
+                        })
                         .then(x => setTimeout(() => x.delete(), 10000));
                     conn.np = {
                         title: info.title,
@@ -299,13 +523,17 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                               data.metadata
                                   ? data.metadata.artist
                                     ? data.metadata.artist
-                                    : "<no artist>"
+                                    : data.metadata.ARTIST
+                                      ? data.metadata.ARTIST
+                                      : "<no artist>"
                                   : "<no metadata>"
                           } - ${
                               data.metadata
                                   ? data.metadata.title
                                     ? data.metadata.title
-                                    : "<no title>"
+                                    : data.metadata.TITLE
+                                      ? data.metadata.TITLE
+                                      : "<no title>"
                                   : "<no metadata>"
                           }`
                         : url;
@@ -317,9 +545,31 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                         addedBy: addedBy
                     });
                     msg.channel
-                        .createMessage(
-                            `:musical_note: Added \`${title}\` to queue.`
-                        )
+                        .createMessage({
+                            embed: {
+                                title: `:white_check_mark: Added to queue`,
+                                fields: [
+                                    {
+                                        name: "Title",
+                                        value: title,
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Length",
+                                        value: ctx.utils.remainingTime(
+                                            data.format.duration * 1000 || 0
+                                        ),
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Added By",
+                                        value: `<@${addedBy}>`,
+                                        inline: true
+                                    }
+                                ],
+                                color: 0x80ffc0
+                            }
+                        })
                         .then(x => setTimeout(() => x.delete(), 10000));
                 });
             } else {
@@ -329,20 +579,46 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                               data.metadata
                                   ? data.metadata.artist
                                     ? data.metadata.artist
-                                    : "<no artist>"
+                                    : data.metadata.ARTIST
+                                      ? data.metadata.ARTIST
+                                      : "<no artist>"
                                   : "<no metadata>"
                           } - ${
                               data.metadata
                                   ? data.metadata.title
                                     ? data.metadata.title
-                                    : "<no title>"
+                                    : data.metadata.TITLE
+                                      ? data.metadata.TITLE
+                                      : "<no title>"
                                   : "<no metadata>"
                           }`
                         : url;
                     msg.channel
-                        .createMessage(
-                            `:musical_note: Now playing: \`${title}\``
-                        )
+                        .createMessage({
+                            embed: {
+                                title: `:musical_note: Now Playing`,
+                                fields: [
+                                    {
+                                        name: "Title",
+                                        value: title,
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Length",
+                                        value: ctx.utils.remainingTime(
+                                            data.format.duration * 1000 || 0
+                                        ),
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Added By",
+                                        value: `<@${addedBy}>`,
+                                        inline: true
+                                    }
+                                ],
+                                color: 0x80c0ff
+                            }
+                        })
                         .then(x => setTimeout(() => x.delete(), 10000));
                     conn.np = {
                         title: title,
@@ -367,20 +643,46 @@ let doMusicThingsOk = async function(id, url, type, msg, ctx, addedBy) {
                               data.metadata
                                   ? data.metadata.artist
                                     ? data.metadata.artist
-                                    : "<no artist>"
+                                    : data.metadata.ARTIST
+                                      ? data.metadata.ARTIST
+                                      : "<no artist>"
                                   : "<no metadata>"
                           } - ${
                               data.metadata
                                   ? data.metadata.title
                                     ? data.metadata.title
-                                    : "<no title>"
+                                    : data.metadata.TITLE
+                                      ? data.metadata.TITLE
+                                      : "<no title>"
                                   : "<no metadata>"
                           }`
                         : url;
                     msg.channel
-                        .createMessage(
-                            `:musical_note: Now playing: \`${title}\``
-                        )
+                        .createMessage({
+                            embed: {
+                                title: `:musical_note: Now Playing`,
+                                fields: [
+                                    {
+                                        name: "Title",
+                                        value: title,
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Length",
+                                        value: ctx.utils.remainingTime(
+                                            data.format.duration * 1000 || 0
+                                        ),
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Added By",
+                                        value: `<@${addedBy}>`,
+                                        inline: true
+                                    }
+                                ],
+                                color: 0x80c0ff
+                            }
+                        })
                         .then(x => setTimeout(() => x.delete(), 10000));
                     conn.np = {
                         title: title,
@@ -742,7 +1044,10 @@ let func = function(ctx, msg, args) {
                                     inline: true
                                 }
                             ],
-                            color: 0xff8800
+                            color: 0x80c0ff,
+                            thumbnail: {
+                                url: conn.np.thumb
+                            }
                         }
                     })
                     .then(x => setTimeout(() => x.delete(), 10000));
