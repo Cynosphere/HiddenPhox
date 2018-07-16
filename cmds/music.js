@@ -70,10 +70,9 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
         .catch(e =>
             msg.channel
                 .createMessage(
-                    `:warning: Could not get playlist: \`${e.toString.replace(
-                        "Error: ",
-                        ""
-                    )}\``
+                    `:warning: Could not get playlist: \`${e
+                        .toString()
+                        .replace("Error: ", "")}\``
                 )
                 .then(x => setTimeout(() => x.delete(), 10000))
         );
