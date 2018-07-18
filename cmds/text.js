@@ -1,108 +1,5 @@
 // Mappings
-
-let fwcharmap = {
-    "!": "\uFF01",
-    '"': "\uFF02",
-    "#": "\uFF03",
-    $: "\uFF04",
-    "%": "\uFF05",
-    "&": "\uFF06",
-    "'": "\uFF07",
-    "(": "\uFF08",
-    ")": "\uFF09",
-    "*": "\uFF0A",
-    "+": "\uFF0B",
-    ",": "\uFF0C",
-    "-": "\uFF0D",
-    ".": "\uFF0E",
-    "/": "\uFF0F",
-    ":": "\uFF1A",
-    ";": "\uFF1B",
-    "<": "\uFF1C",
-    "=": "\uFF1D",
-    ">": "\uFF1E",
-    "?": "\uFF1F",
-    "@": "\uFF20",
-    "[": "\uFF3B",
-    "\\": "\uFF3C",
-    "]": "\uFF3D",
-    "^": "\uFF3E",
-    _: "\uFF3F",
-    "`": "\uFF40",
-    "{": "\uFF5B",
-    "|": "\uFF5C",
-    "}": "\uFF5D",
-    "~": "\uFF5E",
-
-    A: "\uFF21",
-    B: "\uFF22",
-    C: "\uFF23",
-    D: "\uFF24",
-    E: "\uFF25",
-    F: "\uFF26",
-    G: "\uFF27",
-    H: "\uFF28",
-    I: "\uFF29",
-    J: "\uFF2A",
-    K: "\uFF2B",
-    L: "\uFF2C",
-    M: "\uFF2D",
-    N: "\uFF2E",
-    O: "\uFF2F",
-    P: "\uFF30",
-    Q: "\uFF31",
-    R: "\uFF32",
-    S: "\uFF33",
-    T: "\uFF34",
-    U: "\uFF35",
-    V: "\uFF36",
-    W: "\uFF37",
-    X: "\uFF38",
-    Y: "\uFF39",
-    Z: "\uFF3A",
-
-    a: "\uFF41",
-    b: "\uFF42",
-    c: "\uFF43",
-    d: "\uFF44",
-    e: "\uFF45",
-    f: "\uFF46",
-    g: "\uFF47",
-    h: "\uFF48",
-    i: "\uFF49",
-    j: "\uFF4A",
-    k: "\uFF4B",
-    l: "\uFF4C",
-    m: "\uFF4D",
-    n: "\uFF4E",
-    o: "\uFF4F",
-    p: "\uFF50",
-    q: "\uFF51",
-    r: "\uFF52",
-    s: "\uFF53",
-    t: "\uFF54",
-    u: "\uFF55",
-    v: "\uFF56",
-    w: "\uFF57",
-    x: "\uFF58",
-    y: "\uFF59",
-    z: "\uFF5A",
-
-    "0": "\uFF10",
-    "1": "\uFF11",
-    "2": "\uFF12",
-    "3": "\uFF13",
-    "4": "\uFF14",
-    "5": "\uFF15",
-    "6": "\uFF16",
-    "7": "\uFF17",
-    "8": "\uFF18",
-    "9": "\uFF19",
-
-    " ": "\u3000"
-};
-
-let bubblemap = {
+const bubblemap = {
     A: "\u24B6",
     B: "\u24B7",
     C: "\u24B8",
@@ -171,98 +68,138 @@ let bubblemap = {
     " ": "\u25EF"
 };
 
+const rDance = {
+    "0": "<a:r_letter_0:393623734092693524>",
+    "1": "<a:r_letter_1:393623734344220673>",
+    "2": "<a:r_letter_2:393623734180642837>",
+    "3": "<a:r_letter_3:393623734109601812>",
+    "4": "<a:r_letter_4:393623734147088384>",
+    "5": "<a:r_letter_5:393623733731983362>",
+    "6": "<a:r_letter_6:393623733962539019>",
+    "7": "<a:r_letter_7:393623734075785216>",
+    "8": "<a:r_letter_8:393623734155739136>",
+    "9": "<a:r_letter_9:393623734101213194>",
+    a: "<a:r_letter_a:393623734344351744>",
+    b: "<a:r_letter_b:393623734034104322>",
+    c: "<a:r_letter_c:393623734176448512>",
+    d: "<a:r_letter_d:393623734168190996>",
+    e: "<a:r_letter_e:393623733937373185>",
+    f: "<a:r_letter_f:393623734268985346>",
+    g: "<a:r_letter_g:393623734055075841>",
+    h: "<a:r_letter_h:393623734549741568>",
+    i: "<a:r_letter_i:393623734616981514>",
+    j: "<a:r_letter_j:393623734323249174>",
+    k: "<a:r_letter_k:393623734461792257>",
+    l: "<a:r_letter_l:393623734621306881>",
+    m: "<a:r_letter_m:393623734813982720>",
+    n: "<a:r_letter_n:393623734696542209>",
+    o: "<a:r_letter_o:393623735011246080>",
+    p: "<a:r_letter_p:393623734931554305>",
+    q: "<a:r_letter_q:393623735137206272>",
+    r: "<a:r_letter_r:393623735065903114>",
+    s: "<a:r_letter_s:393623735132749824>",
+    t: "<a:r_letter_t:393623735002988545>",
+    u: "<a:r_letter_u:393623735229218816>",
+    v: "<a:r_letter_v:393623735216898049>",
+    w: "<a:r_letter_w:393623735388602368>",
+    x: "<a:r_letter_x:393623735028154369>",
+    y: "<a:r_letter_y:393623735233675265>",
+    z: "<a:r_letter_z:393623735376150550>",
+    "&": "<a:r_letter_and:393623733761212427>",
+    "@": "<a:r_letter_at:393623734122053632>",
+    $: "<a:r_letter_dollar:393623734344351774>",
+    "!": "<a:r_letter_exclaim:393623734377906176>"
+};
+const redDance = {
+    "0": "<a:dancing_0:469268028908109824>",
+    "1": "<a:dancing_1:469268028576759820>",
+    "2": "<a:dancing_2:469268028534685707>",
+    "3": "<a:dancing_3:469268029063299072>",
+    "4": "<a:dancing_4:469268029121757234>",
+    "5": "<a:dancing_5:469268029348249611>",
+    "6": "<a:dancing_6:469268028966567946>",
+    "7": "<a:dancing_7:469268029058842634>",
+    "8": "<a:dancing_8:469268030006886410>",
+    "9": "<a:dancing_9:469268028962635791>",
+    a: "<a:dancing_a:469268029113368577>",
+    b: "<a:dancing_b:469268029700702238>",
+    c: "<a:dancing_c:469268029708959744>",
+    d: "<a:dancing_d:469268029717479424>",
+    e: "<a:dancing_e:469268029524541451>",
+    f: "<a:dancing_f:469268030048698392>",
+    g: "<a:dancing_g:469268030309007381>",
+    h: "<a:dancing_h:469268030313070624>",
+    i: "<a:dancing_i:469268030145167361>",
+    j: "<a:dancing_j:469268030212538369>",
+    k: "<a:dancing_k:469268030283710466>",
+    l: "<a:dancing_l:469268030543626240>",
+    m: "<a:dancing_m:469268030686494720>",
+    n: "<a:dancing_n:469268030636032000>",
+    o: "<a:dancing_o:469268031143542785>",
+    p: "<a:dancing_p:469268030942347264>",
+    q: "<a:dancing_q:469268030799740958>",
+    r: "<a:dancing_r:469268031479087124>",
+    s: "<a:dancing_s:469268031470698522>",
+    t: "<a:dancing_t:469268031382749205>",
+    u: "<a:dancing_u:469268031441207326>",
+    v: "<a:dancing_v:469268031487475732>",
+    w: "<a:dancing_w:469268031584075776>",
+    x: "<a:dancing_x:469268031600590889>",
+    y: "<a:dancing_y:469268031478956043>",
+    z: "<a:dancing_z:469268031462440972>",
+    "&": "<a:dancing_and:469268029365026816>",
+    "@": "<a:dancing_at:469268029486661653>",
+    $: "<a:dancing_dollar:469268029579198465>",
+    "!": "<a:dancing_exclaim:469268029985783810>",
+    "?": "<a:dancing_question:469268030757535755>"
+};
+const logos = {
+    "0": "<:Logo0:415342593321205760>",
+    "1": "<:Logo1:415342593313079316>",
+    "2": "<:Logo2:415342593166016524>",
+    "3": "<:Logo3:465620480129499136>",
+    "4": "<:Logo4:415342593094844417>",
+    "5": "<:Logo5:415342593564737546>",
+    "6": "<:Logo6:415342593250164754>",
+    "7": "<:Logo7:415342593455554560>",
+    "8": "<:Logo8:415342593313079298>",
+    "9": "<:Logo9:415342593556086784>",
+    a: "<:LogoA:414655543458922506>",
+    b: "<:LogoB:414655554158329856>",
+    c: "<:LogoC:414655566636646400>",
+    d: "<:LogoD:414655751181565974>",
+    e: "<:LogoE:414655783116996608>",
+    f: "<:LogoF:414655803157381122>",
+    g: "<:LogoG:414655817493512200>",
+    h: "<:LogoH:414655829732753420>",
+    i: "<:LogoI:414656712478294026>",
+    j: "<:LogoJ:414660430577795072>",
+    k: "<:LogoK:414660451822075904>",
+    l: "<:LogoL:414660470834724876>",
+    m: "<:LogoM:414660488970895360>",
+    n: "<:LogoN:414660515298541589>",
+    o: "<:LogoO:414660533531181057>",
+    p: "<:LogoP:414676183926571009>",
+    q: "<:LogoQ:414666225600299018>",
+    r: "<:LogoR:414666249138601994>",
+    s: "<:LogoS:414666264930418698>",
+    t: "<:LogoT:414666283687346187>",
+    u: "<:LogoU:414666299407335424>",
+    v: "<:LogoV:414666317627523073>",
+    w: "<:LogoW:414666346144595978>",
+    x: "<:LogoX:414666361373982722>",
+    y: "<:LogoY:414666374179454976>",
+    z: "<:LogoZ:414666386304925706>",
+    "!": "<:LogoExclam:466089799338426378>",
+    ".": "<:LogoPeriod:466089797027627008>"
+};
+
 // Commands
 
 let dancesay = function(ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage(`Please use with some text.`);
     } else {
-        let emotes = {
-            "0": "<a:r_letter_0:393623734092693524>",
-            "1": "<a:r_letter_1:393623734344220673>",
-            "2": "<a:r_letter_2:393623734180642837>",
-            "3": "<a:r_letter_3:393623734109601812>",
-            "4": "<a:r_letter_4:393623734147088384>",
-            "5": "<a:r_letter_5:393623733731983362>",
-            "6": "<a:r_letter_6:393623733962539019>",
-            "7": "<a:r_letter_7:393623734075785216>",
-            "8": "<a:r_letter_8:393623734155739136>",
-            "9": "<a:r_letter_9:393623734101213194>",
-            a: "<a:r_letter_a:393623734344351744>",
-            b: "<a:r_letter_b:393623734034104322>",
-            c: "<a:r_letter_c:393623734176448512>",
-            d: "<a:r_letter_d:393623734168190996>",
-            e: "<a:r_letter_e:393623733937373185>",
-            f: "<a:r_letter_f:393623734268985346>",
-            g: "<a:r_letter_g:393623734055075841>",
-            h: "<a:r_letter_h:393623734549741568>",
-            i: "<a:r_letter_i:393623734616981514>",
-            j: "<a:r_letter_j:393623734323249174>",
-            k: "<a:r_letter_k:393623734461792257>",
-            l: "<a:r_letter_l:393623734621306881>",
-            m: "<a:r_letter_m:393623734813982720>",
-            n: "<a:r_letter_n:393623734696542209>",
-            o: "<a:r_letter_o:393623735011246080>",
-            p: "<a:r_letter_p:393623734931554305>",
-            q: "<a:r_letter_q:393623735137206272>",
-            r: "<a:r_letter_r:393623735065903114>",
-            s: "<a:r_letter_s:393623735132749824>",
-            t: "<a:r_letter_t:393623735002988545>",
-            u: "<a:r_letter_u:393623735229218816>",
-            v: "<a:r_letter_v:393623735216898049>",
-            w: "<a:r_letter_w:393623735388602368>",
-            x: "<a:r_letter_x:393623735028154369>",
-            y: "<a:r_letter_y:393623735233675265>",
-            z: "<a:r_letter_z:393623735376150550>",
-            "&": "<a:r_letter_and:393623733761212427>",
-            "@": "<a:r_letter_at:393623734122053632>",
-            $: "<a:r_letter_dollar:393623734344351774>",
-            "!": "<a:r_letter_exclaim:393623734377906176>"
-        };
-        let red = {
-            "0": "<a:dancing_0:469268028908109824>",
-            "1": "<a:dancing_1:469268028576759820>",
-            "2": "<a:dancing_2:469268028534685707>",
-            "3": "<a:dancing_3:469268029063299072>",
-            "4": "<a:dancing_4:469268029121757234>",
-            "5": "<a:dancing_5:469268029348249611>",
-            "6": "<a:dancing_6:469268028966567946>",
-            "7": "<a:dancing_7:469268029058842634>",
-            "8": "<a:dancing_8:469268030006886410>",
-            "9": "<a:dancing_9:469268028962635791>",
-            a: "<a:dancing_a:469268029113368577>",
-            b: "<a:dancing_b:469268029700702238>",
-            c: "<a:dancing_c:469268029708959744>",
-            d: "<a:dancing_d:469268029717479424>",
-            e: "<a:dancing_e:469268029524541451>",
-            f: "<a:dancing_f:469268030048698392>",
-            g: "<a:dancing_g:469268030309007381>",
-            h: "<a:dancing_h:469268030313070624>",
-            i: "<a:dancing_i:469268030145167361>",
-            j: "<a:dancing_j:469268030212538369>",
-            k: "<a:dancing_k:469268030283710466>",
-            l: "<a:dancing_l:469268030543626240>",
-            m: "<a:dancing_m:469268030686494720>",
-            n: "<a:dancing_n:469268030636032000>",
-            o: "<a:dancing_o:469268031143542785>",
-            p: "<a:dancing_p:469268030942347264>",
-            q: "<a:dancing_q:469268030799740958>",
-            r: "<a:dancing_r:469268031479087124>",
-            s: "<a:dancing_s:469268031470698522>",
-            t: "<a:dancing_t:469268031382749205>",
-            u: "<a:dancing_u:469268031441207326>",
-            v: "<a:dancing_v:469268031487475732>",
-            w: "<a:dancing_w:469268031584075776>",
-            x: "<a:dancing_x:469268031600590889>",
-            y: "<a:dancing_y:469268031478956043>",
-            z: "<a:dancing_z:469268031462440972>",
-            "&": "<a:dancing_and:469268029365026816>",
-            "@": "<a:dancing_at:469268029486661653>",
-            $: "<a:dancing_dollar:469268029579198465>",
-            "!": "<a:dancing_exclaim:469268029985783810>",
-            "?": "<a:dancing_question:469268030757535755>"
-        };
-
         let isRed = args.startsWith("--red ");
         args = args.startsWith("--red ") ? args.replace("--red ", "") : args;
 
@@ -274,8 +211,8 @@ let dancesay = function(ctx, msg, args) {
             } else {
                 out +=
                     (isRed
-                        ? red[inp[x].toLowerCase()]
-                        : emotes[inp[x].toLowerCase()]) || inp[x].toLowerCase();
+                        ? redDance[inp[x].toLowerCase()]
+                        : rDance[inp[x].toLowerCase()]) || inp[x].toLowerCase();
             }
         }
 
@@ -288,10 +225,14 @@ let fullwidth = function(ctx, msg, args) {
         msg.channel.createMessage(`Please use with some text.`);
     } else {
         let inp = ctx.utils.safeString(args).split("");
-        let out = "";
-        for (let x in inp) {
-            out += fwcharmap[inp[x]] || inp[x];
-        }
+        let out = inp
+            .map(
+                x =>
+                    x == " "
+                        ? "\u3000"
+                        : String.fromCodePoint(x.charCodeAt() + 0xfee0)
+            )
+            .join("");
 
         msg.channel.createMessage(out);
     }
@@ -307,10 +248,14 @@ let bunnysay = function(ctx, msg, args) {
     if (!args) {
         let err = "Please use with some text.";
         let inp = ctx.utils.safeString(err).split("");
-        let out = "";
-        for (let x in inp) {
-            out += fwcharmap[inp[x]] || inp[x];
-        }
+        let out = inp
+            .map(
+                x =>
+                    x == " "
+                        ? "\u3000"
+                        : String.fromCodePoint(x.charCodeAt() + 0xfee0)
+            )
+            .join("");
 
         let final = "";
         final += cside + ctop.repeat(err.length) + cside + "\n";
@@ -321,10 +266,14 @@ let bunnysay = function(ctx, msg, args) {
         msg.channel.createMessage(`\`\`\`${final}\`\`\``);
     } else {
         let inp = ctx.utils.safeString(args).split("");
-        let out = "";
-        for (let x in inp) {
-            out += fwcharmap[inp[x]] || inp[x];
-        }
+        let out = inp
+            .map(
+                x =>
+                    x == " "
+                        ? "\u3000"
+                        : String.fromCodePoint(x.charCodeAt() + 0xfee0)
+            )
+            .join("");
 
         let final = "";
         final += cside + ctop.repeat(args.length) + cside + "\n";
@@ -354,54 +303,13 @@ let logosay = function(ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage(`Please use with some text.`);
     } else {
-        let emotes = {
-            "0": "<:Logo0:415342593321205760>",
-            "1": "<:Logo1:415342593313079316>",
-            "2": "<:Logo2:415342593166016524>",
-            "3": "<:Logo3:465620480129499136>",
-            "4": "<:Logo4:415342593094844417>",
-            "5": "<:Logo5:415342593564737546>",
-            "6": "<:Logo6:415342593250164754>",
-            "7": "<:Logo7:415342593455554560>",
-            "8": "<:Logo8:415342593313079298>",
-            "9": "<:Logo9:415342593556086784>",
-            a: "<:LogoA:414655543458922506>",
-            b: "<:LogoB:414655554158329856>",
-            c: "<:LogoC:414655566636646400>",
-            d: "<:LogoD:414655751181565974>",
-            e: "<:LogoE:414655783116996608>",
-            f: "<:LogoF:414655803157381122>",
-            g: "<:LogoG:414655817493512200>",
-            h: "<:LogoH:414655829732753420>",
-            i: "<:LogoI:414656712478294026>",
-            j: "<:LogoJ:414660430577795072>",
-            k: "<:LogoK:414660451822075904>",
-            l: "<:LogoL:414660470834724876>",
-            m: "<:LogoM:414660488970895360>",
-            n: "<:LogoN:414660515298541589>",
-            o: "<:LogoO:414660533531181057>",
-            p: "<:LogoP:414676183926571009>",
-            q: "<:LogoQ:414666225600299018>",
-            r: "<:LogoR:414666249138601994>",
-            s: "<:LogoS:414666264930418698>",
-            t: "<:LogoT:414666283687346187>",
-            u: "<:LogoU:414666299407335424>",
-            v: "<:LogoV:414666317627523073>",
-            w: "<:LogoW:414666346144595978>",
-            x: "<:LogoX:414666361373982722>",
-            y: "<:LogoY:414666374179454976>",
-            z: "<:LogoZ:414666386304925706>",
-            "!": "<:LogoExclam:466089799338426378>",
-            ".": "<:LogoPeriod:466089797027627008>"
-        };
-
         let inp = ctx.utils.safeString(args).split("");
         let out = "";
         for (let x in inp) {
             if (inp[x].toLowerCase() == " " || inp[x].toLowerCase() == ":") {
                 out += "<:blankboi:393555375389016065>";
             } else {
-                out += emotes[inp[x].toLowerCase()] || inp[x].toLowerCase();
+                out += logos[inp[x].toLowerCase()] || inp[x].toLowerCase();
             }
         }
 
