@@ -1,12 +1,10 @@
 let help = async function(ctx, msg, args) {
     const sorted = {};
     ctx.cmds.forEach(c => {
-        var cmd = c;
-        cmd.func = undefined;
-        if (sorted[cmd.group.toLowerCase()] === undefined) {
-            sorted[cmd.group.toLowerCase()] = [];
+        if (sorted[c.group.toLowerCase()] === undefined) {
+            sorted[c.group.toLowerCase()] = [];
         }
-        sorted[cmd.group.toLowerCase()].push(cmd);
+        sorted[c.group.toLowerCase()].push(c);
     });
 
     if (args) {
