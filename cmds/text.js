@@ -219,6 +219,52 @@ let dancesay = function(ctx, msg, args) {
             $: "<a:r_letter_dollar:393623734344351774>",
             "!": "<a:r_letter_exclaim:393623734377906176>"
         };
+        let red = {
+            "0": "<a:dancing_0:469268028908109824>",
+            "1": "<a:dancing_1:469268028576759820>",
+            "2": "<a:dancing_2:469268028534685707>",
+            "3": "<a:dancing_3:469268029063299072>",
+            "4": "<a:dancing_4:469268029121757234>",
+            "5": "<a:dancing_5:469268029348249611>",
+            "6": "<a:dancing_6:469268028966567946>",
+            "7": "<a:dancing_7:469268029058842634>",
+            "8": "<a:dancing_8:469268030006886410>",
+            "9": "<a:dancing_9:469268028962635791>",
+            a: "<a:dancing_a:469268029113368577>",
+            b: "<a:dancing_b:469268029700702238>",
+            c: "<a:dancing_c:469268029708959744>",
+            d: "<a:dancing_d:469268029717479424>",
+            e: "<a:dancing_e:469268029524541451>",
+            f: "<a:dancing_f:469268030048698392>",
+            g: "<a:dancing_g:469268030309007381>",
+            h: "<a:dancing_h:469268030313070624>",
+            i: "<a:dancing_i:469268030145167361>",
+            j: "<a:dancing_j:469268030212538369>",
+            k: "<a:dancing_k:469268030283710466>",
+            l: "<a:dancing_l:469268030543626240>",
+            m: "<a:dancing_m:469268030686494720>",
+            n: "<a:dancing_n:469268030636032000>",
+            o: "<a:dancing_o:469268031143542785>",
+            p: "<a:dancing_p:469268030942347264>",
+            q: "<a:dancing_q:469268030799740958>",
+            r: "<a:dancing_r:469268031479087124>",
+            s: "<a:dancing_s:469268031470698522>",
+            t: "<a:dancing_t:469268031382749205>",
+            u: "<a:dancing_u:469268031441207326>",
+            v: "<a:dancing_v:469268031487475732>",
+            w: "<a:dancing_w:469268031584075776>",
+            x: "<a:dancing_x:469268031600590889>",
+            y: "<a:dancing_y:469268031478956043>",
+            z: "<a:dancing_z:469268031462440972>",
+            "&": "<a:dancing_and:469268029365026816>",
+            "@": "<a:dancing_at:469268029486661653>",
+            $: "<a:dancing_dollar:469268029579198465>",
+            "!": "<a:dancing_exclaim:469268029985783810>",
+            "?": "<a:dancing_question:469268030757535755>"
+        };
+
+        let isRed = args.startsWith("--red ");
+        args = args.startsWith("--red ") ? args.replace("--red ", "") : args;
 
         let inp = ctx.utils.safeString(args).split("");
         let out = "";
@@ -226,7 +272,10 @@ let dancesay = function(ctx, msg, args) {
             if (inp[x].toLowerCase() == " " || inp[x].toLowerCase() == ":") {
                 out += "<:blankboi:393555375389016065>";
             } else {
-                out += emotes[inp[x].toLowerCase()] || inp[x].toLowerCase();
+                out +=
+                    (isRed
+                        ? red[inp[x].toLowerCase()]
+                        : emotes[inp[x].toLowerCase()]) || inp[x].toLowerCase();
             }
         }
 
