@@ -39,20 +39,16 @@ ctx.vc = new Eris.Collection();
 ctx.cmds = new Eris.Collection();
 ctx.emotes = new Eris.Collection();
 ctx.events = new Eris.Collection();
-ctx.heists = new Eris.Collection();
-ctx.snipes = new Eris.Collection();
-ctx.esnipes = new Eris.Collection();
 ctx.awaitMsgs = new Eris.Collection();
 ctx.ratelimits = new Eris.Collection();
 
-ctx.prefix = "hf!";
+ctx.prefix = config.prefix;
 
-ctx.logid = "349368487472529410";
-ctx.ownerid = "150745989836308480";
+ctx.logid = config.logid;
+ctx.ownerid = config.ownerid;
+ctx.elevated = config.elevated;
 
 ctx.apikeys = require("./apikeys.json");
-let swa = require("steam-web-api2");
-ctx.steamapi = new swa(ctx.apikeys.steam);
 
 client.on("ready", () => {
     console.log("HiddenPhox Instance Loaded.");
@@ -62,10 +58,29 @@ client.on("ready", () => {
         c.createMessage(":white_check_mark: Loaded HiddenPhox.");
     });
 
-    ctx.libs.superagent
-        .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
-        .set("Authorization", ctx.apikeys.dbots)
-        .send({ server_count: ctx.bot.guilds.size });
+    if (ctx.apikeys.dbots)
+        ctx.libs.superagent
+            .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
+            .set("Authorization", ctx.apikeys.dbots)
+            .send({ server_count: ctx.bot.guilds.size })
+            .then(() => {
+                ctx.utils.logInfo(ctx, `[dbots] Posted stats.`);
+            })
+            .catch(e => {
+                ctx.utils.logWarn(ctx, `[dbots] Failed to post stats: "${e}"`);
+            });
+
+    if (ctx.apikeys.dbl)
+        ctx.libs.superagent
+            .post(`https://discordbots.org/api/bots/stats`)
+            .set("Authorization", ctx.apikeys.dbl)
+            .send({ server_count: ctx.bot.guilds.size })
+            .then(() => {
+                ctx.utils.logInfo(ctx, `[dbl] Posted stats.`);
+            })
+            .catch(e => {
+                ctx.utils.logWarn(ctx, `[dbl] Failed to post stats: "${e}"`);
+            });
 
     ctx.bot.guilds.forEach(g => {
         g.emojis.forEach(e => {
@@ -81,10 +96,30 @@ client.on("guildCreate", function(guild) {
         if (m.bot) ++bots;
     });
 
-    ctx.libs.superagent
-        .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
-        .set("Authorization", ctx.apikeys.dbots)
-        .send({ server_count: ctx.bot.guilds.size });
+    if (ctx.apikeys.dbots)
+        ctx.libs.superagent
+            .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
+            .set("Authorization", ctx.apikeys.dbots)
+            .send({ server_count: ctx.bot.guilds.size })
+            .then(() => {
+                ctx.utils.logInfo(ctx, `[dbots] Posted stats.`);
+            })
+            .catch(e => {
+                ctx.utils.logWarn(ctx, `[dbots] Failed to post stats: "${e}"`);
+            });
+
+    if (ctx.apikeys.dbl)
+        ctx.libs.superagent
+            .post(`https://discordbots.org/api/bots/stats`)
+            .set("Authorization", ctx.apikeys.dbl)
+            .send({ server_count: ctx.bot.guilds.size })
+            .then(() => {
+                ctx.utils.logInfo(ctx, `[dbl] Posted stats.`);
+            })
+            .catch(e => {
+                ctx.utils.logWarn(ctx, `[dbl] Failed to post stats: "${e}"`);
+            });
+
     ctx.utils.logInfo(
         ctx,
         `Joined Guild: '${guild.name}' (${guild.id}) | Percentage: ${Math.floor(
@@ -106,10 +141,30 @@ client.on("guildCreate", function(guild) {
 });
 
 client.on("guildDelete", function(guild) {
-    ctx.libs.superagent
-        .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
-        .set("Authorization", ctx.apikeys.dbots)
-        .send({ server_count: ctx.bot.guilds.size });
+    if (ctx.apikeys.dbots)
+        ctx.libs.superagent
+            .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
+            .set("Authorization", ctx.apikeys.dbots)
+            .send({ server_count: ctx.bot.guilds.size })
+            .then(() => {
+                ctx.utils.logInfo(ctx, `[dbots] Posted stats.`);
+            })
+            .catch(e => {
+                ctx.utils.logWarn(ctx, `[dbots] Failed to post stats: "${e}"`);
+            });
+
+    if (ctx.apikeys.dbl)
+        ctx.libs.superagent
+            .post(`https://discordbots.org/api/bots/stats`)
+            .set("Authorization", ctx.apikeys.dbl)
+            .send({ server_count: ctx.bot.guilds.size })
+            .then(() => {
+                ctx.utils.logInfo(ctx, `[dbl] Posted stats.`);
+            })
+            .catch(e => {
+                ctx.utils.logWarn(ctx, `[dbl] Failed to post stats: "${e}"`);
+            });
+
     ctx.utils.logInfo(
         ctx,
         `Left Guild: '${guild.name}' (${guild.id}) | Now in ${
@@ -321,7 +376,7 @@ client.on("messageCreate", msg => {
                     );
                 }
 
-                let analytics = await ctx.db.models.analytics.findOne({
+                /*let analytics = await ctx.db.models.analytics.findOne({
                     where: { id: 1 }
                 });
                 let usage = JSON.parse(analytics.dataValues.cmd_usage);
@@ -331,7 +386,7 @@ client.on("messageCreate", msg => {
                 await ctx.db.models.analytics.update(
                     { cmd_usage: JSON.stringify(usage) },
                     { where: { id: 1 } }
-                );
+                );*/
 
                 hasRan = true;
             }
