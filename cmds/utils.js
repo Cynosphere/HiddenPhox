@@ -1001,11 +1001,11 @@ module.exports = [
         group: "utils"
     },
     {
-        name: "convertflake",
+        name: "cflake",
         desc: "Converts a Discord snowflake to a readable time.",
         func: cflake,
         group: "utils",
-        aliases: ["cflake", "snowflake"]
+        aliases: ["snowflake"]
     },
     {
         name: "slist",

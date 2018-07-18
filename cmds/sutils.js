@@ -1,81 +1,3 @@
-let snipe = async function(ctx, msg, args) {
-    let data = await ctx.db.models.sdata.findOrCreate({
-        where: { id: msg.channel.guild.id }
-    });
-    let canSnipe = data[0].dataValues.allow_snipe;
-
-    if (!msg.channel.guild) {
-        msg.channel.createMessage("Not in a guild.");
-    } else if (!ctx.snipes.get(msg.channel.id)) {
-        msg.channel.createMessage("No messages deleted recently to snipe.");
-    } else if (canSnipe === false) {
-        msg.channel.createMessage(
-            "This server has opted to disable sniping of messages and edits."
-        );
-    } else {
-        let m = ctx.snipes.get(msg.channel.id);
-        msg.channel.createMessage({
-            embed: {
-                author: {
-                    name: `${m.author.username}#${m.author.discriminator}`,
-                    icon_url: m.author.avatarURL
-                },
-                description: m.content,
-                footer: {
-                    text: `Sniped by ${msg.author.username}#${
-                        msg.author.discriminator
-                    }`,
-                    icon_url: msg.author.avatarURL
-                },
-                image: {
-                    url:
-                        (m.attachments.length > 0 && m.attachments[0].url) || ""
-                },
-                timestamp: new Date(m.timestamp)
-            }
-        });
-    }
-};
-
-let esnipe = async function(ctx, msg, args) {
-    let data = await ctx.db.models.sdata.findOrCreate({
-        where: { id: msg.channel.guild.id }
-    });
-    let canSnipe = data[0].dataValues.allow_snipe;
-
-    if (!msg.channel.guild) {
-        msg.channel.createMessage("Not in a guild.");
-    } else if (!ctx.esnipes.get(msg.channel.id)) {
-        msg.channel.createMessage("No messages edited recently to snipe.");
-    } else if (canSnipe === false) {
-        msg.channel.createMessage(
-            "This server has opted to disable sniping of messages and edits."
-        );
-    } else {
-        let om = ctx.esnipes.get(msg.channel.id).omsg;
-        let m = ctx.esnipes.get(msg.channel.id).msg;
-        msg.channel.createMessage({
-            embed: {
-                author: {
-                    name: `${m.author.username}#${m.author.discriminator}`,
-                    icon_url: m.author.avatarURL
-                },
-                fields: [
-                    { name: "Old Message", value: om.content, inline: true },
-                    { name: "New Message", value: m.content, inline: true }
-                ],
-                footer: {
-                    text: `Edit sniped by ${msg.author.username}#${
-                        msg.author.discriminator
-                    }`,
-                    icon_url: msg.author.avatarURL
-                },
-                timestamp: new Date(m.timestamp)
-            }
-        });
-    }
-};
-
 let dehoist = function(ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage("Arguments required.");
@@ -392,11 +314,6 @@ let sconfig = async function(ctx, msg, args) {
             name: "logchan",
             desc: "[WIP] Server logging channel ID",
             type: "string"
-        },
-        {
-            name: "allow_snipe",
-            desc: "Allow sniping of deleted and edited messages",
-            type: "boolean"
         },
         {
             name: "shortlinks",
@@ -870,18 +787,6 @@ let esteal = async function(ctx, msg, args) {
 };
 
 module.exports = [
-    /*{
-        name:"snipe",
-        desc:"Snipe recently deleted messages.",
-        func:snipe,
-        group:"Server Utils"
-    },
-    {
-        name:"esnipe",
-        desc:"Snipe recently edited messages.",
-        func:esnipe,
-        group:"Server Utils"
-    },*/
     {
         name: "dehoist",
         desc: "Dehoist a user's name or nickname.",

@@ -265,39 +265,6 @@ let vote = function(ctx, msg, args) {
     }
 };
 
-let cmdstats = async function(ctx, msg, args) {
-    let analytics = await ctx.db.models.analytics.findOne({ where: { id: 1 } });
-    let usage = JSON.parse(analytics.dataValues.cmd_usage);
-    let names = Object.keys(usage);
-
-    let toSort = [];
-
-    for (let i in names) {
-        toSort.push({ name: names[i], value: usage[names[i]] });
-    }
-
-    let sorted = toSort.sort((a, b) => {
-        if (a.value < b.value) return 1;
-        if (a.value > b.value) return -1;
-        return 0;
-    });
-
-    sorted = sorted.splice(0, 10);
-
-    let _list = new ctx.utils.table(["#", "Command", "Usages"]);
-    for (let i in sorted) {
-        _list.addRow([
-            parseInt(i) + 1,
-            `${ctx.prefix}${sorted[i].name}`,
-            `${sorted[i].value}`
-        ]);
-    }
-
-    msg.channel.createMessage(
-        `__**Top 10 Used Commands**__\`\`\`\n${_list.render()}\`\`\``
-    );
-};
-
 let recipe = function(ctx, msg, args) {
     let randstr = "";
     for (i = 0; i > 60; i++) {
@@ -369,12 +336,6 @@ module.exports = [
         name: "vote",
         desc: "Start a yes/no vote",
         func: vote,
-        group: "fun"
-    },
-    {
-        name: "cmdstats",
-        desc: "Analytics.",
-        func: cmdstats,
         group: "fun"
     },
     {
