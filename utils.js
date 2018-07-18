@@ -469,7 +469,7 @@ utils.formatArgs = function(str) {
     ).a;
 };
 
-utils.topColor = function(ctx, msg, id) {
+utils.topColor = function(ctx, msg, id, fallback = 0x7289da) {
     let roles = msg.channel.guild.members
         .get(id)
         .roles.map(r => msg.channel.guild.roles.get(r))
@@ -484,7 +484,7 @@ utils.topColor = function(ctx, msg, id) {
         return 0;
     });
 
-    return (roles[0] && roles[0].color) || 0x7289da;
+    return (roles[0] && roles[0].color) || fallback;
 };
 
 utils.google = require("./utils/google.js");

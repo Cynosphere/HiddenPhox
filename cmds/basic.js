@@ -1,147 +1,99 @@
 let help = async function(ctx, msg, args) {
-    let groups = { unsorted: { name: "unsorted", cmds: [] } };
+    const sorted = {};
     ctx.cmds.forEach(c => {
-        if (c.group && groups[c.group]) {
-            groups[c.group].cmds.push(c);
-        } else if (c.group && !groups[c.group]) {
-            groups[c.group] = { name: c.group, cmds: [] };
-            groups[c.group].cmds.push(c);
-        } else if (!c.group) {
-            groups["unsorted"].cmds.push(c);
+        var cmd = c;
+        cmd.func = undefined;
+        if (sorted[cmd.group.toLowerCase()] === undefined) {
+            sorted[cmd.group.toLowerCase()] = [];
         }
+        sorted[cmd.group.toLowerCase()].push(cmd);
     });
 
-    if (!args) {
-        let _text = `__Commands for ${ctx.bot.user.username}__\n\`\`\`\n`;
-        let text = _text;
+    if (args) {
+        if (args.startsWith("--")) {
+            const category = args
+                .replace("--", "")
+                .toLowerCase()
+                .trim();
 
-        for (let i in groups) {
-            let g = groups[i];
-
-            if (g.cmds.length > 0 && g.name.toLowerCase() != "guild specific") {
-                text =
-                    text +
-                    g.name.charAt(0).toUpperCase() +
-                    g.name.slice(1) +
-                    ":\n";
-                g.cmds.forEach(c => {
-                    text = text + "  " + c.name + " - " + c.desc + "\n";
-                });
-            }
-        }
-
-        msg.channel.createMessage(
-            `${msg.author.mention}, Sending help via DM.`
-        );
-        ctx.client.getDMChannel(msg.author.id).then(c => {
-            if (text.length > 2000 - _text.length - 3) {
-                c.createMessage(
-                    text.substr(0, 2000 - _text.length - 3) + "```"
-                );
-                c.createMessage(
-                    "```" +
-                        text.substr(2000 - _text.length - 3, text.legnth) +
-                        "```"
-                );
-            } else {
-                c.createMessage(text + "```");
-            }
-        });
-    } else if (args == "guild") {
-        let gcmds = ctx.cmds.filter(
-            c =>
-                c.guild &&
-                msg.channel.guild &&
-                c.guild.includes(msg.channel.guild.id)
-        );
-
-        if (gcmds && gcmds.length > 0) {
-            let out = "";
-            gcmds.forEach(c => {
-                out += "  " + c.name + " - " + c.desc + "\n";
-            });
-            msg.channel.createMessage(
-                `\`\`\`Guild specific commands:\n${out}\`\`\``
-            );
-        } else {
-            msg.channel.createMessage("No guild specific commands found.");
-        }
-    } else {
-        if (
-            ctx.cmds.filter(
-                c => c.name == args || (c.aliases && c.aliases.includes(args))
-            ).length > 0
-        ) {
-            let c = ctx.cmds.filter(
-                c => c.name == args || (c.aliases && c.aliases.includes(args))
-            )[0];
-
-            let analytics = await ctx.db.models.analytics.findOne({
-                where: { id: 1 }
-            });
-            let usage = JSON.parse(analytics.dataValues.cmd_usage);
-
-            let embed = {
-                color: 0x4f586c,
-                title: "Command info: " + c.name,
-                fields: [
-                    { name: "Description", value: c.desc, inline: true },
-                    {
-                        name: "Group",
-                        value:
-                            c.group.charAt(0).toUpperCase() + c.group.slice(1),
-                        inline: true
-                    },
-                    {
-                        name: "Usage",
-                        value:
-                            `${ctx.prefix}${c.name} ` +
-                            (c.usage ? c.usage : ""),
-                        inline: true
-                    },
-                    {
-                        name: "Command Uses",
-                        value: usage[c.name] || 0,
-                        inline: true
+            if (sorted[category]) {
+                const embed = {
+                    embed: {
+                        title: `HiddenPhox Help: Category > ${category
+                            .toUpperCase()
+                            .charAt(0) + category.toLowerCase().slice(1)}`,
+                        color: ctx.utils.topColor(
+                            msg,
+                            ctx.bot.user.id,
+                            0x8060c0
+                        ),
+                        fields: []
                     }
-                ]
-            };
-
-            if (c.aliases)
-                embed.fields.push({
-                    name: "Aliases",
-                    value: c.aliases.join(", "),
-                    inline: true
+                };
+                sorted[category].forEach(cmd => {
+                    embed.embed.fields.push({
+                        name: `${ctx.prefix}${cmd.name}`,
+                        value: cmd.desc,
+                        inline: true
+                    });
                 });
-            //embed.fields.push({name:"Full Description",value:c.fulldesc ? c.fulldesc : "None provided."});
-
-            msg.channel.createMessage({ embed: embed });
+                msg.channel.createMessage(embed);
+            } else {
+                msg.channel.createMessage("Category not found.");
+            }
         } else {
-            let cat;
-            for (let i in groups) {
-                let g = groups[i];
-                if (g.name.toLowerCase().indexOf(args.toLowerCase()) > -1) {
-                    cat = g;
+            if (
+                ctx.cmds.filter(
+                    c =>
+                        c.name == args ||
+                        (c.aliases && c.aliases.includes(args))
+                ).length > 0
+            ) {
+                const cmd = ctx.cmds.filter(
+                    c =>
+                        c.name == args ||
+                        (c.aliases && c.aliases.includes(args))
+                )[0];
+                const embed = {
+                    title: `HiddenPhox Help: Command > \`${ctx.prefix}${
+                        cmd.name
+                    }\``,
+                    color: ctx.utils.topColor(msg, ctx.bot.user.id, 0x8060c0),
+                    fields: [
+                        { name: "Description", value: cmd.desc, inline: true },
+                        { name: "Category", value: cmd.group, inline: true }
+                    ]
+                };
+                if (cmd.aliases) {
+                    embed.fields.push({
+                        name: "Aliases",
+                        value: cmd.aliases.join(", "),
+                        inline: true
+                    });
                 }
-            }
-
-            if (cat.name.toLowerCase() == "guild specific") {
-                msg.channel.createMessage("lol no.");
-                return;
-            }
-
-            if (cat && cat.cmds.length > 0) {
-                let out = "";
-                cat.cmds.forEach(c => {
-                    out += "  " + c.name + " - " + c.desc + "\n";
-                });
-                msg.channel.createMessage(
-                    `\`\`\`Commands for category "${cat.name}":\n${out}\`\`\``
-                );
+                msg.channel.createMessage({ embed: embed });
             } else {
                 msg.channel.createMessage("Command not found.");
             }
         }
+    } else {
+        const embed = {
+            embed: {
+                title: "HiddenPhox Help",
+                color: ctx.utils.topColor(msg, ctx.bot.user.id, 0x8060c0),
+                fields: []
+            }
+        };
+        Object.keys(sorted).forEach(x => {
+            embed.embed.fields.push({
+                name: x.toUpperCase().charAt(0) + x.toLowerCase().slice(1),
+                value: `${sorted[x].length} Commands\n${
+                    ctx.prefix
+                }help --${x.toLowerCase()}`,
+                inline: true
+            });
+        });
+        msg.channel.createMessage(embed);
     }
 };
 
