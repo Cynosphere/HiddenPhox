@@ -23,6 +23,7 @@ let help = async function(ctx, msg, args) {
                             .toUpperCase()
                             .charAt(0) + category.toLowerCase().slice(1)}`,
                         color: ctx.utils.topColor(
+                            ctx,
                             msg,
                             ctx.bot.user.id,
                             0x8060c0
@@ -58,7 +59,12 @@ let help = async function(ctx, msg, args) {
                     title: `HiddenPhox Help: Command > \`${ctx.prefix}${
                         cmd.name
                     }\``,
-                    color: ctx.utils.topColor(msg, ctx.bot.user.id, 0x8060c0),
+                    color: ctx.utils.topColor(
+                        ctx,
+                        msg,
+                        ctx.bot.user.id,
+                        0x8060c0
+                    ),
                     fields: [
                         { name: "Description", value: cmd.desc, inline: true },
                         { name: "Category", value: cmd.group, inline: true }
@@ -80,7 +86,7 @@ let help = async function(ctx, msg, args) {
         const embed = {
             embed: {
                 title: "HiddenPhox Help",
-                color: ctx.utils.topColor(msg, ctx.bot.user.id, 0x8060c0),
+                color: ctx.utils.topColor(ctx, msg, ctx.bot.user.id, 0x8060c0),
                 fields: []
             }
         };
