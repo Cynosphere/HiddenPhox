@@ -937,7 +937,7 @@ let jumbo = function(ctx, msg, args) {
     } else {
         let pack = "twemoji";
         Object.keys(emojiSets).forEach(x=>{
-            if args.startsWith(`--${x} `){
+            if (args.startsWith(`--${x} `)) {
                 pack = x;
                 args = args.replace(`--${x} `,"");
             }
