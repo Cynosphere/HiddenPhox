@@ -967,9 +967,7 @@ let jumbo = async function(ctx, msg, args) {
                                 emojiNames[args]
                                     ? `\\:${emojiNames[args]}\\:`
                                     : "<no shorthand>"
-                            } (${emoji
-                                .toUpperCase()
-                                .replace(emojiSets[pack].ext, ", ")})`,
+                            } (${emoji.toUpperCase().replace(/[-_]/g, ", ")})`,
                             url: emojiurl,
                             image: {
                                 url: emojiurl
@@ -987,7 +985,7 @@ let jumbo = async function(ctx, msg, args) {
                                             : "<no shorthand>"
                                     } (${emoji
                                         .toUpperCase()
-                                        .replace(emojiSets[pack].ext, ", ")})`,
+                                        .replace(/[-_]/g, ", ")})`,
                                     url: emojiurl,
                                     image: {
                                         url: "attachment://emoji.png"
