@@ -923,7 +923,7 @@ const svg2png = require("svg2png");
 let jumbo = async function(ctx, msg, args) {
     let emojiNames = await ctx.libs.superagent
         .get(
-            "https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json"
+            "https://cdn.rawgit.com/omnidan/node-emoji/359b0aad/lib/emoji.json"
         )
         .then(x => x.body);
     let temp = [];
