@@ -171,13 +171,9 @@ let stats = function(ctx, msg, args) {
 };
 
 let invite = function(ctx, msg, args) {
-    msg.channel.createMessage({
-        embed: {
-            description:
-                "[Click here to invite](https://discordapp.com/oauth2/authorize?client_id=173441062243663872&scope=bot)\n\nNeed support? Have command ideas? Find a bug? [Join the support channel.](https://discord.gg/vW9fsgW)",
-            color: 0x50596d
-        }
-    });
+    msg.channel.createMessage(
+        "<https://discordapp.com/oauth2/authorize?client_id=173441062243663872&scope=bot>"
+    );
 };
 
 // To anyone who actually forks my bot for their own use
@@ -259,7 +255,7 @@ let info = function(ctx, msg, args) {
                 },
                 {
                     name: "Links",
-                    value: "[GitHub](https://github.com/Cynosphere/HiddenPhox)"
+                    value: "[Source](https://gitlab.com/Cynosphere/HiddenPhox)"
                 }
             ]
         }
