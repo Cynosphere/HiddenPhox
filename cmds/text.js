@@ -194,6 +194,47 @@ const logos = {
     ".": "<:LogoPeriod:466089797027627008>"
 };
 
+const riMap = {
+    "0": ":zero:",
+    "1": ":one:",
+    "2": ":two",
+    "3": ":three:",
+    "4": ":four:",
+    "5": ":five:",
+    "6": ":six:",
+    "7": ":seven:",
+    "8": ":eight:",
+    "9": ":nine:",
+    a: ":regional_indicator_a:",
+    b: ":regional_indicator_b:",
+    c: ":regional_indicator_c:",
+    d: ":regional_indicator_d:",
+    e: ":regional_indicator_e:",
+    f: ":regional_indicator_f:",
+    g: ":regional_indicator_g:",
+    h: ":regional_indicator_h:",
+    i: ":regional_indicator_i:",
+    j: ":regional_indicator_j:",
+    k: ":regional_indicator_k:",
+    l: ":regional_indicator_l:",
+    m: ":regional_indicator_m:",
+    n: ":regional_indicator_n:",
+    o: ":regional_indicator_o:",
+    p: ":regional_indicator_p:",
+    q: ":regional_indicator_q:",
+    r: ":regional_indicator_r:",
+    s: ":regional_indicator_s:",
+    t: ":regional_indicator_t:",
+    u: ":regional_indicator_u:",
+    v: ":regional_indicator_v:",
+    w: ":regional_indicator_w:",
+    x: ":regional_indicator_x:",
+    y: ":regional_indicator_y:",
+    z: ":regional_indicator_z:",
+    "#": ":hash:",
+    "*": ":asterisk:"
+};
+
 // Commands
 
 let dancesay = function(ctx, msg, args) {
@@ -317,10 +358,29 @@ let logosay = function(ctx, msg, args) {
     }
 };
 
+let ri = function(ctx, msg, args) {
+    if (!args) {
+        msg.channel.createMessage(`Please use with some text.`);
+    } else {
+        let inp = ctx.utils.safeString(args).split("");
+        let out = "";
+        for (let x in inp) {
+            if (inp[x].toLowerCase() == " " || inp[x].toLowerCase() == ":") {
+                out += "<:blankboi:393555375389016065>";
+            } else {
+                out += riMap[inp[x].toLowerCase()] || inp[x].toLowerCase();
+            }
+        }
+
+        msg.channel.createMessage(out);
+    }
+};
+
 module.exports = [
     {
         name: "dancesay",
-        desc: "hey its that dancing letter meme",
+        desc:
+            "hey its that dancing letter meme, put `--red` before text to make it red letters.",
         func: dancesay,
         group: "text",
         aliases: ["dsay", "ds"]
@@ -353,5 +413,12 @@ module.exports = [
         func: logosay,
         group: "text",
         aliases: ["logo"]
+    },
+    {
+        name: "regional",
+        desc: "Say things in regional indicators. For the lazy.",
+        func: ri,
+        group: "text",
+        aliases: ["bigtext", "ri"]
     }
 ];
