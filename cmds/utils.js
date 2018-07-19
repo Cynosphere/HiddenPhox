@@ -920,7 +920,12 @@ const emojiSets = {
 
 const svg2png = require("svg2png");
 
-let jumbo = function(ctx, msg, args) {
+let jumbo = async function(ctx, msg, args) {
+    const emojiNames = await ctx.superagent
+        .get(
+            "https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json"
+        )
+        .then(x => x.body);
     if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
         let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
         let animated = a[1] ? true : false;
@@ -955,7 +960,13 @@ let jumbo = function(ctx, msg, args) {
                 if (emojiSets[pack].ext == ".png") {
                     msg.channel.createMessage({
                         embed: {
-                            title: emoji,
+                            title: `${
+                                emojiNames[args]
+                                    ? `:${emojiNames[args]}:`
+                                    : "<no shorthand>"
+                            } (${emoji
+                                .toUpperCase()
+                                .replace(emojiSets[pack].ext, ", ")})`,
                             url: emojiurl,
                             image: {
                                 url: emojiurl
@@ -967,7 +978,13 @@ let jumbo = function(ctx, msg, args) {
                         msg.channel.createMessage(
                             {
                                 embed: {
-                                    title: emoji,
+                                    title: `${
+                                        emojiNames[args]
+                                            ? `:${emojiNames[args]}:`
+                                            : "<no shorthand>"
+                                    } (${emoji
+                                        .toUpperCase()
+                                        .replace(emojiSets[pack].ext, ", ")})`,
                                     url: emojiurl,
                                     image: {
                                         url: "attachment://emoji.png"
