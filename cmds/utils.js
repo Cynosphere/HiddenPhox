@@ -921,11 +921,14 @@ const emojiSets = {
 const svg2png = require("svg2png");
 
 let jumbo = async function(ctx, msg, args) {
-    const emojiNames = await ctx.superagent
+    let emojiNames = await ctx.superagent
         .get(
             "https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json"
         )
         .then(x => x.body);
+    let temp = [];
+    Object.keys(emojiNames).map(x => (temp[emojiNames[x]] = x));
+    emojiNames = temp;
     if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
         let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
         let animated = a[1] ? true : false;
