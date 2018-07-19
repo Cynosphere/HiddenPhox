@@ -197,7 +197,7 @@ const logos = {
 const riMap = {
     "0": ":zero:",
     "1": ":one:",
-    "2": ":two",
+    "2": ":two:",
     "3": ":three:",
     "4": ":four:",
     "5": ":five:",
