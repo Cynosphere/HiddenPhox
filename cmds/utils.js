@@ -921,7 +921,7 @@ const emojiSets = {
 const svg2png = require("svg2png");
 
 let jumbo = async function(ctx, msg, args) {
-    let emojiNames = await ctx.superagent
+    let emojiNames = await ctx.libs.superagent
         .get(
             "https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json"
         )
