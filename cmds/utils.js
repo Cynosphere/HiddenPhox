@@ -882,6 +882,41 @@ let presence = function(ctx, msg, args) {
     });
 };
 
+const emojiSets = {
+    "blobs":{
+        url:"https://cdn.rawgit.com/googlei18n/noto-emoji/e456654119cc3a5f9bebb7bbd00512456f983d2d/svg/emoji_u",
+        joiner:"_",
+        ext:".svg"
+    },
+    "noto":{
+        url:"https://cdn.rawgit.com/googlei18n/noto-emoji/43f47be9404018cd9d8f73a227363a8f20acdab5/svg/emoji_u",
+        joiner:"_",
+        ext:".svg"
+    },
+    "twemoji":{
+        url:"https://twitter.github.io/twemoji/2/svg/",
+        joiner:"-",
+        ext:".svg"
+    },
+    "mustd":{
+        url:"https://cdn.rawgit.com/Mstrodl/mutant-standard-mirror/0d094f73/emoji/",
+        joiner:"-",
+        ext:".svg"
+    },
+    "apple":{
+        url:"https://intrnl.github.io/assetsEmoji/AppleColor/emoji_u",
+        joiner:"_",
+        ext:".png"
+    },
+    "facebook":{
+        url:"https://intrnl.github.io/assetsEmoji/facebook/emoji_u",
+        joiner:"_",
+        ext:".png"
+    }
+}
+
+const svg2png = require("svg2png");
+
 let jumbo = function(ctx, msg, args) {
     if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
         let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
@@ -900,9 +935,50 @@ let jumbo = function(ctx, msg, args) {
             }
         });
     } else {
-        msg.channel.createMessage(
-            "Emote not found. This currently only works for custom ones."
-        );
+        let pack = "twemoji";
+        Object.keys(emojiSets).forEach(x=>{
+            if args.startsWith(`--${x} `){
+                pack = x;
+                args = args.replace(`--${x} `,"");
+            }
+        });
+        let emoji = Array.from(args).map(x=>x.codePointAt().toString(16)).join(emojiSets[pack].joiner);
+        let emojiurl = emojiSets[pack].url+emoji+emojiSets[pack].ext;
+        ctx.libs.superagent.get(emojiurl)
+        .then(x=>{
+            if(emojiSets[pack].ext == ".png"){
+                msg.channel.createMessage({
+                    embed: {
+                        title: args,
+                        url: emojiurl,
+                        image: {
+                            url: emojiurl
+                        }
+                    }
+                });
+            }else{
+                svg2png(x.body,{width:512,height:512})
+                .then(y=>{
+                    msg.channel.createMessage({
+                        embed: {
+                            title: args,
+                            url: emojiurl,
+                            image: {
+                                url: "attachment://emoji.png"
+                            }
+                        }
+                    },{
+                        file:y,
+                        name:"emoji.png"
+                    });
+                }
+            }
+        })
+        .catch(e=>{
+            msg.channel.createMessage(
+                "Emote not found. The emoji set chosen might not have this emote as an image."
+            );
+        })
     }
 };
 
