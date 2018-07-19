@@ -937,7 +937,7 @@ let jumbo = async function(ctx, msg, args) {
 
         msg.channel.createMessage({
             embed: {
-                title: `\\:${name}\\: - \`${id}\``,
+                title: `:${name}: - \`${id}\``,
                 image: {
                     url: `https://cdn.discordapp.com/emojis/${id}.${
                         animated ? "gif" : "png"
@@ -965,7 +965,7 @@ let jumbo = async function(ctx, msg, args) {
                         embed: {
                             title: `${
                                 emojiNames[args]
-                                    ? `:${emojiNames[args]}:`
+                                    ? `\\:${emojiNames[args]}\\:`
                                     : "<no shorthand>"
                             } (${emoji
                                 .toUpperCase()
@@ -983,7 +983,7 @@ let jumbo = async function(ctx, msg, args) {
                                 embed: {
                                     title: `${
                                         emojiNames[args]
-                                            ? `:${emojiNames[args]}:`
+                                            ? `\\:${emojiNames[args]}\\:`
                                             : "<no shorthand>"
                                     } (${emoji
                                         .toUpperCase()
