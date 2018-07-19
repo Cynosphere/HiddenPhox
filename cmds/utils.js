@@ -955,7 +955,7 @@ let jumbo = function(ctx, msg, args) {
                 if (emojiSets[pack].ext == ".png") {
                     msg.channel.createMessage({
                         embed: {
-                            title: args,
+                            title: emoji,
                             url: emojiurl,
                             image: {
                                 url: emojiurl
@@ -967,7 +967,7 @@ let jumbo = function(ctx, msg, args) {
                         msg.channel.createMessage(
                             {
                                 embed: {
-                                    title: args,
+                                    title: emoji,
                                     url: emojiurl,
                                     image: {
                                         url: "attachment://emoji.png"
