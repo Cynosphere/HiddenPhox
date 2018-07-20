@@ -793,7 +793,8 @@ let doSearchThingsOk = async function(id, str, msg, ctx) {
                     "https://youtu.be/" + vid.id.videoId,
                     "yt",
                     msg,
-                    ctx
+                    ctx,
+                    msg.author.id
                 );
             }
             clearTimeout(ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer);
