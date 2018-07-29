@@ -382,7 +382,7 @@ let votereward = async function(ctx, msg, args) {
                         ctx.bot.user.id
                     }/check?userId=${msg.author.id}`
                 )
-                .set("Authorization", ctx.apikeys.dbots)
+                .set("Authorization", ctx.apikeys.dbl)
                 .then(x => x.body.voted)
                 .catch(e => {
                     msg.channel.createMessage("An error occured.");
