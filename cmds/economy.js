@@ -32,11 +32,23 @@ let wallet = async function(ctx, msg, args) {
                 where: { id: u.id }
             });
             if (wallet) {
-                msg.channel.createMessage(
-                    `**${u.username}#${u.discriminator}**'s balance is \`${
-                        wallet.currency
-                    }FC\``
-                );
+                if (u.id == msg.author.id) {
+                    msg.channel.createMessage(
+                        `<@${u.id}>, your balance is \`${
+                            wallet.currency
+                        }FC\`.\n\nNeed more money? You can vote every 12 hours at <https://discordbots.org/bot/152172984373608449> and claim your reward with \`${
+                            ctx.prefix
+                        }votereward\`.\nAlternatively, you can do \`${
+                            ctx.prefix
+                        }daily\` every 24 hours.`
+                    );
+                } else {
+                    msg.channel.createMessage(
+                        `**${u.username}#${u.discriminator}**'s balance is \`${
+                            wallet.currency
+                        }FC\``
+                    );
+                }
             } else {
                 msg.channel.createMessage(
                     `**${u.username}#${
@@ -328,7 +340,7 @@ let daily = async function(ctx, msg, args) {
     if (acc) {
         let now = new Date().getTime();
         if (now >= acc.lastdaily) {
-            let value = 10 + (Math.floor(Math.random() * 20) + 1);
+            let value = 50 + Math.floor(Math.random() * 51);
 
             ctx.db.models.econ.update(
                 { currency: acc.currency + value, lastdaily: now + 86400000 },
@@ -337,7 +349,7 @@ let daily = async function(ctx, msg, args) {
             msg.channel.createMessage(
                 `**${msg.author.username}#${
                     msg.author.discriminator
-                }** has claimed their daily PhoxCoins and got **${value}FC**.`
+                }** claimed their daily reward and recieved **${value}FC**.`
             );
         } else {
             msg.channel.createMessage(
@@ -349,7 +361,68 @@ let daily = async function(ctx, msg, args) {
             );
         }
     } else {
-        msg.channel.createMessage("No account found.");
+        msg.channel.createMessage(
+            `You do not have an account, do \`${
+                ctx.prefix
+            }account\` to get an account.`
+        );
+    }
+};
+
+let votereward = async function(ctx, msg, args) {
+    let acc = await ctx.db.models.econ.findOne({
+        where: { id: msg.author.id }
+    });
+    if (acc) {
+        let now = new Date().getTime();
+        if (now >= acc.lastvote) {
+            let voted = await ctx.libs.superagent
+                .get(
+                    `https://discordbots.org/api/bots/${
+                        ctx.bot.user.id
+                    }/check?userId=${msg.author.id}`
+                )
+                .set("Authorization", ctx.apikeys.dbots)
+                .then(x => x.body.voted)
+                .catch(e => {
+                    msg.channel.createMessage("An error occured.");
+                    ctx.utils.logWarn(ctx, "[dbl:vote] " + e);
+                });
+            if (voted == 1) {
+                let value = 25 + Math.floor(Math.random() * 26);
+
+                ctx.db.models.econ.update(
+                    {
+                        currency: acc.currency + value,
+                        lastvote: now + 43200000
+                    },
+                    { where: { id: msg.author.id } }
+                );
+                msg.channel.createMessage(
+                    `**${msg.author.username}#${
+                        msg.author.discriminator
+                    }** voted and recieved **${value}FC**.`
+                );
+            } else {
+                msg.channel.createMessage(
+                    "You have not yet voted. You can vote every 12 hours at <https://discordbots.org/bot/152172984373608449>.\n\nIf you did vote, wait a minute and try again."
+                );
+            }
+        } else {
+            msg.channel.createMessage(
+                `${
+                    msg.author.mention
+                }, your vote resets in ${ctx.utils.remainingTime(
+                    acc.lastvote - now
+                )}`
+            );
+        }
+    } else {
+        msg.channel.createMessage(
+            `You do not have an account, do \`${
+                ctx.prefix
+            }account\` to get an account.`
+        );
     }
 };
 
@@ -969,9 +1042,17 @@ module.exports = [
     },
     {
         name: "daily",
-        desc: "Get 10-30 daily PhoxCoins",
+        desc: "Get 50-100 daily PhoxCoins",
         func: daily,
         group: "economy"
+    },
+    {
+        name: "votereward",
+        desc:
+            "Get 25-50 PhoxCoins every 12 hours for voting on discordbots.org",
+        func: votereward,
+        group: "economy",
+        aliases: ["getreward", "claimreward", "claimvote"]
     },
     {
         name: "transfer",

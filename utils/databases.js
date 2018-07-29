@@ -22,6 +22,11 @@ module.exports = function(ctx) {
             defaultValue: 0,
             allowNull: false
         },
+        lastvote: {
+            type: ctx.libs.sequelize.INTEGER,
+            defaultValue: 0,
+            allowNull: false
+        },
         points: {
             type: ctx.libs.sequelize.INTEGER,
             defaultValue: 3,
@@ -123,43 +128,10 @@ module.exports = function(ctx) {
         }
     });
 
-    dbs.osu = ctx.db.define("osu", {
-        id: {
-            type: ctx.libs.sequelize.STRING,
-            unique: true,
-            primaryKey: true
-        },
-        username: {
-            type: ctx.libs.sequelize.STRING,
-            defaultValue: "",
-            allowNull: false
-        }
-    });
-
-    dbs.osutrack = ctx.db.define("osutrack", {
-        id: {
-            type: ctx.libs.sequelize.STRING,
-            unique: true,
-            primaryKey: true
-        },
-        tracking: {
-            type: ctx.libs.sequelize.STRING,
-            defaultValue: "[]",
-            allowNull: false
-        },
-        channel: {
-            type: ctx.libs.sequelize.STRING,
-            defaultValue: "",
-            allowNull: false
-        }
-    });
-
     dbs.econ.sync({ force: false, alter: true });
     dbs.taxbanks.sync({ force: false, alter: true });
     dbs.sdata.sync({ force: false, alter: true });
     dbs.analytics.sync({ force: false, alter: true });
-    dbs.osu.sync({ force: false, alter: true });
-    dbs.osutrack.sync({ force: false, alter: true });
 
     return dbs;
 };
