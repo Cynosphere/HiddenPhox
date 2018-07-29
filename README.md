@@ -1,5 +1,6 @@
 # HiddenPhox
 HiddenPhox is a kitchen sink bot of sorts providing utilities, moderation tools and fun.
+
 [![Discord Bots](https://discordbots.org/api/widget/152172984373608449.svg)](https://discordbots.org/bot/152172984373608449)
 
 ## Features
