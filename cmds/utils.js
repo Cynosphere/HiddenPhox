@@ -370,8 +370,8 @@ let uinfo = function(ctx, msg, args) {
                                               ? "gif"
                                               : "png"
                                       }?size=1024)`
-                                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                                          5}.png`,
+                                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                          5}.png)`,
                             inline: true
                         }
                     ],
@@ -415,27 +415,37 @@ let uinfo = function(ctx, msg, args) {
                             name: "Created At",
                             value: new Date(timestamp).toUTCString(),
                             inline: true
+                        },
+                        {
+                            name: "Avatar",
+                            value:
+                                u.avatar !== null
+                                    ? `[Full Size](https://cdn.discordapp.com/avatars/${
+                                          u.id
+                                      }/${u.avatar}.${
+                                          u.avatar.startsWith("a_")
+                                              ? "gif"
+                                              : "png?size=1024"
+                                      })`
+                                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                          5}.png)`,
+                            inline: true
                         }
                     ],
                     thumbnail: {
-                        url: `https://cdn.discordapp.com/avatars/${u.id}/${
-                            u.avatar
-                        }.${u.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
+                        url:
+                            u.avatar !== null
+                                ? `https://cdn.discordapp.com/avatars/${u.id}/${
+                                      u.avatar
+                                  }.${
+                                      u.avatar.startsWith("a_")
+                                          ? "gif"
+                                          : "png?size=256"
+                                  }`
+                                : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                      5}.png`
                     }
                 };
-
-                e.fields.push({
-                    name: "Avatar",
-                    value:
-                        "[Full Size](" +
-                        `https://cdn.discordapp.com/avatars/${u.id}/${
-                            u.avatar
-                        }.${
-                            u.avatar.startsWith("a_") ? "gif" : "png"
-                        }?size=1024` +
-                        ")",
-                    inline: true
-                });
 
                 msg.channel.createMessage({ embed: e });
             }
