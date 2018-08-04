@@ -609,7 +609,7 @@ let doMusicThingsOk = async function(
                         data.metadata.StreamTitle
                     ) {
                         title = `${data.metadata.StreamTitle} [${data.metadata
-                            .icy - name}]`;
+                            .["icy-name"]}]`;
                         stream = true;
                     }
 
@@ -691,7 +691,7 @@ let doMusicThingsOk = async function(
                         data.metadata.StreamTitle
                     ) {
                         title = `${data.metadata.StreamTitle} [${data.metadata
-                            .icy - name}]`;
+                            .["icy-name"]}]`;
                         stream = true;
                     }
 
@@ -779,7 +779,7 @@ let doMusicThingsOk = async function(
                             data.metadata.StreamTitle
                         ) {
                             title = `${data.metadata.StreamTitle} [${data
-                                .metadata.icy - name}]`;
+                                .metadata.["icy-name"]}]`;
                             stream = true;
                         }
 
