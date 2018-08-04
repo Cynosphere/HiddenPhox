@@ -361,28 +361,32 @@ let uinfo = function(ctx, msg, args) {
                         },
                         {
                             name: "Avatar",
-                            value: u.avatar
-                                ? `[Full Size](https://cdn.discordapp.com/avatars/${
-                                      u.id
-                                  }/${u.avatar}.${
-                                      u.avatar.startsWith("a_") ? "gif" : "png"
-                                  }?size=1024)`
-                                : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                                      5}.png`,
+                            value:
+                                u.avatar !== null
+                                    ? `[Full Size](https://cdn.discordapp.com/avatars/${
+                                          u.id
+                                      }/${u.avatar}.${
+                                          u.avatar.startsWith("a_")
+                                              ? "gif"
+                                              : "png"
+                                      }?size=1024)`
+                                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                          5}.png`,
                             inline: true
                         }
                     ],
                     thumbnail: {
-                        url: u.avatar
-                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
-                                  u.avatar
-                              }.${
-                                  u.avatar.startsWith("a_")
-                                      ? "gif"
-                                      : "png?size=256"
-                              }`
-                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                                  5}.png`
+                        url:
+                            u.avatar !== null
+                                ? `https://cdn.discordapp.com/avatars/${u.id}/${
+                                      u.avatar
+                                  }.${
+                                      u.avatar.startsWith("a_")
+                                          ? "gif"
+                                          : "png?size=256"
+                                  }`
+                                : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                      5}.png`
                     }
                 };
 
