@@ -606,11 +606,14 @@ let doMusicThingsOk = async function(
                         if (
                             data &&
                             data.metadata &&
-                            data.metadata["icy-name"] &&
+                            (data.metadata["icy-name"] ||
+                                data.metadata["Icy-Name"]) &&
                             data.metadata.StreamTitle
                         ) {
                             title = `${data.metadata.StreamTitle} [${
                                 data.metadata["icy-name"]
+                                    ? data.metadata["icy-name"]
+                                    : data.metadata["Icy-Name"]
                             }]`;
                             stream = true;
                         }
@@ -1215,6 +1218,12 @@ let func = function(ctx, msg, args) {
                                                     data.metadata.StreamTitle
                                                 } [${
                                                     data.metadata["icy-name"]
+                                                        ? data.metadata[
+                                                              "icy-name"
+                                                          ]
+                                                        : data.metadata[
+                                                              "Icy-Name"
+                                                          ]
                                                 }]`,
                                                 inline: true
                                             },
