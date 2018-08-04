@@ -729,7 +729,7 @@ let multiban = function(ctx, msg, args) {
                         args.map(async i => {
                             let u = await ctx.utils.lookupUser(ctx, msg, i);
                             ctx.bot
-                                .kickGuildMember(
+                                .banGuildMember(
                                     msg.channel.guild.id,
                                     u.id,
                                     `[multiban] [${msg.author.username}#${
@@ -741,7 +741,7 @@ let multiban = function(ctx, msg, args) {
                                 )
                                 .catch(e => {
                                     msg.channel.createMessage(
-                                        `Could not kick **${u.username}#${
+                                        `Could not ban **${u.username}#${
                                             u.discriminator
                                         }** (${i}):\n\`\`\`\n${
                                             e.message
