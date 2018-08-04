@@ -358,27 +358,33 @@ let uinfo = function(ctx, msg, args) {
                             name: "Joined At",
                             value: new Date(u.joinedAt).toUTCString(),
                             inline: true
+                        },
+                        {
+                            name: "Avatar",
+                            value: u.avatar
+                                ? `[Full Size](https://cdn.discordapp.com/avatars/${
+                                      u.id
+                                  }/${u.avatar}.${
+                                      u.avatar.startsWith("a_") ? "gif" : "png"
+                                  }?size=1024)`
+                                : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                      5}.png`,
+                            inline: true
                         }
                     ],
                     thumbnail: {
-                        url: `https://cdn.discordapp.com/avatars/${u.id}/${
-                            u.avatar
-                        }.${u.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
+                        url: u.avatar
+                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
+                                  u.avatar
+                              }.${
+                                  u.avatar.startsWith("a_")
+                                      ? "gif"
+                                      : "png?size=256"
+                              }`
+                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                  5}.png`
                     }
                 };
-
-                e.fields.push({
-                    name: "Avatar",
-                    value:
-                        "[Full Size](" +
-                        `https://cdn.discordapp.com/avatars/${u.id}/${
-                            u.avatar
-                        }.${
-                            u.avatar.startsWith("a_") ? "gif" : "png"
-                        }?size=1024` +
-                        ")",
-                    inline: true
-                });
 
                 msg.channel.createMessage({ embed: e });
             } else {
