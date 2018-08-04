@@ -917,6 +917,13 @@ module.exports = [
         group: "Server Utils",
         usage: "<id1> <id2> ... [reason]"
     },
+    {
+        name: "multiban",
+        desc: "Bans a group of users.",
+        func: multiban,
+        group: "Server Utils",
+        usage: "<id1> <id2> ... [reason]"
+    },
 
     {
         name: "tidy",
