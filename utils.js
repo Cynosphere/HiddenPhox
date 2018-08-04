@@ -470,6 +470,7 @@ utils.formatArgs = function(str) {
 };
 
 utils.topColor = function(ctx, msg, id, fallback = 0x7289da) {
+    if (!msg.guild) return fallback;
     let roles = msg.channel.guild.members
         .get(id)
         .roles.map(r => msg.channel.guild.roles.get(r))
