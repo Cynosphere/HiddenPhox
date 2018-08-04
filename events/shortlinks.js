@@ -13,7 +13,7 @@ const reglinks = {
     sc: "https://soundcloud.com/$link$",
     aur: "https://aur.archlinux.org/packages/$link$",
     bot: "<https://discordapp.com/oauth2/authorize?client_id=$link$&scope=bot>",
-    sw: "https://steamcommunity.com/sharedfiles/filedetails/?id=$link$"
+    sw: "https://steamcommunity.com/sharedfiles/filedetails/?id=$link$",
     tw: "https://twitter.com/$link$"
 };
 
