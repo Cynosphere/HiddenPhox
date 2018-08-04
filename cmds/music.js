@@ -579,31 +579,51 @@ let doMusicThingsOk = async function(
             let conn = ctx.vc.get(id);
             if (conn.playing) {
                 probe(url, function(e, data) {
-                    let title = data
-                        ? `${
-                              data.metadata
-                                  ? data.metadata.artist
-                                    ? data.metadata.artist
-                                    : data.metadata.ARTIST
-                                      ? data.metadata.ARTIST
-                                      : "<no artist>"
-                                  : "<no metadata>"
-                          } - ${
-                              data.metadata
-                                  ? data.metadata.title
-                                    ? data.metadata.title
-                                    : data.metadata.TITLE
-                                      ? data.metadata.TITLE
-                                      : "<no title>"
-                                  : "<no metadata>"
-                          }`
-                        : url;
+                    let title = url;
+                    let stream = false;
+
+                    if (
+                        data &&
+                        data.metadata &&
+                        data.metadata.artist &&
+                        data.metadata.title
+                    ) {
+                        title = `${data.metadata.artist} - ${
+                            data.metadata.title
+                        }`;
+                    }
+                    if (
+                        data &&
+                        data.metadata &&
+                        data.metadata.ARTIST &&
+                        data.metadata.TITLE
+                    ) {
+                        title = `${data.metadata.ARTIST} - ${
+                            data.metadata.TITLE
+                        }`;
+                    }
+                    if (
+                        data &&
+                        data.metadata &&
+                        data.metadata["icy-name"] &&
+                        data.metadata.StreamTitle
+                    ) {
+                        title = `${data.metadata.StreamTitle} [${data.metadata
+                            .icy - name}]`;
+                        stream = true;
+                    }
+
                     ctx.vc.get(id).queue.push({
                         url: url,
                         type: "mp3",
                         title: title,
-                        len: data ? Math.floor(data.format.duration) * 1000 : 0,
-                        addedBy: addedBy
+                        len: stream
+                            ? 0
+                            : data && data.format
+                              ? Math.floor(data.format.duration) * 1000
+                              : 0,
+                        addedBy: addedBy,
+                        stream: stream
                     });
                     msg.channel
                         .createMessage({
@@ -618,7 +638,13 @@ let doMusicThingsOk = async function(
                                     {
                                         name: "Length",
                                         value: ctx.utils.remainingTime(
-                                            data.format.duration * 1000 || 0
+                                            stream
+                                                ? 0
+                                                : data && data.format
+                                                  ? Math.floor(
+                                                        data.format.duration
+                                                    ) * 1000
+                                                  : 0
                                         ),
                                         inline: true
                                     },
@@ -635,25 +661,40 @@ let doMusicThingsOk = async function(
                 });
             } else {
                 probe(url, function(e, data) {
-                    let title = data
-                        ? `${
-                              data.metadata
-                                  ? data.metadata.artist
-                                    ? data.metadata.artist
-                                    : data.metadata.ARTIST
-                                      ? data.metadata.ARTIST
-                                      : "<no artist>"
-                                  : "<no metadata>"
-                          } - ${
-                              data.metadata
-                                  ? data.metadata.title
-                                    ? data.metadata.title
-                                    : data.metadata.TITLE
-                                      ? data.metadata.TITLE
-                                      : "<no title>"
-                                  : "<no metadata>"
-                          }`
-                        : url;
+                    let title = url;
+                    let stream = false;
+
+                    if (
+                        data &&
+                        data.metadata &&
+                        data.metadata.artist &&
+                        data.metadata.title
+                    ) {
+                        title = `${data.metadata.artist} - ${
+                            data.metadata.title
+                        }`;
+                    }
+                    if (
+                        data &&
+                        data.metadata &&
+                        data.metadata.ARTIST &&
+                        data.metadata.TITLE
+                    ) {
+                        title = `${data.metadata.ARTIST} - ${
+                            data.metadata.TITLE
+                        }`;
+                    }
+                    if (
+                        data &&
+                        data.metadata &&
+                        data.metadata["icy-name"] &&
+                        data.metadata.StreamTitle
+                    ) {
+                        title = `${data.metadata.StreamTitle} [${data.metadata
+                            .icy - name}]`;
+                        stream = true;
+                    }
+
                     msg.channel.createMessage({
                         embed: {
                             title: `:musical_note: Now Playing`,
@@ -666,7 +707,13 @@ let doMusicThingsOk = async function(
                                 {
                                     name: "Length",
                                     value: ctx.utils.remainingTime(
-                                        data.format.duration * 1000 || 0
+                                        stream
+                                            ? 0
+                                            : data && data.format
+                                              ? Math.floor(
+                                                    data.format.duration
+                                                ) * 1000
+                                              : 0
                                     ),
                                     inline: true
                                 },
@@ -681,11 +728,14 @@ let doMusicThingsOk = async function(
                     });
                     conn.np = {
                         title: title,
-                        addedBy: addedBy
+                        addedBy: addedBy,
+                        stream: stream
                     };
-                    conn.len = data
-                        ? Math.floor(data.format.duration) * 1000
-                        : 0;
+                    conn.len = stream
+                        ? 0
+                        : data && data.format
+                          ? Math.floor(data.format.duration) * 1000
+                          : 0;
                     conn.start = Date.now();
                     conn.end = Date.now() + conn.len;
 
@@ -699,25 +749,40 @@ let doMusicThingsOk = async function(
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
                     probe(url, function(e, data) {
-                        let title = data
-                            ? `${
-                                  data.metadata
-                                      ? data.metadata.artist
-                                        ? data.metadata.artist
-                                        : data.metadata.ARTIST
-                                          ? data.metadata.ARTIST
-                                          : "<no artist>"
-                                      : "<no metadata>"
-                              } - ${
-                                  data.metadata
-                                      ? data.metadata.title
-                                        ? data.metadata.title
-                                        : data.metadata.TITLE
-                                          ? data.metadata.TITLE
-                                          : "<no title>"
-                                      : "<no metadata>"
-                              }`
-                            : url;
+                        let title = url;
+                        let stream = false;
+
+                        if (
+                            data &&
+                            data.metadata &&
+                            data.metadata.artist &&
+                            data.metadata.title
+                        ) {
+                            title = `${data.metadata.artist} - ${
+                                data.metadata.title
+                            }`;
+                        }
+                        if (
+                            data &&
+                            data.metadata &&
+                            data.metadata.ARTIST &&
+                            data.metadata.TITLE
+                        ) {
+                            title = `${data.metadata.ARTIST} - ${
+                                data.metadata.TITLE
+                            }`;
+                        }
+                        if (
+                            data &&
+                            data.metadata &&
+                            data.metadata["icy-name"] &&
+                            data.metadata.StreamTitle
+                        ) {
+                            title = `${data.metadata.StreamTitle} [${data
+                                .metadata.icy - name}]`;
+                            stream = true;
+                        }
+
                         msg.channel.createMessage({
                             embed: {
                                 title: `:musical_note: Now Playing`,
@@ -730,7 +795,13 @@ let doMusicThingsOk = async function(
                                     {
                                         name: "Length",
                                         value: ctx.utils.remainingTime(
-                                            data.format.duration * 1000 || 0
+                                            stream
+                                                ? 0
+                                                : data && data.format
+                                                  ? Math.floor(
+                                                        data.format.duration
+                                                    ) * 1000
+                                                  : 0
                                         ),
                                         inline: true
                                     },
@@ -745,11 +816,14 @@ let doMusicThingsOk = async function(
                         });
                         conn.np = {
                             title: title,
-                            addedBy: addedBy
+                            addedBy: addedBy,
+                            stream: stream
                         };
-                        conn.len = data
-                            ? Math.floor(data.format.duration) * 1000
-                            : 0;
+                        conn.len = stream
+                            ? 0
+                            : data && data.format
+                              ? Math.floor(data.format.duration) * 1000
+                              : 0;
                         conn.start = Date.now();
                         conn.end = Date.now() + conn.len;
 
