@@ -732,6 +732,7 @@ let multiban = function(ctx, msg, args) {
                                 .banGuildMember(
                                     msg.channel.guild.id,
                                     u.id,
+                                    0,
                                     `[multiban] [${msg.author.username}#${
                                         msg.author.discriminator
                                     }] ${reason}` ||
