@@ -613,7 +613,7 @@ let unban = function(ctx, msg, args) {
 let multikick = function(ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage(
-            `Usage: ${ctx.prefix}kick <id1> <id2> ... [reason]`
+            `Usage: ${ctx.prefix}multikick <id1> <id2> ... [reason]`
         );
     } else {
         if (!msg.channel.permissionsOf(msg.author.id).has("kickMembers")) {
@@ -688,6 +688,88 @@ let multikick = function(ctx, msg, args) {
                 `Could not kick:\n\`\`\`\n${e.message}\n\`\`\``
             );
             ctx.utils.logWarn(ctx, "[multikick] " + e.message);
+        }
+    }
+};
+
+let multiban = function(ctx, msg, args) {
+    if (!args) {
+        msg.channel.createMessage(
+            `Usage: ${ctx.prefix}multiban <id1> <id2> ... [reason]`
+        );
+    } else {
+        if (!msg.channel.permissionsOf(msg.author.id).has("banMembers")) {
+            msg.channel.createMessage(
+                "You do not have `Ban Members` permission."
+            );
+            return;
+        }
+        if (!msg.channel.permissionsOf(ctx.bot.user.id).has("banMembers")) {
+            msg.channel.createMessage(
+                "I do not have `Ban Members` permission."
+            );
+            return;
+        }
+
+        args = ctx.utils.formatArgs(args);
+        let reason = args.splice(args.length - 1).join(" ");
+        args = args.splice(0, args.length);
+
+        try {
+            ctx.utils.awaitMessage(
+                ctx,
+                msg,
+                `${msg.author.mention}, you're about to ban **${
+                    args.length
+                } users** for reason \`${
+                    reason ? reason : "No reason given"
+                }\`.\n\nTo confirm type \`yes\` otherwise type anything else.`,
+                async m => {
+                    if (m.content.toLowerCase() == "yes") {
+                        args.map(async i => {
+                            let u = await ctx.utils.lookupUser(ctx, msg, i);
+                            ctx.bot
+                                .kickGuildMember(
+                                    msg.channel.guild.id,
+                                    u.id,
+                                    `[multiban] [${msg.author.username}#${
+                                        msg.author.discriminator
+                                    }] ${reason}` ||
+                                        `[multiban] [${msg.author.username}#${
+                                            msg.author.discriminator
+                                        }] No reason given.`
+                                )
+                                .catch(e => {
+                                    msg.channel.createMessage(
+                                        `Could not kick **${u.username}#${
+                                            u.discriminator
+                                        }** (${i}):\n\`\`\`\n${
+                                            e.message
+                                        }\n\`\`\``
+                                    );
+                                });
+                        });
+                        msg.addReaction("\uD83D\uDC4C");
+                        m.delete().catch(() => {});
+                        ctx.bot.removeListener(
+                            "messageCreate",
+                            ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                        );
+                    } else {
+                        msg.channel.createMessage("Multiban aborted.");
+                        m.delete().catch(() => {});
+                        ctx.bot.removeListener(
+                            "messageCreate",
+                            ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                        );
+                    }
+                }
+            );
+        } catch (e) {
+            msg.channel.createMessage(
+                `Could not ban:\n\`\`\`\n${e.message}\n\`\`\``
+            );
+            ctx.utils.logWarn(ctx, "[multiban] " + e.message);
         }
     }
 };
