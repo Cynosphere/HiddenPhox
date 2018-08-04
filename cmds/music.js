@@ -1,6 +1,9 @@
 const ytdl = require("ytdl-core");
-const scdl = require("youtube-dl");
+//const scdl = require("youtube-dl");
 const probe = require("node-ffprobe");
+
+//As it's impossible to get a SC API key, stealing youtube-dl's :^)
+const scCID = "LvWovRaJZlWCHql0bISuum8Bd2KX79mb";
 
 const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 const plregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
@@ -405,143 +408,166 @@ let doMusicThingsOk = async function(
         if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
             if (conn.playing) {
-                try {
-                    let scstream = scdl(url);
-                    await scstream.on("info", info => {
-                        ctx.vc.get(msg.member.voiceState.channelID).queue.push({
-                            url: url,
-                            type: "sc",
-                            title: info.title,
-                            len: info._duration_raw * 1000,
-                            addedBy: addedBy
-                        });
+                let info = await ctx.libs.superagent
+                    .get(
+                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+                    )
+                    .then(x => x.body)
+                    .catch(e =>
                         msg.channel
-                            .createMessage({
-                                embed: {
-                                    title: `:white_check_mark: Added to queue`,
-                                    fields: [
-                                        {
-                                            name: "Title",
-                                            value: info.title,
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Length",
-                                            value: ctx.utils.remainingTime(
-                                                info._duration_raw * 1000
-                                            ),
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Added By",
-                                            value: `<@${addedBy}>`,
-                                            inline: true
-                                        }
-                                    ],
-                                    color: 0x80ffc0,
-                                    thumbnail: {
-                                        url: info.thumbnail
-                                    }
+                            .createMessage(
+                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                            )
+                            .then(x => setTimeout(() => x.delete(), 10000))
+                    );
+                ctx.vc.get(msg.member.voiceState.channelID).queue.push({
+                    url: url,
+                    type: "sc",
+                    title: info.title,
+                    len: info.duration,
+                    addedBy: addedBy
+                });
+                msg.channel
+                    .createMessage({
+                        embed: {
+                            title: `:white_check_mark: Added to queue`,
+                            fields: [
+                                {
+                                    name: "Title",
+                                    value: info.title,
+                                    inline: true
+                                },
+                                {
+                                    name: "Length",
+                                    value: ctx.utils.remainingTime(
+                                        info.duration
+                                    ),
+                                    inline: true
+                                },
+                                {
+                                    name: "Added By",
+                                    value: `<@${addedBy}>`,
+                                    inline: true
                                 }
-                            })
-                            .then(x => setTimeout(() => x.delete(), 10000));
-                    });
-                } catch (e) {
-                    msg.channel
-                        .createMessage(
-                            `:warning: Error getting track: \`${e}\``
-                        )
-                        .then(x => setTimeout(() => x.delete(), 10000));
-                }
-            } else {
-                let scstream = scdl(url);
-                await scstream.on("info", info => {
-                    msg.channel
-                        .createMessage({
-                            embed: {
-                                title: `:musical_note: Now Playing`,
-                                fields: [
-                                    {
-                                        name: "Title",
-                                        value: info.title,
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Length",
-                                        value: ctx.utils.remainingTime(
-                                            info._duration_raw * 1000
-                                        ),
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Added By",
-                                        value: `<@${addedBy}>`,
-                                        inline: true
-                                    }
-                                ],
-                                color: 0x80c0ff,
-                                thumbnail: {
-                                    url: info.thumbnail
-                                }
+                            ],
+                            color: 0x80ffc0,
+                            thumbnail: {
+                                url: info.artwork_url
                             }
-                        })
-                        .then(x => setTimeout(() => x.delete(), 10000));
-                    conn.np = {
-                        title: info.title,
-                        addedBy: addedBy
-                    };
-                    conn.len = info._duration_raw * 1000;
-                    conn.start = Date.now();
-                    conn.end = Date.now() + conn.len;
+                        }
+                    })
+                    .then(x => setTimeout(() => x.delete(), 10000));
+            } else {
+                let info = await ctx.libs.superagent
+                    .get(
+                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+                    )
+                    .then(x => x.body)
+                    .catch(e =>
+                        msg.channel
+                            .createMessage(
+                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                            )
+                            .then(x => setTimeout(() => x.delete(), 10000))
+                    );
+                msg.channel
+                    .createMessage({
+                        embed: {
+                            title: `:musical_note: Now Playing`,
+                            fields: [
+                                {
+                                    name: "Title",
+                                    value: info.title,
+                                    inline: true
+                                },
+                                {
+                                    name: "Length",
+                                    value: ctx.utils.remainingTime(
+                                        info.duration
+                                    ),
+                                    inline: true
+                                },
+                                {
+                                    name: "Added By",
+                                    value: `<@${addedBy}>`,
+                                    inline: true
+                                }
+                            ],
+                            color: 0x80c0ff,
+                            thumbnail: {
+                                url: info.artwork_url
+                            }
+                        }
+                    })
+                    .then(x => setTimeout(() => x.delete(), 10000));
+                conn.np = {
+                    title: info.title,
+                    addedBy: addedBy
+                };
+                conn.len = info.duration;
+                conn.start = Date.now();
+                conn.end = Date.now() + conn.len;
 
-                    conn.play(info.url, { inlineVolume: true });
+                conn.play(info.stream_url + "?client_id=" + scCID, {
+                    inlineVolume: true
                 });
             }
         } else {
             ctx.bot.joinVoiceChannel(id).then(async conn => {
                 ctx.vc.set(id, conn);
                 ctx.vc.get(id).iwastoldtoleave = false;
-                let scstream = scdl(url);
-                await scstream.on("info", info => {
-                    msg.channel
-                        .createMessage({
-                            embed: {
-                                title: `:musical_note: Now Playing`,
-                                fields: [
-                                    {
-                                        name: "Title",
-                                        value: info.title,
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Length",
-                                        value: ctx.utils.remainingTime(
-                                            info._duration_raw * 1000
-                                        ),
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Added By",
-                                        value: `<@${addedBy}>`,
-                                        inline: true
-                                    }
-                                ],
-                                color: 0x80c0ff,
-                                thumbnail: {
-                                    url: info.thumbnail
+                let info = await ctx.libs.superagent
+                    .get(
+                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+                    )
+                    .then(x => x.body)
+                    .catch(e =>
+                        msg.channel
+                            .createMessage(
+                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                            )
+                            .then(x => setTimeout(() => x.delete(), 10000))
+                    );
+                msg.channel
+                    .createMessage({
+                        embed: {
+                            title: `:musical_note: Now Playing`,
+                            fields: [
+                                {
+                                    name: "Title",
+                                    value: info.title,
+                                    inline: true
+                                },
+                                {
+                                    name: "Length",
+                                    value: ctx.utils.remainingTime(
+                                        info.duration
+                                    ),
+                                    inline: true
+                                },
+                                {
+                                    name: "Added By",
+                                    value: `<@${addedBy}>`,
+                                    inline: true
                                 }
+                            ],
+                            color: 0x80c0ff,
+                            thumbnail: {
+                                url: info.artwork_url
                             }
-                        })
-                        .then(x => setTimeout(() => x.delete(), 10000));
-                    conn.np = {
-                        title: info.title,
-                        addedBy: addedBy
-                    };
-                    conn.len = info._duration_raw * 1000;
-                    conn.start = Date.now();
-                    conn.end = Date.now() + conn.len;
+                        }
+                    })
+                    .then(x => setTimeout(() => x.delete(), 10000));
+                conn.np = {
+                    title: info.title,
+                    addedBy: addedBy
+                };
+                conn.len = info.duration;
+                conn.start = Date.now();
+                conn.end = Date.now() + conn.len;
 
-                    conn.play(info.url, { inlineVolume: true });
+                conn.play(info.stream_url + "?client_id=" + scCID, {
+                    inlineVolume: true
                 });
                 createEndFunction(id, url, type, msg, ctx);
             });
