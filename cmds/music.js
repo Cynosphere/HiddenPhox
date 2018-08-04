@@ -922,7 +922,8 @@ let func = function(ctx, msg, args) {
                     cargs,
                     "mp3",
                     msg,
-                    ctx
+                    ctx,
+                    msg.author.id
                 );
             } else {
                 doSearchThingsOk(
@@ -1252,7 +1253,8 @@ let func = function(ctx, msg, args) {
                     cargs,
                     "mp3",
                     msg,
-                    ctx
+                    ctx,
+                    msg.author.id
                 );
             } else {
                 msg.channel
