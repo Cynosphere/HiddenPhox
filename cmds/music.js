@@ -578,190 +578,100 @@ let doMusicThingsOk = async function(
         if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
             if (conn.playing) {
-                try{
-                probe(url, function(e, data) {
-                    let title = url;
-                    let stream = false;
+                try {
+                    probe(url, function(e, data) {
+                        let title = url;
+                        let stream = false;
 
-                    if (
-                        data &&
-                        data.metadata &&
-                        data.metadata.artist &&
-                        data.metadata.title
-                    ) {
-                        title = `${data.metadata.artist} - ${
+                        if (
+                            data &&
+                            data.metadata &&
+                            data.metadata.artist &&
                             data.metadata.title
-                        }`;
-                    }
-                    if (
-                        data &&
-                        data.metadata &&
-                        data.metadata.ARTIST &&
-                        data.metadata.TITLE
-                    ) {
-                        title = `${data.metadata.ARTIST} - ${
-                            data.metadata.TITLE
-                        }`;
-                    }
-                    if (
-                        data &&
-                        data.metadata &&
-                        data.metadata["icy-name"] &&
-                        data.metadata.StreamTitle
-                    ) {
-                        title = `${data.metadata.StreamTitle} [${
-                            data.metadata["icy-name"]
-                        }]`;
-                        stream = true;
-                    }
-
-                    ctx.vc.get(id).queue.push({
-                        url: url,
-                        type: "mp3",
-                        title: title,
-                        len: stream
-                            ? 0
-                            : data && data.format
-                              ? Math.floor(data.format.duration) * 1000
-                              : 0,
-                        addedBy: addedBy,
-                        stream: stream
-                    });
-                    msg.channel
-                        .createMessage({
-                            embed: {
-                                title: `:white_check_mark: Added to queue`,
-                                fields: [
-                                    {
-                                        name: "Title",
-                                        value: title,
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Length",
-                                        value: ctx.utils.remainingTime(
-                                            stream
-                                                ? 0
-                                                : data && data.format
-                                                  ? Math.floor(
-                                                        data.format.duration
-                                                    ) * 1000
-                                                  : 0
-                                        ),
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Added By",
-                                        value: `<@${addedBy}>`,
-                                        inline: true
-                                    }
-                                ],
-                                color: 0x80ffc0
-                            }
-                        })
-                        .then(x => setTimeout(() => x.delete(), 10000));
-                });
-                }catch(e){
-                        msg.channel.createMessage(`An error occured: \`\`\`\n${e}\n\`\`\``).then(x => setTimeout(() => x.delete(), 10000));
-                        ctx.utils.logWarn(ctx,"[ffprobe] ffprobe machine :b:roke: "+e)
-                    }
-            } else {
-                try{
-                probe(url, function(e, data) {
-                    let title = url;
-                    let stream = false;
-
-                    if (
-                        data &&
-                        data.metadata &&
-                        data.metadata.artist &&
-                        data.metadata.title
-                    ) {
-                        title = `${data.metadata.artist} - ${
-                            data.metadata.title
-                        }`;
-                    }
-                    if (
-                        data &&
-                        data.metadata &&
-                        data.metadata.ARTIST &&
-                        data.metadata.TITLE
-                    ) {
-                        title = `${data.metadata.ARTIST} - ${
-                            data.metadata.TITLE
-                        }`;
-                    }
-                    if (
-                        data &&
-                        data.metadata &&
-                        data.metadata["icy-name"] &&
-                        data.metadata.StreamTitle
-                    ) {
-                        title = `${data.metadata.StreamTitle} [${
-                            data.metadata["icy-name"]
-                        }]`;
-                        stream = true;
-                    }
-
-                    msg.channel.createMessage({
-                        embed: {
-                            title: `:musical_note: Now Playing`,
-                            fields: [
-                                {
-                                    name: "Title",
-                                    value: title,
-                                    inline: true
-                                },
-                                {
-                                    name: "Length",
-                                    value: ctx.utils.remainingTime(
-                                        stream
-                                            ? 0
-                                            : data && data.format
-                                              ? Math.floor(
-                                                    data.format.duration
-                                                ) * 1000
-                                              : 0
-                                    ),
-                                    inline: true
-                                },
-                                {
-                                    name: "Added By",
-                                    value: `<@${addedBy}>`,
-                                    inline: true
-                                }
-                            ],
-                            color: 0x80c0ff
+                        ) {
+                            title = `${data.metadata.artist} - ${
+                                data.metadata.title
+                            }`;
                         }
-                    });
-                    conn.np = {
-                        url: url,
-                        title: title,
-                        addedBy: addedBy,
-                        stream: stream
-                    };
-                    conn.len = stream
-                        ? 0
-                        : data && data.format
-                          ? Math.floor(data.format.duration) * 1000
-                          : 0;
-                    conn.start = Date.now();
-                    conn.end = Date.now() + conn.len;
+                        if (
+                            data &&
+                            data.metadata &&
+                            data.metadata.ARTIST &&
+                            data.metadata.TITLE
+                        ) {
+                            title = `${data.metadata.ARTIST} - ${
+                                data.metadata.TITLE
+                            }`;
+                        }
+                        if (
+                            data &&
+                            data.metadata &&
+                            data.metadata["icy-name"] &&
+                            data.metadata.StreamTitle
+                        ) {
+                            title = `${data.metadata.StreamTitle} [${
+                                data.metadata["icy-name"]
+                            }]`;
+                            stream = true;
+                        }
 
-                    conn.play(url, { inlineVolume: true });
-                });
-                }catch(e){
-                        msg.channel.createMessage(`An error occured: \`\`\`\n${e}\n\`\`\``).then(x => setTimeout(() => x.delete(), 10000));
-                        ctx.utils.logWarn(ctx,"[ffprobe] ffprobe machine :b:roke: "+e)
-                    }
-            }
-        } else {
-            ctx.bot
-                .joinVoiceChannel(id)
-                .then(conn => {
-                    ctx.vc.set(id, conn);
-                    ctx.vc.get(id).iwastoldtoleave = false;
-                    try{
+                        ctx.vc.get(id).queue.push({
+                            url: url,
+                            type: "mp3",
+                            title: title,
+                            len: stream
+                                ? 0
+                                : data && data.format
+                                  ? Math.floor(data.format.duration) * 1000
+                                  : 0,
+                            addedBy: addedBy,
+                            stream: stream
+                        });
+                        msg.channel
+                            .createMessage({
+                                embed: {
+                                    title: `:white_check_mark: Added to queue`,
+                                    fields: [
+                                        {
+                                            name: "Title",
+                                            value: title,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Length",
+                                            value: ctx.utils.remainingTime(
+                                                stream
+                                                    ? 0
+                                                    : data && data.format
+                                                      ? Math.floor(
+                                                            data.format.duration
+                                                        ) * 1000
+                                                      : 0
+                                            ),
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Added By",
+                                            value: `<@${addedBy}>`,
+                                            inline: true
+                                        }
+                                    ],
+                                    color: 0x80ffc0
+                                }
+                            })
+                            .then(x => setTimeout(() => x.delete(), 10000));
+                    });
+                } catch (e) {
+                    msg.channel
+                        .createMessage(`An error occured: \`\`\`\n${e}\n\`\`\``)
+                        .then(x => setTimeout(() => x.delete(), 10000));
+                    ctx.utils.logWarn(
+                        ctx,
+                        "[ffprobe] ffprobe machine :b:roke: " + e
+                    );
+                }
+            } else {
+                try {
                     probe(url, function(e, data) {
                         let title = url;
                         let stream = false;
@@ -845,10 +755,117 @@ let doMusicThingsOk = async function(
 
                         conn.play(url, { inlineVolume: true });
                     });
-                    createEndFunction(id, url, type, msg, ctx);
-                    }catch(e){
-                        msg.channel.createMessage(`An error occured: \`\`\`\n${e}\n\`\`\``).then(x => setTimeout(() => x.delete(), 10000));
-                        ctx.utils.logWarn(ctx,"[ffprobe] ffprobe machine :b:roke: "+e)
+                } catch (e) {
+                    msg.channel
+                        .createMessage(`An error occured: \`\`\`\n${e}\n\`\`\``)
+                        .then(x => setTimeout(() => x.delete(), 10000));
+                    ctx.utils.logWarn(
+                        ctx,
+                        "[ffprobe] ffprobe machine :b:roke: " + e
+                    );
+                }
+            }
+        } else {
+            ctx.bot
+                .joinVoiceChannel(id)
+                .then(conn => {
+                    ctx.vc.set(id, conn);
+                    ctx.vc.get(id).iwastoldtoleave = false;
+                    try {
+                        probe(url, function(e, data) {
+                            let title = url;
+                            let stream = false;
+
+                            if (
+                                data &&
+                                data.metadata &&
+                                data.metadata.artist &&
+                                data.metadata.title
+                            ) {
+                                title = `${data.metadata.artist} - ${
+                                    data.metadata.title
+                                }`;
+                            }
+                            if (
+                                data &&
+                                data.metadata &&
+                                data.metadata.ARTIST &&
+                                data.metadata.TITLE
+                            ) {
+                                title = `${data.metadata.ARTIST} - ${
+                                    data.metadata.TITLE
+                                }`;
+                            }
+                            if (
+                                data &&
+                                data.metadata &&
+                                data.metadata["icy-name"] &&
+                                data.metadata.StreamTitle
+                            ) {
+                                title = `${data.metadata.StreamTitle} [${
+                                    data.metadata["icy-name"]
+                                }]`;
+                                stream = true;
+                            }
+
+                            msg.channel.createMessage({
+                                embed: {
+                                    title: `:musical_note: Now Playing`,
+                                    fields: [
+                                        {
+                                            name: "Title",
+                                            value: title,
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Length",
+                                            value: ctx.utils.remainingTime(
+                                                stream
+                                                    ? 0
+                                                    : data && data.format
+                                                      ? Math.floor(
+                                                            data.format.duration
+                                                        ) * 1000
+                                                      : 0
+                                            ),
+                                            inline: true
+                                        },
+                                        {
+                                            name: "Added By",
+                                            value: `<@${addedBy}>`,
+                                            inline: true
+                                        }
+                                    ],
+                                    color: 0x80c0ff
+                                }
+                            });
+                            conn.np = {
+                                url: url,
+                                title: title,
+                                addedBy: addedBy,
+                                stream: stream
+                            };
+                            conn.len = stream
+                                ? 0
+                                : data && data.format
+                                  ? Math.floor(data.format.duration) * 1000
+                                  : 0;
+                            conn.start = Date.now();
+                            conn.end = Date.now() + conn.len;
+
+                            conn.play(url, { inlineVolume: true });
+                        });
+                        createEndFunction(id, url, type, msg, ctx);
+                    } catch (e) {
+                        msg.channel
+                            .createMessage(
+                                `An error occured: \`\`\`\n${e}\n\`\`\``
+                            )
+                            .then(x => setTimeout(() => x.delete(), 10000));
+                        ctx.utils.logWarn(
+                            ctx,
+                            "[ffprobe] ffprobe machine :b:roke: " + e
+                        );
                     }
                 })
                 .catch(e =>
@@ -1185,46 +1202,57 @@ let func = function(ctx, msg, args) {
                 let conn = ctx.vc.get(msg.member.voiceState.channelID);
 
                 if (conn.np.stream) {
-                    try{
+                    try {
                         probe(conn.np.url, function(e, data) {
                             msg.channel
-                            .createMessage({
-                                embed: {
-                                    title: `:musical_note: Now Playing`,
-                                    fields: [
-                                        {
-                                            name: "Title",
-                                            value: `${data.metadata.StreamTitle} [${
-                                    data.metadata["icy-name"]
-                                }]`,
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Remaining Time",
-                                            value: `${ctx.utils.remainingTime(
-                                                Date.now() - conn.start
-                                            )}/${ctx.utils.remainingTime(0)}`,
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Added By",
-                                            value: `<@${conn.np.addedBy}>`,
-                                            inline: true
+                                .createMessage({
+                                    embed: {
+                                        title: `:musical_note: Now Playing`,
+                                        fields: [
+                                            {
+                                                name: "Title",
+                                                value: `${
+                                                    data.metadata.StreamTitle
+                                                } [${
+                                                    data.metadata["icy-name"]
+                                                }]`,
+                                                inline: true
+                                            },
+                                            {
+                                                name: "Remaining Time",
+                                                value: `${ctx.utils.remainingTime(
+                                                    Date.now() - conn.start
+                                                )}/${ctx.utils.remainingTime(
+                                                    0
+                                                )}`,
+                                                inline: true
+                                            },
+                                            {
+                                                name: "Added By",
+                                                value: `<@${conn.np.addedBy}>`,
+                                                inline: true
+                                            }
+                                        ],
+                                        color: 0x80c0ff,
+                                        thumbnail: {
+                                            url: conn.np.thumb
                                         }
-                                    ],
-                                    color: 0x80c0ff,
-                                    thumbnail: {
-                                        url: conn.np.thumb
                                     }
-                                }
-                            })
+                                })
+                                .then(x => setTimeout(() => x.delete(), 10000));
+                        });
+                    } catch (e) {
+                        msg.channel
+                            .createMessage(
+                                `An error occured: \`\`\`\n${e}\n\`\`\``
+                            )
                             .then(x => setTimeout(() => x.delete(), 10000));
-                        }
-                    }catch(e){
-                        msg.channel.createMessage(`An error occured: \`\`\`\n${e}\n\`\`\``).then(x => setTimeout(() => x.delete(), 10000));
-                        ctx.utils.logWarn(ctx,"[ffprobe] ffprobe machine :b:roke: "+e)
+                        ctx.utils.logWarn(
+                            ctx,
+                            "[ffprobe] ffprobe machine :b:roke: " + e
+                        );
                     }
-                }else{
+                } else {
                     msg.channel
                         .createMessage({
                             embed: {
@@ -1239,7 +1267,9 @@ let func = function(ctx, msg, args) {
                                         name: "Remaining Time",
                                         value: `${ctx.utils.remainingTime(
                                             Date.now() - conn.start
-                                        )}/${ctx.utils.remainingTime(conn.len)}`,
+                                        )}/${ctx.utils.remainingTime(
+                                            conn.len
+                                        )}`,
                                         inline: true
                                     },
                                     {
