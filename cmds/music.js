@@ -27,21 +27,23 @@ let createEndFunction = function(id, url, type, msg, ctx) {
         } else {
             let conn = ctx.vc.get(id);
             if (!conn) return;
-            conn.disconnect();
-            if (ctx.vc.get(id).iwastoldtoleave === false) {
-                msg.channel
-                    .createMessage(
-                        ":musical_note: Queue is empty, leaving voice channel."
-                    )
-                    .then(x => setTimeout(() => x.delete(), 10000));
-            }
-            conn.removeListener("error", e =>
-                ctx.utils.logWarn(ctx, `[music] error catching: ${e}`)
-            );
-            conn.removeListener("warn", e =>
-                ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`)
-            );
-            ctx.vc.delete(id);
+            setTimeout(_ => {
+                conn.disconnect();
+                if (ctx.vc.get(id).iwastoldtoleave === false) {
+                    msg.channel
+                        .createMessage(
+                            ":musical_note: Queue is empty, leaving voice channel."
+                        )
+                        .then(x => setTimeout(() => x.delete(), 10000));
+                }
+                conn.removeListener("error", e =>
+                    ctx.utils.logWarn(ctx, `[music] error catching: ${e}`)
+                );
+                conn.removeListener("warn", e =>
+                    ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`)
+                );
+                ctx.vc.delete(id);
+            }, 1000);
         }
     };
 
