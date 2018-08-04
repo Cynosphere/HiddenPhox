@@ -236,66 +236,62 @@ let doMusicThingsOk = async function(
                         return;
                     }
                     if (info == null || info.title == null) {
-                        msg.channel
-                            .createMessage({
-                                embed: {
-                                    title: `:musical_note: Now Playing`,
-                                    fields: [
-                                        {
-                                            name: "Title",
-                                            value: url,
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Length",
-                                            value: "Unknown",
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Added By",
-                                            value: `<@${addedBy}>`,
-                                            inline: true
-                                        }
-                                    ],
-                                    color: 0x80c0ff
-                                }
-                            })
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                        msg.channel.createMessage({
+                            embed: {
+                                title: `:musical_note: Now Playing`,
+                                fields: [
+                                    {
+                                        name: "Title",
+                                        value: url,
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Length",
+                                        value: "Unknown",
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Added By",
+                                        value: `<@${addedBy}>`,
+                                        inline: true
+                                    }
+                                ],
+                                color: 0x80c0ff
+                            }
+                        });
                         conn.np = url;
                         conn.len = 0;
                         conn.start = Date.now();
                         conn.end = Date.now();
                     } else {
-                        msg.channel
-                            .createMessage({
-                                embed: {
-                                    title: `:musical_note: Now Playing`,
-                                    fields: [
-                                        {
-                                            name: "Title",
-                                            value: info.title,
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Length",
-                                            value: ctx.utils.remainingTime(
-                                                info.length_seconds * 1000
-                                            ),
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Added By",
-                                            value: `<@${addedBy}>`,
-                                            inline: true
-                                        }
-                                    ],
-                                    color: 0x80c0ff,
-                                    thumbnail: {
-                                        url: info.thumbnail_url
+                        msg.channel.createMessage({
+                            embed: {
+                                title: `:musical_note: Now Playing`,
+                                fields: [
+                                    {
+                                        name: "Title",
+                                        value: info.title,
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Length",
+                                        value: ctx.utils.remainingTime(
+                                            info.length_seconds * 1000
+                                        ),
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Added By",
+                                        value: `<@${addedBy}>`,
+                                        inline: true
                                     }
+                                ],
+                                color: 0x80c0ff,
+                                thumbnail: {
+                                    url: info.thumbnail_url
                                 }
-                            })
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            }
+                        });
                         conn.np = {
                             title: info.title,
                             addedBy: addedBy,
@@ -308,26 +304,27 @@ let doMusicThingsOk = async function(
                 });
             }
         } else {
-            ctx.bot.joinVoiceChannel(id).then(conn => {
-                ctx.vc.set(id, conn);
-                ctx.vc.get(id).iwastoldtoleave = false;
-                conn.play(ytdl(url, { quality: "highestaudio" }), {
-                    inlineVolume: true
-                });
-                ytdl.getInfo(url, {}, function(err, info) {
-                    if (err) {
-                        msg.channel
-                            .createMessage(
-                                `:warning: Could not add video: \`${err
-                                    .toString()
-                                    .replace("Error: ", "")}\``
-                            )
-                            .then(x => setTimeout(() => x.delete(), 10000));
-                        return;
-                    }
-                    if (info == null || info.title == null) {
-                        msg.channel
-                            .createMessage({
+            ctx.bot
+                .joinVoiceChannel(id)
+                .then(conn => {
+                    ctx.vc.set(id, conn);
+                    ctx.vc.get(id).iwastoldtoleave = false;
+                    conn.play(ytdl(url, { quality: "highestaudio" }), {
+                        inlineVolume: true
+                    });
+                    ytdl.getInfo(url, {}, function(err, info) {
+                        if (err) {
+                            msg.channel
+                                .createMessage(
+                                    `:warning: Could not add video: \`${err
+                                        .toString()
+                                        .replace("Error: ", "")}\``
+                                )
+                                .then(x => setTimeout(() => x.delete(), 10000));
+                            return;
+                        }
+                        if (info == null || info.title == null) {
+                            msg.channel.createMessage({
                                 embed: {
                                     title: `:musical_note: Now Playing`,
                                     fields: [
@@ -354,12 +351,10 @@ let doMusicThingsOk = async function(
                                         url: info.thumbnail_url
                                     }
                                 }
-                            })
-                            .then(x => setTimeout(() => x.delete(), 10000));
-                        if (conn) conn.np = url;
-                    } else {
-                        msg.channel
-                            .createMessage({
+                            });
+                            if (conn) conn.np = url;
+                        } else {
+                            msg.channel.createMessage({
                                 embed: {
                                     title: `:musical_note: Now Playing`,
                                     fields: [
@@ -386,20 +381,24 @@ let doMusicThingsOk = async function(
                                         url: info.thumbnail_url
                                     }
                                 }
-                            })
-                            .then(x => setTimeout(() => x.delete(), 10000));
-                        conn.np = {
-                            title: info.title,
-                            addedBy: addedBy,
-                            thumb: info.thumbnail_url
-                        };
-                        conn.len = info.length_seconds * 1000;
-                        conn.start = Date.now();
-                        conn.end = Date.now() + conn.len;
-                    }
-                });
-                createEndFunction(id, url, type, msg, ctx);
-            });
+                            });
+                            conn.np = {
+                                title: info.title,
+                                addedBy: addedBy,
+                                thumb: info.thumbnail_url
+                            };
+                            conn.len = info.length_seconds * 1000;
+                            conn.start = Date.now();
+                            conn.end = Date.now() + conn.len;
+                        }
+                    });
+                    createEndFunction(id, url, type, msg, ctx);
+                })
+                .catch(e =>
+                    msg.channel.createMessage(
+                        `An error occured when joining: \`\`\`\n${e}\n\`\`\``
+                    )
+                );
         }
     } else if (type == "sc") {
         if (url.startsWith("sc:")) {
@@ -470,36 +469,32 @@ let doMusicThingsOk = async function(
                             )
                             .then(x => setTimeout(() => x.delete(), 10000))
                     );
-                msg.channel
-                    .createMessage({
-                        embed: {
-                            title: `:musical_note: Now Playing`,
-                            fields: [
-                                {
-                                    name: "Title",
-                                    value: info.title,
-                                    inline: true
-                                },
-                                {
-                                    name: "Length",
-                                    value: ctx.utils.remainingTime(
-                                        info.duration
-                                    ),
-                                    inline: true
-                                },
-                                {
-                                    name: "Added By",
-                                    value: `<@${addedBy}>`,
-                                    inline: true
-                                }
-                            ],
-                            color: 0x80c0ff,
-                            thumbnail: {
-                                url: info.artwork_url
+                msg.channel.createMessage({
+                    embed: {
+                        title: `:musical_note: Now Playing`,
+                        fields: [
+                            {
+                                name: "Title",
+                                value: info.title,
+                                inline: true
+                            },
+                            {
+                                name: "Length",
+                                value: ctx.utils.remainingTime(info.duration),
+                                inline: true
+                            },
+                            {
+                                name: "Added By",
+                                value: `<@${addedBy}>`,
+                                inline: true
                             }
+                        ],
+                        color: 0x80c0ff,
+                        thumbnail: {
+                            url: info.artwork_url
                         }
-                    })
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    }
+                });
                 conn.np = {
                     title: info.title,
                     addedBy: addedBy
@@ -513,23 +508,24 @@ let doMusicThingsOk = async function(
                 });
             }
         } else {
-            ctx.bot.joinVoiceChannel(id).then(async conn => {
-                ctx.vc.set(id, conn);
-                ctx.vc.get(id).iwastoldtoleave = false;
-                let info = await ctx.libs.superagent
-                    .get(
-                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
-                    )
-                    .then(x => x.body)
-                    .catch(e =>
-                        msg.channel
-                            .createMessage(
-                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                            )
-                            .then(x => setTimeout(() => x.delete(), 10000))
-                    );
-                msg.channel
-                    .createMessage({
+            ctx.bot
+                .joinVoiceChannel(id)
+                .then(async conn => {
+                    ctx.vc.set(id, conn);
+                    ctx.vc.get(id).iwastoldtoleave = false;
+                    let info = await ctx.libs.superagent
+                        .get(
+                            `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+                        )
+                        .then(x => x.body)
+                        .catch(e =>
+                            msg.channel
+                                .createMessage(
+                                    `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                                )
+                                .then(x => setTimeout(() => x.delete(), 10000))
+                        );
+                    msg.channel.createMessage({
                         embed: {
                             title: `:musical_note: Now Playing`,
                             fields: [
@@ -556,21 +552,25 @@ let doMusicThingsOk = async function(
                                 url: info.artwork_url
                             }
                         }
-                    })
-                    .then(x => setTimeout(() => x.delete(), 10000));
-                conn.np = {
-                    title: info.title,
-                    addedBy: addedBy
-                };
-                conn.len = info.duration;
-                conn.start = Date.now();
-                conn.end = Date.now() + conn.len;
+                    });
+                    conn.np = {
+                        title: info.title,
+                        addedBy: addedBy
+                    };
+                    conn.len = info.duration;
+                    conn.start = Date.now();
+                    conn.end = Date.now() + conn.len;
 
-                conn.play(info.stream_url + "?client_id=" + scCID, {
-                    inlineVolume: true
-                });
-                createEndFunction(id, url, type, msg, ctx);
-            });
+                    conn.play(info.stream_url + "?client_id=" + scCID, {
+                        inlineVolume: true
+                    });
+                    createEndFunction(id, url, type, msg, ctx);
+                })
+                .catch(e =>
+                    msg.channel.createMessage(
+                        `An error occured when joining: \`\`\`\n${e}\n\`\`\``
+                    )
+                );
         }
     } else if (type == "mp3") {
         if (ctx.vc.get(id)) {
@@ -652,33 +652,31 @@ let doMusicThingsOk = async function(
                                   : "<no metadata>"
                           }`
                         : url;
-                    msg.channel
-                        .createMessage({
-                            embed: {
-                                title: `:musical_note: Now Playing`,
-                                fields: [
-                                    {
-                                        name: "Title",
-                                        value: title,
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Length",
-                                        value: ctx.utils.remainingTime(
-                                            data.format.duration * 1000 || 0
-                                        ),
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Added By",
-                                        value: `<@${addedBy}>`,
-                                        inline: true
-                                    }
-                                ],
-                                color: 0x80c0ff
-                            }
-                        })
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                    msg.channel.createMessage({
+                        embed: {
+                            title: `:musical_note: Now Playing`,
+                            fields: [
+                                {
+                                    name: "Title",
+                                    value: title,
+                                    inline: true
+                                },
+                                {
+                                    name: "Length",
+                                    value: ctx.utils.remainingTime(
+                                        data.format.duration * 1000 || 0
+                                    ),
+                                    inline: true
+                                },
+                                {
+                                    name: "Added By",
+                                    value: `<@${addedBy}>`,
+                                    inline: true
+                                }
+                            ],
+                            color: 0x80c0ff
+                        }
+                    });
                     conn.np = {
                         title: title,
                         addedBy: addedBy
@@ -693,31 +691,32 @@ let doMusicThingsOk = async function(
                 });
             }
         } else {
-            ctx.bot.joinVoiceChannel(id).then(conn => {
-                ctx.vc.set(id, conn);
-                ctx.vc.get(id).iwastoldtoleave = false;
-                probe(url, function(e, data) {
-                    let title = data
-                        ? `${
-                              data.metadata
-                                  ? data.metadata.artist
-                                    ? data.metadata.artist
-                                    : data.metadata.ARTIST
-                                      ? data.metadata.ARTIST
-                                      : "<no artist>"
-                                  : "<no metadata>"
-                          } - ${
-                              data.metadata
-                                  ? data.metadata.title
-                                    ? data.metadata.title
-                                    : data.metadata.TITLE
-                                      ? data.metadata.TITLE
-                                      : "<no title>"
-                                  : "<no metadata>"
-                          }`
-                        : url;
-                    msg.channel
-                        .createMessage({
+            ctx.bot
+                .joinVoiceChannel(id)
+                .then(conn => {
+                    ctx.vc.set(id, conn);
+                    ctx.vc.get(id).iwastoldtoleave = false;
+                    probe(url, function(e, data) {
+                        let title = data
+                            ? `${
+                                  data.metadata
+                                      ? data.metadata.artist
+                                        ? data.metadata.artist
+                                        : data.metadata.ARTIST
+                                          ? data.metadata.ARTIST
+                                          : "<no artist>"
+                                      : "<no metadata>"
+                              } - ${
+                                  data.metadata
+                                      ? data.metadata.title
+                                        ? data.metadata.title
+                                        : data.metadata.TITLE
+                                          ? data.metadata.TITLE
+                                          : "<no title>"
+                                      : "<no metadata>"
+                              }`
+                            : url;
+                        msg.channel.createMessage({
                             embed: {
                                 title: `:musical_note: Now Playing`,
                                 fields: [
@@ -741,22 +740,26 @@ let doMusicThingsOk = async function(
                                 ],
                                 color: 0x80c0ff
                             }
-                        })
-                        .then(x => setTimeout(() => x.delete(), 10000));
-                    conn.np = {
-                        title: title,
-                        addedBy: addedBy
-                    };
-                    conn.len = data
-                        ? Math.floor(data.format.duration) * 1000
-                        : 0;
-                    conn.start = Date.now();
-                    conn.end = Date.now() + conn.len;
+                        });
+                        conn.np = {
+                            title: title,
+                            addedBy: addedBy
+                        };
+                        conn.len = data
+                            ? Math.floor(data.format.duration) * 1000
+                            : 0;
+                        conn.start = Date.now();
+                        conn.end = Date.now() + conn.len;
 
-                    conn.play(url, { inlineVolume: true });
-                });
-                createEndFunction(id, url, type, msg, ctx);
-            });
+                        conn.play(url, { inlineVolume: true });
+                    });
+                    createEndFunction(id, url, type, msg, ctx);
+                })
+                .catch(e =>
+                    msg.channel.createMessage(
+                        `An error occured when joining: \`\`\`\n${e}\n\`\`\``
+                    )
+                );
         }
     } else {
         msg.channel.createMessage(
@@ -1027,19 +1030,21 @@ let func = function(ctx, msg, args) {
                     } [${ctx.utils.remainingTime(item.len)}]`
                 );
             }
-            msg.channel.createMessage(
-                `Current Queue:\n\`\`\`md\n0. ${
-                    conn.np.title
-                } [${ctx.utils.remainingTime(
-                    Date.now() - conn.start
-                )}/${ctx.utils.remainingTime(conn.len)}]\n${lqueue
-                    .splice(0, 20)
-                    .join("\n")}\n${
-                    conn.queue.length > 20
-                        ? `\n# Showing 20/${conn.queue.length}.`
-                        : ""
-                }\`\`\``
-            );
+            msg.channel
+                .createMessage(
+                    `Current Queue:\n\`\`\`md\n0. ${
+                        conn.np.title
+                    } [${ctx.utils.remainingTime(
+                        Date.now() - conn.start
+                    )}/${ctx.utils.remainingTime(conn.len)}]\n${lqueue
+                        .splice(0, 20)
+                        .join("\n")}\n${
+                        conn.queue.length > 20
+                            ? `\n# Showing 20/${conn.queue.length}.`
+                            : ""
+                    }\`\`\``
+                )
+                .then(x => setTimeout(() => x.delete(), 10000));
         } else {
             msg.channel
                 .createMessage("You or the bot isn't in a voice channel.")
