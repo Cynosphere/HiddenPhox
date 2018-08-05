@@ -1075,6 +1075,23 @@ let einfo = function(ctx, msg, args) {
     }
 };
 
+let translate = async function(ctx,msg,args){
+    args = ctx.utils.formatArgs(args);
+    if (args.length > 3) {
+        msg.channel.createMessage("Too many arguments, please wrap your to translate input in quotes.");
+        return;
+    }
+
+    let in = args.length == 3 ? args[2] : args[1];
+    let lang1 = args.length == 3 ? args[0] : "auto";
+    let lang2 = args.length == 3 ? args[1] : args[0];
+
+    let out = await ctx.libs.superagent.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(lang1)}&tl=${encodeURIComponent(lang2)}&dt=t&q=${encodeURIComponent(in)}`)
+    .then(x=>x.body[0][0][0]);
+
+    msg.channel.createMessage(`[${lang1} -> ${lang2}] \`${in}\` translates to \`${out}\``);
+}
+
 module.exports = [
     {
         name: "avatar",
@@ -1154,5 +1171,12 @@ module.exports = [
         func: einfo,
         group: "utils",
         aliases: ["e", "emote", "emoji"]
+    },
+    {
+        name: "translate",
+        desc: "Translate text from one language to another.",
+        func: translate,
+        group: "utils",
+        aliases: ["tr"]
     }
 ];
