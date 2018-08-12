@@ -153,6 +153,44 @@ const redDance = {
     "!": "<a:dancing_exclaim:469268029985783810>",
     "?": "<a:dancing_question:469268030757535755>"
 };
+const fastDance = {
+    "0": "<a:00:478301208290000897>",
+    "1": "<a:11:478301208453447711>",
+    "2": "<a:22:478301208717557791>",
+    "3": "<a:33:478301208398921748>",
+    "4": "<a:44:478301208696848394>",
+    "5": "<a:55:478301208499716097>",
+    "6": "<a:66:478301208470224916>",
+    "7": "<a:77:478301208675745812>",
+    "8": "<a:88:478301208365236226>",
+    "9": "<a:99:478301209330057218>",
+    a: "<a:aa:478301209212616705>",
+    b: "<a:bb:478301209372131348>",
+    c: "<a:cc:478301209287983124>",
+    d: "<a:dd:478301209023873054>",
+    e: "<a:ee:478294325873082368>",
+    f: "<a:ff:478301209221005322>",
+    g: "<a:gg:478301209548161025>",
+    h: "<a:hh:471063992391958528>",
+    i: "<a:ii:478301209502023680>",
+    j: "<a:jj:478301210076774449>",
+    k: "<a:kk:478301209497960458>",
+    l: "<a:ll:478301209246040065>",
+    m: "<a:mm:478301209736904715>",
+    n: "<a:nn:478301209199902731>",
+    o: "<a:oo:478301209480921099>",
+    p: "<a:pp:478301209585778700>",
+    q: "<a:qq:478301207652335637>",
+    r: "<a:rr:478301209292177419>",
+    s: "<a:ss:478301209506086943>",
+    t: "<a:tt:478301209435045888>",
+    u: "<a:uu:478301209581584414>",
+    v: "<a:vv:478301209619464195>",
+    w: "<a:ww:478301209480921088>",
+    x: "<a:xx:478301209506217984>",
+    y: "<a:yy:478301209476726784>",
+    z: "<a:zz:478301209514475520>"
+};
 const logos = {
     "0": "<:Logo0:415342593321205760>",
     "1": "<:Logo1:415342593313079316>",
@@ -242,7 +280,9 @@ let dancesay = function(ctx, msg, args) {
         msg.channel.createMessage(`Please use with some text.`);
     } else {
         let isRed = args.startsWith("--red ");
+        let isFast = args.startWith("--fast ");
         args = args.startsWith("--red ") ? args.replace("--red ", "") : args;
+        args = args.startsWith("--fast ") ? args.replace("--fast ", "") : args;
 
         let inp = ctx.utils.safeString(args).split("");
         let out = "";
@@ -253,7 +293,10 @@ let dancesay = function(ctx, msg, args) {
                 out +=
                     (isRed
                         ? redDance[inp[x].toLowerCase()]
-                        : rDance[inp[x].toLowerCase()]) || inp[x].toLowerCase();
+                        : isFast
+                          ? fastDance[inp[x].toLowerCase()]
+                          : rDance[inp[x].toLowerCase()]) ||
+                    inp[x].toLowerCase();
             }
         }
 
