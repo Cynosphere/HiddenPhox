@@ -280,9 +280,10 @@ let dancesay = function(ctx, msg, args) {
         msg.channel.createMessage(`Please use with some text.`);
     } else {
         let isRed = args.startsWith("--red ");
-        let isFast = args.startWith("--fast ");
-        args = args.startsWith("--red ") ? args.replace("--red ", "") : args;
-        args = args.startsWith("--fast ") ? args.replace("--fast ", "") : args;
+        let isFast = args.startsWith("--fast ");
+        args = args.startsWith("--red ")
+            ? args.replace("--red ", "")
+            : args.startsWith("--fast ") ? args.replace("--fast ", "") : args;
 
         let inp = ctx.utils.safeString(args).split("");
         let out = "";
