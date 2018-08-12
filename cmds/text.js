@@ -424,7 +424,7 @@ module.exports = [
     {
         name: "dancesay",
         desc:
-            "hey its that dancing letter meme, put `--red` before text to make it red letters.",
+            "hey its that dancing letter meme, put `--red` before text to make it red letters and `--fast` for fast red letters.",
         func: dancesay,
         group: "text",
         aliases: ["dsay", "ds"]
