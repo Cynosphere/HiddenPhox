@@ -1344,7 +1344,7 @@ let func = function(ctx, msg, args) {
             let conn = ctx.vc.get(msg.member.voiceState.channelID);
             if (conn.paused) {
                 conn.resume();
-                conn.start = Date.now() + conn.__paused - conn.__tsbeforepause;
+                conn.start = Date.now() - conn.__paused + conn.__tsbeforepause;
                 msg.channel
                     .createMessage(":arrow_forward: Resumed.")
                     .then(x => setTimeout(() => x.delete(), 10000));
