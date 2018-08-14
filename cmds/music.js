@@ -1344,14 +1344,14 @@ let func = function(ctx, msg, args) {
             let conn = ctx.vc.get(msg.member.voiceState.channelID);
             if (conn.paused) {
                 conn.resume();
-                conn.start = Date.now() - conn.__paused + conn.__tsbeforepause;
+                conn.start = conn.__oldStart - conn.__paused + Date.now();
                 msg.channel
                     .createMessage(":arrow_forward: Resumed.")
                     .then(x => setTimeout(() => x.delete(), 10000));
             } else {
                 conn.pause();
                 conn.__paused = Date.now();
-                conn.__tsbeforepause = Date.now() - conn.start;
+                conn.__oldStart = conn.start;
                 msg.channel
                     .createMessage(":pause_button: Paused.")
                     .then(x => setTimeout(() => x.delete(), 10000));
