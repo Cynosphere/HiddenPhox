@@ -1069,7 +1069,7 @@ let func = function(ctx, msg, args) {
                 .createMessage("You are not in a voice channel.")
                 .then(x => setTimeout(() => x.delete(), 10000));
         }
-    } else if (cmd == "leave" || cmd == "l") {
+    } else if (cmd == "leave" || cmd == "l" || cmd == "stop") {
         if (msg.member.voiceState && msg.member.voiceState.channelID) {
             let conn = ctx.vc.get(msg.member.voiceState.channelID);
             if (conn) {
@@ -1335,6 +1335,29 @@ let func = function(ctx, msg, args) {
                 .createMessage("You are not in a voice channel.")
                 .then(x => setTimeout(() => x.delete(), 10000));
         }
+    } else if (cmd == "pause") {
+        if (
+            msg.member.voiceState &&
+            msg.member.voiceState.channelID &&
+            ctx.vc.get(msg.member.voiceState.channelID)
+        ) {
+            let conn = ctx.vc.get(msg.member.voiceState.channelID);
+            if (conn.paused) {
+                conn.resume();
+                msg.channel
+                    .createMessage(":arrow_forward: Resumed.")
+                    .then(x => setTimeout(() => x.delete(), 10000));
+            } else {
+                conn.pause();
+                msg.channel
+                    .createMessage(":pause_button: Paused.")
+                    .then(x => setTimeout(() => x.delete(), 10000));
+            }
+        } else {
+            msg.channel
+                .createMessage("You are not in a voice channel.")
+                .then(x => setTimeout(() => x.delete(), 10000));
+        }
     } else if (cmd == "queuerem" || cmd == "qr") {
         if (
             msg.member.voiceState &&
@@ -1429,7 +1452,7 @@ let func = function(ctx, msg, args) {
                 .then(x => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "forceurl") {
-        if (msg.member.id == "150745989836308480") {
+        if (ctx.elevated.contains(msg.author.id)) {
             if (msg.member.voiceState && msg.member.voiceState.channelID) {
                 doMusicThingsOk(
                     msg.member.voiceState.channelID,
@@ -1454,7 +1477,7 @@ let func = function(ctx, msg, args) {
 \u2022 **play/p [url|search string]** - Play a song or add to queue (YouTube/YT Playlist/SoundCloud/MP3/OGG/FLAC/WAV).
 \u2022 **queue/q (page)** - List queue.
 \u2022 **playlist/pl [url|playlist id]** - Playlist alias.
-\u2022 **leave/l** - Leaves voice channel.
+\u2022 **leave/l/stop** - Leaves voice channel.
 \u2022 **np** - Gets now playing song.
 \u2022 **skip/s** - Skip current song.
 \u2022 **volume/v** - Change volume. (1-150)
@@ -1468,5 +1491,6 @@ module.exports = {
     name: "music",
     desc: 'Do "hf!music help" for full list of subcommands.',
     func: func,
-    group: "fun"
+    group: "fun",
+    aliases: ["m"]
 };
