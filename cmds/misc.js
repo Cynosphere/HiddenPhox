@@ -286,17 +286,18 @@ let currency = async function(ctx, msg, args) {
 
     if (args) {
         args = args.split(" ");
-        let { amt, inp, out } = args;
+        let amt = parseInt(args[0]);
+        let inp = args[1];
+        let out = args[2];
         if (!amt || !inp || !out) {
             msg.channel.createMessage(
                 `Missing arguments. Usage: \`${
                     ctx.prefix
-                } <amount> <from> <to>\``
+                }currency <amount> <from> <to>\``
             );
             return;
         }
 
-        amt = parseInt(amt);
         if (amt == NaN) amt = 1;
 
         let data = await ctx.libs.superagent
