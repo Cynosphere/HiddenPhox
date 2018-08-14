@@ -280,6 +280,49 @@ let recipe = function(ctx, msg, args) {
     });
 };
 
+let currency = async function(ctx, msg, args) {
+    const url =
+        "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=$IN&to_currency=$OUT&apikey=$API";
+
+    if (args) {
+        args = args.split(" ");
+        let { amt, inp, out } = args;
+        if (!amt || !inp || !out) {
+            msg.channel.createMessage(
+                `Missing arguments. Usage: \`${
+                    ctx.prefix
+                } <amount> <from> <to>\``
+            );
+            return;
+        }
+
+        amt = parseInt(amt);
+        if (amt == NaN) amt = 1;
+
+        let data = await ctx.libs.superagent
+            .get(
+                url
+                    .replace("$IN", inp.toUpperCase())
+                    .replace("$OUT", out.toUpperCase())
+                    .replace("$API", ctx.apikeys.alphavantage)
+            )
+            .then(x => x.body);
+        if (!data["Error Message"]) {
+            data = data["Realtime Currency Exchange Rate"];
+            let val = amt * parseInt(data["5. Exchange Rate"]);
+            let from = data["1. From_Currency Code"];
+            let to = data["3. To_Currency Code"];
+
+            msg.channel.createMessage(`${amt} ${from} = ${val} ${to}`);
+        } else {
+            msg.channel.createMessage(
+                "One of the currency values were invalid."
+            );
+        }
+    } else {
+    }
+};
+
 module.exports = [
     {
         name: "calc",
@@ -344,5 +387,12 @@ module.exports = [
             "Hm, it looks like that file might've been a virus. Instead of cooking up trouble, try cooking up...",
         func: recipe,
         group: "fun"
+    },
+    {
+        name: "currency",
+        desc: "Convert currency.",
+        func: currency,
+        group: "fun",
+        aliases: ["money"]
     }
 ];

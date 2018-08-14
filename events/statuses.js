@@ -1,28 +1,26 @@
 let statuses = [
     { type: 0, name: "on %scount% servers" },
     { type: 0, name: "with %ucount% users" },
-    { type: 0, name: "Minecraft 1.8.9" },
+    { type: 0, name: "in %ccount% channels" },
     { type: 0, name: "Minecraft 1.7.10" },
-    { type: 2, name: "to server room noises" },
+    { type: 2, name: "home server noises" },
     { type: 3, name: "you \uD83D\uDC40" },
-    { type: 3, name: "SimpleFlips, eediot" },
-    { type: 0, name: "with your mind" },
-    { type: 0, name: "Super BUP 64" },
     { type: 0, name: "with cute blobs uwu" },
     { type: 0, name: "Need something to eat? Try hf!recipe" },
-    { type: 0, name: "Pants Pants Revolution" },
-    { type: 2, name: "1, 2 Oatmeal on a loop" }
+    { type: 2, name: "lofi hip hop radio - beats to relax/study to" },
+    { type: 2, name: "OpenMPT" }
 ];
 
 let setStatus = function(ctx) {
     let status = statuses[Math.floor(Math.random() * statuses.length)];
     status.name = status.name
         .replace("%scount%", ctx.bot.guilds.size)
-        .replace("%ucount%", ctx.bot.users.size);
+        .replace("%ucount%", ctx.bot.users.size)
+        .replace("%ccount%", Object.keys(ctx.bot.channelGuildMap).length);
 
     ctx.bot.editStatus("online", {
         type: status.type,
-        name: status.name + " | hf!help"
+        name: `${status.name} | ${ctx.prefix}help`
     });
 };
 
