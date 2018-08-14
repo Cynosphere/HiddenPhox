@@ -1344,11 +1344,14 @@ let func = function(ctx, msg, args) {
             let conn = ctx.vc.get(msg.member.voiceState.channelID);
             if (conn.paused) {
                 conn.resume();
+                conn.start = Date.now() + conn.__paused - conn.__tsbeforepause;
                 msg.channel
                     .createMessage(":arrow_forward: Resumed.")
                     .then(x => setTimeout(() => x.delete(), 10000));
             } else {
                 conn.pause();
+                conn.__paused = Date.now();
+                conn.__tsbeforepause = Date.now() - conn.start;
                 msg.channel
                     .createMessage(":pause_button: Paused.")
                     .then(x => setTimeout(() => x.delete(), 10000));
@@ -1474,12 +1477,14 @@ let func = function(ctx, msg, args) {
         }
     } else {
         msg.channel.createMessage(`**__Music Subcommands__**
+**All commands require ${ctx.prefix}music before them!**
 \u2022 **play/p [url|search string]** - Play a song or add to queue (YouTube/YT Playlist/SoundCloud/MP3/OGG/FLAC/WAV).
 \u2022 **queue/q (page)** - List queue.
 \u2022 **playlist/pl [url|playlist id]** - Playlist alias.
 \u2022 **leave/l/stop** - Leaves voice channel.
 \u2022 **np** - Gets now playing song.
 \u2022 **skip/s** - Skip current song.
+\u2022 **pause** - Pause and resume.
 \u2022 **volume/v** - Change volume. (1-150)
 \u2022 **queuerem/qr** - Remove a song from queue.
 \u2022 **lock/:lock:** - Lock skipping and queue.
