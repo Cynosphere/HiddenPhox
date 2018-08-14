@@ -286,7 +286,7 @@ let currency = async function(ctx, msg, args) {
 
     if (args) {
         args = args.split(" ");
-        let amt = parseInt(args[0]);
+        let amt = parseFloat(args[0]);
         let inp = args[1];
         let out = args[2];
         if (!amt || !inp || !out) {
@@ -310,7 +310,7 @@ let currency = async function(ctx, msg, args) {
             .then(x => x.body);
         if (!data["Error Message"]) {
             data = data["Realtime Currency Exchange Rate"];
-            let val = amt * parseInt(data["5. Exchange Rate"]);
+            let val = amt * parseFloat(data["5. Exchange Rate"]);
             let from = data["1. From_Currency Code"];
             let to = data["3. To_Currency Code"];
 
