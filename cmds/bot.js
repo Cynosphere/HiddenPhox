@@ -26,17 +26,17 @@ let _eval = async function(ctx, msg, args) {
             if (out.toString().length > 1980) {
                 let output = out.toString();
                 ctx.libs.superagent
-                    .post("https://hastebin.com/documents")
+                    .post("https://mystb.in/documents")
                     .send(output)
                     .then(res => {
                         let key = res.body.key;
                         msg.channel.createMessage(
-                            `\u2705 Output too long to send in a message: https://hastebin.com/${key}.js`
+                            `\u2705 Output too long to send in a message: https://mystb.in/${key}.js`
                         );
                     })
                     .catch(e => {
                         msg.channel.createMessage(
-                            `Could not upload output to Hastebin.`
+                            `Could not upload output to Mystbin.`
                         );
                     });
             } else {

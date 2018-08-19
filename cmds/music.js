@@ -1342,6 +1342,12 @@ let func = function(ctx, msg, args) {
             ctx.vc.get(msg.member.voiceState.channelID)
         ) {
             let conn = ctx.vc.get(msg.member.voiceState.channelID);
+            if (conn.np.stream) {
+                msg.channel
+                    .createMessage("Cannot pause streams.")
+                    .then(x => setTimeout(() => x.delete(), 10000));
+                return;
+            }
             if (conn.paused) {
                 conn.resume();
                 conn.start = conn.__oldStart - conn.__paused + Date.now();
