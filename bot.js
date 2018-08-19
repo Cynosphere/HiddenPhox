@@ -398,20 +398,20 @@ process.on("unhandledRejection", (e, p) => {
     //console.log("Uncaught rejection: "+e.message);
     if (e.length > 1900) {
         ctx.libs.request.post(
-            "https://mystb.in/documents",
+            "https://hastebin.com/documents",
             { body: `${e} (${p})` },
             function(err, res, body) {
                 if (res.statusCode == 200) {
                     let key = JSON.parse(body).key;
                     ctx.utils.logWarn(
                         ctx,
-                        `Uncaught rejection: Output too long to send in a message: https://mystb.in/${key}.js`
+                        `Uncaught rejection: Output too long to send in a message: https://hastebin.com/${key}.js`
                     );
                 } else {
                     ctx.bot
                         .getChannel(logid)
                         .createMessage(
-                            ":warning: Cannot upload rejection to Mystbin."
+                            ":warning: Cannot upload rejection to Hastebin."
                         );
                 }
             }
@@ -425,20 +425,20 @@ client.on("error", e => {
     //console.log("Bot error: "+e.message);
     if (e.message.length > 1900) {
         ctx.libs.request.post(
-            "https://mystb.in/documents",
+            "https://hastebin.com/documents",
             { body: e.message },
             function(err, res, body) {
                 if (res.statusCode == 200) {
                     let key = JSON.parse(body).key;
                     ctx.utils.logWarn(
                         ctx,
-                        `Error: Output too long to send in a message: https://mystb.in/${key}.js`
+                        `Error: Output too long to send in a message: https://hastebin.com/${key}.js`
                     );
                 } else {
                     ctx.bot
                         .getChannel(logid)
                         .createMessage(
-                            ":warning: Cannot upload error to Mystbin."
+                            ":warning: Cannot upload error to Hastebin."
                         );
                 }
             }
