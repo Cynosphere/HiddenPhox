@@ -922,7 +922,7 @@ const emojiSets = {
     },
     mustd: {
         url:
-            "https://cdn.rawgit.com/Mstrodl/mutant-standard-mirror/0d094f73/emoji/",
+            "https://cdn.rawgit.com/Mstrodl/mutant-standard-mirror/master/emoji/",
         joiner: "-",
         ext: ".svg"
     },
