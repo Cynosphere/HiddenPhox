@@ -68,6 +68,13 @@ let help = async function(ctx, msg, args) {
                         { name: "Category", value: cmd.group, inline: true }
                     ]
                 };
+                if (cmd.usage) {
+                    embed.fields.push({
+                        name: "Usage",
+                        value: `${ctx.prefix}${cmd.name} ${cmd.usage}`,
+                        inline: true
+                    });
+                }
                 if (cmd.aliases) {
                     embed.fields.push({
                         name: "Aliases",
