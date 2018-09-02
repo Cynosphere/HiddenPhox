@@ -1,6 +1,6 @@
 let jimp = require("jimp");
 let c2c = require("colorcolor");
-let i2b = require("image-to-braille");
+//let i2b = require("image-to-braille");
 
 let mirror = function(msg, url, type) {
     switch (type) {
@@ -597,7 +597,7 @@ let color = function(ctx, msg, args) {
     }
 };
 
-let _i2b = function(msg, url) {
+/*let _i2b = function(msg, url) {
     jimp.read(url).then(im => {
         im.getBuffer(jimp.MIME_PNG, (e, f) => {
             i2b
@@ -646,7 +646,7 @@ let img2braille = async function(ctx, msg, args) {
             "Image not found. Please give URL or attachment."
         );
     }
-};
+};*/
 
 module.exports = [
     {
