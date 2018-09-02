@@ -1,5 +1,6 @@
 let jimp = require("jimp");
 let c2c = require("colorcolor");
+let i2b = require("image-to-braille");
 
 let mirror = function(msg, url, type) {
     switch (type) {
@@ -134,7 +135,7 @@ let hooh = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.indexOf("http") > -1) {
+    if (args && args.startsWith("http")) {
         mirror(msg, args, 1);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 1);
@@ -149,7 +150,7 @@ let haah = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.indexOf("http") > -1) {
+    if (args && args.startsWith("http")) {
         mirror(msg, args, 2);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 2);
@@ -164,7 +165,7 @@ let woow = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.indexOf("http") > -1) {
+    if (args && args.startsWith("http")) {
         mirror(msg, args, 3);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 3);
@@ -179,7 +180,7 @@ let waaw = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.indexOf("http") > -1) {
+    if (args && args.startsWith("http")) {
         mirror(msg, args, 4);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 4);
@@ -205,7 +206,7 @@ let invert = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.indexOf("http") > -1) {
+    if (args && args.startsWith("http")) {
         _invert(msg, args);
     } else if (msg.attachments.length > 0) {
         _invert(msg, msg.attachments[0].url);
@@ -221,7 +222,7 @@ let flip = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.indexOf("http") > -1) {
+    if (args && args.startsWith("http")) {
         jimp.read(args).then(im => {
             im.mirror(true, false);
             im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -246,7 +247,7 @@ let flop = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.indexOf("http") > -1) {
+    if (args && args.startsWith("http")) {
         jimp.read(args).then(im => {
             im.mirror(false, true);
             im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -596,6 +597,57 @@ let color = function(ctx, msg, args) {
     }
 };
 
+let _i2b = function(msg, url) {
+    jimp.read(url).then(im => {
+        im.getBuffer(jimp.MIME_PNG, (e, f) => {
+            i2b
+                .convert(f, {
+                    width:
+                        im.bitmap.width > 256
+                            ? im.bitmap.width / 2
+                            : im.bitmap.width,
+                    height:
+                        im.bitmap.height > 256
+                            ? im.bitmap.height / 2
+                            : im.bitmap.height,
+                    threshold: 64
+                })
+                .then(x => {
+                    ctx.libs.request.post(
+                        "https://hastebin.com/documents",
+                        {
+                            body: x
+                        },
+                        function(err, res, body) {
+                            if (res.statusCode == 200) {
+                                let key = JSON.parse(body).key;
+                                msg.channel.createMessage(
+                                    `Output: https://hastebin.com/${key}`
+                                );
+                            } else {
+                                msg.channel.createMessage(
+                                    ":warning: Cannot upload output to Hastebin."
+                                );
+                            }
+                        }
+                    );
+                });
+        });
+    });
+};
+
+let img2braille = async function(ctx, msg, args) {
+    if (args && args.startsWith("http")) {
+        _i2b(msg, args);
+    } else if (msg.attachments.length > 0) {
+        _i2b(msg, msg.attachments[0].url);
+    } else {
+        msg.channel.createMessage(
+            "Image not found. Please give URL or attachment."
+        );
+    }
+};
+
 module.exports = [
     {
         name: "hooh",
@@ -663,5 +715,13 @@ module.exports = [
         group: "image",
         usage: "[rgb or hex]",
         aliases: ["col"]
+    },
+
+    {
+        name: "img2braille",
+        desc: "Makes an image into braille characters.",
+        func: img2braille,
+        group: "image",
+        aliases: ["i2b"]
     }
 ];
