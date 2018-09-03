@@ -246,7 +246,7 @@ client.on("messageCreate", msg => {
         let [cmd2, ...args2] = msg.cleanContent.split(" ");
 
         cmd = cmd.toLowerCase();
-        cmd2 = cmd.toLowerCase();
+        cmd2 = cmd2.toLowerCase();
 
         ctx.cmds.forEach(async c => {
             if (cmd == prefix + c.name) {
