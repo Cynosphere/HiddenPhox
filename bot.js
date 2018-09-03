@@ -245,6 +245,9 @@ client.on("messageCreate", msg => {
 
         let [cmd2, ...args2] = msg.cleanContent.split(" ");
 
+        cmd = cmd.toLowerCase();
+        cmd2 = cmd.toLowerCase();
+
         ctx.cmds.forEach(async c => {
             if (cmd == prefix + c.name) {
                 if (
@@ -299,7 +302,7 @@ client.on("messageCreate", msg => {
                     );
                 }
 
-                let analytics = await ctx.db.models.analytics.findOne({
+                /*let analytics = await ctx.db.models.analytics.findOne({
                     where: { id: 1 }
                 });
                 let usage = JSON.parse(analytics.dataValues.cmd_usage);
@@ -309,7 +312,7 @@ client.on("messageCreate", msg => {
                 await ctx.db.models.analytics.update(
                     { cmd_usage: JSON.stringify(usage) },
                     { where: { id: 1 } }
-                );
+                );*/
 
                 hasRan = true;
             }
