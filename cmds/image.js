@@ -715,13 +715,13 @@ module.exports = [
         group: "image",
         usage: "[rgb or hex]",
         aliases: ["col"]
-    },
+    }
 
-    {
+    /*{
         name: "img2braille",
         desc: "Makes an image into braille characters.",
         func: img2braille,
         group: "image",
         aliases: ["i2b"]
-    }
+    }*/
 ];
