@@ -382,13 +382,13 @@ module.exports = [
         func: vote,
         group: "fun"
     },
-    {
+    /*{
         name: "recipe",
         desc:
             "Hm, it looks like that file might've been a virus. Instead of cooking up trouble, try cooking up...",
         func: recipe,
         group: "fun"
-    },
+    },*/
     {
         name: "currency",
         desc: "Convert currency.",
