@@ -1175,6 +1175,11 @@ module.exports = [
     {
         name: "mods",
         desc: "Displays list of online mods",
+        fulldesc: `
+Mods are defined as members which have any of those permissions:
+ - Kick Members.
+ - Manage Messages on the channel the command is coming from.
+        `,
         func: mods,
         group: "utils"
     },
@@ -1206,6 +1211,18 @@ module.exports = [
     {
         name: "cflake",
         desc: "Converts a Discord snowflake to a readable time.",
+        fulldesc: `
+Snowflakes are Discord's way of identifying any kind of object (
+server, channel, user, role).
+
+You can enable fetching of those Snowflakes by going to your
+Discord client configuration, and enable \`Developer Mode\` in
+the \`Appearance\` menu (then right clicking on an object and
+pressing \`Copy ID\`).
+
+This command only gives the date of when the Snowflake was
+generated, not any other info or what type it is.
+        `,
         func: cflake,
         group: "utils",
         aliases: ["snowflake"]

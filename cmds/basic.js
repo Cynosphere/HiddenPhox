@@ -281,6 +281,7 @@ module.exports = [
     {
         name: "ping",
         desc: "Pong",
+        fulldesc: "Measure response times to Discord.",
         func: ping,
         group: "general",
         aliases: ["p"]
@@ -288,6 +289,10 @@ module.exports = [
     {
         name: "stats",
         desc: "Displays bot stats",
+        fulldesc: `
+Give bot statistics such as amount of servers,
+channels, users, etc.
+        `,
         func: stats,
         group: "general"
     },
