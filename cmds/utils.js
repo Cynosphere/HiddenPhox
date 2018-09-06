@@ -1121,7 +1121,7 @@ let quote = async function(ctx, msg, args) {
 
     const embed = {
         author: {
-            name: message.author.tag,
+            name: `${message.author.username}#${message.author.discriminator}`,
             icon_url: message.author.avatarURL
         },
         description: message.content,
