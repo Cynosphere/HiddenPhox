@@ -72,8 +72,7 @@ let help = async function(ctx, msg, args) {
                 if (cmd.fulldesc) {
                     embed.fields.push({
                         name: "Full Description",
-                        value: cmd.fulldesc,
-                        inline: true
+                        value: cmd.fulldesc
                     });
                 }
                 if (cmd.usage) {
