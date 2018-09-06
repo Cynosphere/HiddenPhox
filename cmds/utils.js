@@ -1105,7 +1105,7 @@ let translate = async function(ctx, msg, args) {
 
 let quote = async function(ctx, msg, args) {
     const id = args[0];
-    const quote = args.length > 1 ? args.splice(1).join(" ") : "";
+    const quote = args.length > 1 ? args.slice(1).join(" ") : "";
 
     if (!msg.channel.getMessage(id)) {
         msg.channel.createMessage(
