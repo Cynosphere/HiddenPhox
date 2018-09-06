@@ -1104,6 +1104,7 @@ let translate = async function(ctx, msg, args) {
 };
 
 let quote = async function(ctx, msg, args) {
+    args = args.split(" ");
     const id = args[0];
     const quote = args.length > 1 ? args.slice(1).join(" ") : "";
 
