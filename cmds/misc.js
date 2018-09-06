@@ -79,7 +79,12 @@ let search = function(ctx, msg, args) {
         msg.channel.createMessage("Arguments are required!");
     } else {
         ctx.utils.google
-            .search(args, msg.channel && msg.channel.nsfw)
+            .search(
+                args,
+                msg.channel &&
+                    msg.channel.nsfw &&
+                    !msg.channel.topic.includes("[no_nsfw]")
+            )
             .then(({ card, results }) => {
                 if (card) {
                     msg.channel.createMessage(card);
@@ -108,8 +113,9 @@ let gimg = function(ctx, msg, args) {
         gimages
             .search(args, {
                 safe:
+                    msg.channel &&
                     msg.channel.nsfw &&
-                    !msg.channel.topic.includes("[hf:no-nsfw]")
+                    !msg.channel.topic.includes("[no_nsfw]")
                         ? "off"
                         : "high"
             })
@@ -144,8 +150,9 @@ let fgimg = function(ctx, msg, args) {
         gimages
             .search(args, {
                 safe:
+                    msg.channel &&
                     msg.channel.nsfw &&
-                    !msg.channel.topic.includes("[hf:no-nsfw]")
+                    !msg.channel.topic.includes("[no_nsfw]")
                         ? "off"
                         : "high"
             })
