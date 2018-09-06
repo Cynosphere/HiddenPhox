@@ -1064,6 +1064,17 @@ module.exports = [
     {
         name: "steal",
         desc: "Steal PhoxCoins from a user.",
+        fulldesc: `
+To have a better chance of success it is recommended
+to decrease the amount you want to steal from your target.
+
+Once a target is successfully stolen from, they enter
+a grace period where they can't be stolen from for 6 hours.
+
+When you lose a steal, half of the amount you tried to steal is
+transferred from your wallet to the server's taxbank.
+(keep in mind you can go into debt with this mechanic)
+        `,
         func: steal,
         group: "economy",
         usage: "<user> <amount>"
@@ -1071,12 +1082,26 @@ module.exports = [
     {
         name: "stealstate",
         desc: "Get your stealing state.",
+        fulldesc: `
+By having X "stealing points", you can only use
+the steal command X times before receiving a cooldown.
+
+With the command you can also look on cooldowns
+currently applied to you.
+        `,
         func: sstate,
         group: "economy"
     },
     {
         name: "fcstats",
         desc: "HiddenPhox Economy Stats.",
+        fulldesc: `
+Show information such as:
+ - Total amount of FC in user accounts
+ - Total amount of FC in taxbanks
+ - Total amount of success steals done with the steal command.
+ - Total amount of *fail* steals done with the steal command.
+        `,
         func: fcstats,
         group: "economy",
         aliases: ["estats", "econstats"]
@@ -1084,6 +1109,13 @@ module.exports = [
     {
         name: "taxbank",
         desc: "Check how much the guild's taxbank has.",
+        fulldesc: `
+Taxbanks are PhoxCoin accounts that are tied to a server/guild.
+
+Users can not operate those accounts at will, only the bot can.
+
+The only operation is to donate to a taxbank through the donate command.
+        `,
         func: taxbank,
         group: "economy",
         aliases: ["tb", "bank"]

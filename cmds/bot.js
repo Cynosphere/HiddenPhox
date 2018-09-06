@@ -208,6 +208,7 @@ module.exports = [
     {
         name: "eval",
         desc: "JS Eval",
+        fulldesc: "Evaluate JavaScript code at runtime",
         func: _eval,
         usage: "<string>",
         group: "bot"

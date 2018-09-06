@@ -335,12 +335,18 @@ module.exports = [
     {
         name: "calc",
         desc: "Do maths",
+        fulldesc: `
+Syntax on how to use the calculator is [here](https://github.com/silentmatt/expr-eval#expression-syntax).
+        `,
         func: calc,
         group: "misc"
     },
     {
         name: "yt",
         desc: "Search YouTube.",
+        fulldesc: `
+Gives at most 5 results for a given search query.
+        `,
         func: yt,
         group: "misc"
     },
@@ -353,6 +359,12 @@ module.exports = [
     {
         name: "google",
         desc: "Search Google.",
+        fulldesc: `
+Gives at most 5 results for a given search query.
+
+NSFW channels will bring up NSFW results, to prevent this,
+add "[no_nsfw]" (without quotemarks) to the channel topic.
+        `,
         func: search,
         group: "misc",
         aliases: ["g", "search"]
@@ -360,6 +372,10 @@ module.exports = [
     {
         name: "gimg",
         desc: "Search Google Images.",
+        fulldesc: `
+NSFW channels will bring up NSFW results, to prevent this,
+add "[no_nsfw]" (without quotemarks) to the channel topic.
+        `,
         func: gimg,
         group: "misc",
         aliases: ["img"]
@@ -367,6 +383,10 @@ module.exports = [
     {
         name: "fgimg",
         desc: "Search Google Images and grab first result only.",
+        fulldesc: `
+NSFW channels will bring up NSFW results, to prevent this,
+add "[no_nsfw]" (without quotemarks) to the channel topic.
+        `,
         func: fgimg,
         group: "misc",
         aliases: ["fimg"]
@@ -398,7 +418,15 @@ module.exports = [
     },*/
     {
         name: "currency",
-        desc: "Convert currency.",
+        desc: "Convert between world currencies.",
+        fulldesc: `
+This command uses [AlphaVantage](https://www.alphavantage.co/), which supports
+both physical and cryptocurrency.
+
+For a list of available currencies (as CSV files):
+ - [Physical Currencies](https://www.alphavantage.co/physical_currency_list/)
+ - [Cryptocurrencies](https://www.alphavantage.co/digital_currency_list/)
+        `,
         func: currency,
         group: "fun",
         aliases: ["money"]
