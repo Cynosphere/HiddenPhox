@@ -1126,7 +1126,7 @@ let quote = async function(ctx, msg, args) {
         },
         description: message.content,
         color: ctx.utils.topColor(ctx, msg, message.author.id),
-        timestamp: message.timestamp,
+        timestamp: new Date(message.timestamp).toISOString(),
         fields: [
             {
                 name: "Jump to",
