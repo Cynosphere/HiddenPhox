@@ -1117,7 +1117,7 @@ let quote = async function(ctx, msg, args) {
         return;
     }
 
-    const message = msg.channel.getMessage(id);
+    const message = await msg.channel.getMessage(id);
 
     const embed = {
         author: {
