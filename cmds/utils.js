@@ -1108,50 +1108,52 @@ let quote = async function(ctx, msg, args) {
     const id = args[0];
     const quote = args.length > 1 ? args.slice(1).join(" ") : "";
 
-    const message = await msg.channel
-        .getMessage(id)
-        .catch(e =>
-            msg.channel.createMessage(
-                `<@${
-                    msg.author.id
-                }> Message not found. Are you in the right channel?`
-            )
+    try {
+        const message = await msg.channel.getMessage(id);
+
+        const embed = {
+            author: {
+                name: `${message.author.username}#${
+                    message.author.discriminator
+                }`,
+                icon_url: message.author.avatarURL
+            },
+            description: message.content,
+            color: ctx.utils.topColor(ctx, msg, message.author.id),
+            timestamp: new Date(message.timestamp).toISOString(),
+            fields: [
+                {
+                    name: "Jump to",
+                    value: `https://canary.discordapp.com/channels/${
+                        msg.channel.guild.id
+                    }/${msg.channel.id}/${message.id}`
+                }
+            ]
+        };
+        if (message.attachments.length > 0) {
+            embed.image = { url: message.attachments[0].url };
+        }
+
+        msg.channel.createMessage({
+            content:
+                quote === ""
+                    ? `Quoted by **${msg.author.username}#${
+                          msg.author.discriminator
+                      }**`
+                    : `**${msg.author.username}#${
+                          msg.author.discriminator
+                      }:** ${quote}`,
+            embed: embed
+        });
+
+        msg.delete().catch(_ => {});
+    } catch (e) {
+        msg.channel.createMessage(
+            `<@${
+                msg.author.id
+            }> Message not found. Are you in the right channel?`
         );
-
-    const embed = {
-        author: {
-            name: `${message.author.username}#${message.author.discriminator}`,
-            icon_url: message.author.avatarURL
-        },
-        description: message.content,
-        color: ctx.utils.topColor(ctx, msg, message.author.id),
-        timestamp: new Date(message.timestamp).toISOString(),
-        fields: [
-            {
-                name: "Jump to",
-                value: `https://canary.discordapp.com/channels/${
-                    msg.channel.guild.id
-                }/${msg.channel.id}/${message.id}`
-            }
-        ]
-    };
-    if (message.attachments.length > 0) {
-        embed.image = { url: message.attachments[0].url };
     }
-
-    msg.channel.createMessage({
-        content:
-            quote === ""
-                ? `Quoted by **${msg.author.username}#${
-                      msg.author.discriminator
-                  }**`
-                : `**${msg.author.username}#${
-                      msg.author.discriminator
-                  }:** ${quote}`,
-        embed: embed
-    });
-
-    msg.delete().catch(_ => {});
 };
 
 module.exports = [

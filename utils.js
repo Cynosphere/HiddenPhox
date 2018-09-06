@@ -475,15 +475,7 @@ utils.topColor = function(ctx, msg, id, fallback = 0x7289da) {
         .get(id)
         .roles.map(r => msg.channel.guild.roles.get(r))
         .filter(r => r.color);
-    roles.sort((a, b) => {
-        if (a.position < b.position) {
-            return 1;
-        }
-        if (a.position > b.position) {
-            return -1;
-        }
-        return 0;
-    });
+    roles.sort((a, b) => a.position - b.position);
 
     return roles[0] ? roles[0].color : fallback;
 };
