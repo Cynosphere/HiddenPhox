@@ -1108,16 +1108,15 @@ let quote = async function(ctx, msg, args) {
     const id = args[0];
     const quote = args.length > 1 ? args.slice(1).join(" ") : "";
 
-    if (!msg.channel.getMessage(id)) {
-        msg.channel.createMessage(
-            `<@${
-                msg.author.id
-            }> Message not found. Are you in the right channel?`
+    const message = await msg.channel
+        .getMessage(id)
+        .catch(e =>
+            msg.channel.createMessage(
+                `<@${
+                    msg.author.id
+                }> Message not found. Are you in the right channel?`
+            )
         );
-        return;
-    }
-
-    const message = await msg.channel.getMessage(id);
 
     const embed = {
         author: {
