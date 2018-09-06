@@ -63,11 +63,19 @@ let help = async function(ctx, msg, args) {
                         ctx.bot.user.id,
                         0x8060c0
                     ),
+                    description: cmd.desc || "No description.",
                     fields: [
-                        { name: "Description", value: cmd.desc, inline: true },
                         { name: "Category", value: cmd.group, inline: true }
                     ]
                 };
+
+                if (cmd.fulldesc) {
+                    embed.fields.push({
+                        name: "Full Description",
+                        value: cmd.fulldesc,
+                        inline: true
+                    });
+                }
                 if (cmd.usage) {
                     embed.fields.push({
                         name: "Usage",

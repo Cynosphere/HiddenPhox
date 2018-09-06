@@ -1103,6 +1103,57 @@ let translate = async function(ctx, msg, args) {
     );
 };
 
+let quote = async function(ctx, msg, args) {
+    const id = args[0];
+    const quote = args.length > 1 ? args.splice(1).join(" ") : "";
+
+    if (!msg.channel.getMessage(id)) {
+        msg.channel.createMessage(
+            `<@${
+                msg.author.id
+            }> Message not found. Are you in the right channel?`
+        );
+        return;
+    }
+
+    const message = msg.channel.getMessage(id);
+
+    const embed = {
+        author: {
+            name: message.author.tag,
+            icon_url: message.author.avatarURL
+        },
+        description: message.content,
+        color: ctx.utils.topColor(ctx, msg, message.author.id),
+        timestamp: message.timestamp,
+        fields: [
+            {
+                name: "Jump to",
+                value: `https://canary.discordapp.com/channels/${
+                    msg.channel.guild.id
+                }/${msg.channel.id}/${message.id}`
+            }
+        ]
+    };
+    if (message.attachments.length > 0) {
+        embed.image = { url: message.attachments[0].url };
+    }
+
+    msg.channel.createMessage({
+        content:
+            quote === ""
+                ? `Quoted by **${msg.author.username}#${
+                      msg.author.discriminator
+                  }**`
+                : `**${msg.author.username}#${
+                      msg.author.discriminator
+                  }:** ${quote}`,
+        embed: embed
+    });
+
+    msg.delete().catch(_ => {});
+};
+
 module.exports = [
     {
         name: "avatar",
@@ -1189,5 +1240,17 @@ module.exports = [
         func: translate,
         group: "utils",
         aliases: ["tr"]
+    },
+    {
+        name: "quote",
+        desc: "Inline quote a message.",
+        fulldesc: `
+**This does not work like dogbot's quotes**, you cannot store them for later, nor quote multiple messages at once.
+
+Allows you to inline quote messages.
+If the bot has Manage Messages, it'll delete your regular command message.`,
+        func: quote,
+        group: "utils",
+        aliases: ["q"]
     }
 ];
