@@ -1105,11 +1105,21 @@ let translate = async function(ctx, msg, args) {
 
 let quote = async function(ctx, msg, args) {
     args = args.split(" ");
-    const id = args[0];
+    let cid = "";
+    let id = args[0].split("|");
+    if (id.length > 1) {
+        cid = id[0];
+        id = id[1];
+    } else {
+        id = id[0];
+    }
     const quote = args.length > 1 ? args.slice(1).join(" ") : "";
 
     try {
-        const message = await msg.channel.getMessage(id);
+        const message =
+            cid !== ""
+                ? await msg.channel.guild.channels.get(cid).getMessage(id)
+                : await msg.channel.getMessage(id);
 
         const embed = {
             author: {
@@ -1267,6 +1277,7 @@ generated, not any other info or what type it is.
 **This does not work like dogbot's quotes**, you cannot store them for later, nor quote multiple messages at once.
 
 Allows you to inline quote messages.
+Use \`channelid|messageid\` to crosschannel quote.
 If the bot has Manage Messages, it'll delete your regular command message.`,
         func: quote,
         group: "utils",
