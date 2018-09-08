@@ -1136,7 +1136,7 @@ let quote = async function(ctx, msg, args) {
                     name: "Jump to",
                     value: `https://canary.discordapp.com/channels/${
                         msg.channel.guild.id
-                    }/${msg.channel.id}/${message.id}`
+                    }/${message.channel.id}/${message.id}`
                 }
             ]
         };
