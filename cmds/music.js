@@ -1461,7 +1461,7 @@ let func = function(ctx, msg, args) {
                 .then(x => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "forceurl") {
-        if (ctx.elevated.contains(msg.author.id)) {
+        if (ctx.elevated.includes(msg.author.id)) {
             if (msg.member.voiceState && msg.member.voiceState.channelID) {
                 doMusicThingsOk(
                     msg.member.voiceState.channelID,
