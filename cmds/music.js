@@ -1482,8 +1482,19 @@ let func = function(ctx, msg, args) {
                 .then(x => setTimeout(() => x.delete(), 10000));
         }
     } else {
-        msg.channel.createMessage(`**__Music Subcommands__**
-**All commands require ${ctx.prefix}music before them!**
+        msg.channel.createMessage(
+            `Invalid/missing subcommand. See \`${
+                ctx.prefix
+            }help music\` for all subcommands.`
+        );
+    }
+};
+
+module.exports = {
+    name: "music",
+    desc: 'Do "hf!music help" for full list of subcommands.',
+    fulldesc: `
+**__Music Subcommands__**
 \u2022 **play/p [url|search string]** - Play a song or add to queue (YouTube/YT Playlist/SoundCloud/MP3/OGG/FLAC/WAV).
 \u2022 **queue/q (page)** - List queue.
 \u2022 **playlist/pl [url|playlist id]** - Playlist alias.
@@ -1494,13 +1505,8 @@ let func = function(ctx, msg, args) {
 \u2022 **volume/v** - Change volume. (1-150)
 \u2022 **queuerem/qr** - Remove a song from queue.
 \u2022 **lock/:lock:** - Lock skipping and queue.
-\u2022 **unlock/:unlock:** - Unlock skipping and queue.`);
-    }
-};
-
-module.exports = {
-    name: "music",
-    desc: 'Do "hf!music help" for full list of subcommands.',
+\u2022 **unlock/:unlock:** - Unlock skipping and queue.
+    `,
     func: func,
     group: "fun",
     aliases: ["m"]
