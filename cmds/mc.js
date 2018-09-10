@@ -87,10 +87,9 @@ let mcstatus = async function(ctx, msg, args) {
 
 let mcserver = async function(ctx, msg, args) {
     args = args.split(" ")[0]; //ignore all other inputs
-    let req = await ctx.libs.superagent.get(
-        `https://api.mcsrvstat.us/1/${args}`
-    );
-    let data = req.body;
+    let data = await ctx.libs.superagent
+        .get(`https://api.mcsrvstat.us/1/${args}`)
+        .then(x => x.body);
 
     let e = {
         title: `Minecraft Server: \`${args}\``,
@@ -125,25 +124,34 @@ let mcserver = async function(ctx, msg, args) {
             value: `${data.players.online}/${data.players.max}`,
             inline: true
         });
-        e.fields.push({
-            name: "Version",
-            value: data.version || "Unknown",
-            inline: true
-        });
-        e.fields.push({
-            name: "Server Type",
-            value: data.software || "Unlisted",
-            inline: true
-        });
-        e.fields.push({
-            name: "Plugins",
-            value: data.plugins ? data.plugins.names.join(", ") : "Unlisted",
-            inline: true
-        });
+        if (data.version)
+            e.fields.push({
+                name: "Version",
+                value: data.version,
+                inline: true
+            });
+        if (data.software)
+            e.fields.push({
+                name: "Server Type",
+                value: data.software,
+                inline: true
+            });
+        if (data.plugins && data.plugins.names)
+            e.fields.push({
+                name: "Plugins",
+                value: data.plugins.names.length + " plugins",
+                inline: true
+            });
+        if (data.mods && data.mods.names)
+            e.fields.push({
+                name: "Mods",
+                value: data.mods.names.length + " mods",
+                inline: true
+            });
         if (data.icon) {
             e.thumbnail.url = "attachment://icon.png";
             let icon = await ctx.libs.jimp.read(data.icon);
-            icon.clone().getBuffer(ctx.libs.jimp.MIME_PNG, (e, f) => {
+            icon.getBuffer(ctx.libs.jimp.MIME_PNG, (e, f) => {
                 a.file = f;
             });
         }
