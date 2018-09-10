@@ -150,14 +150,14 @@ let mcserver = async function(ctx, msg, args) {
             });
         if (data.icon) {
             e.thumbnail.url = "attachment://icon.png";
-            let icon = await ctx.libs.jimp.read(data.icon);
-            icon.resize(32, 32).getBuffer(ctx.libs.jimp.MIME_PNG, (e, f) => {
-                img.file = f;
-            });
+            img.file = Buffer.from(
+                data.icon.replace(/data:image\/png;base64,/, ""),
+                "base64"
+            );
         }
     }
 
-    msg.channel.createMessage({ embed: e, file: img });
+    msg.channel.createMessage({ embed: e }, img);
 };
 
 module.exports = [
