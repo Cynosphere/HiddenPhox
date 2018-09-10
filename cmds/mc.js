@@ -108,7 +108,7 @@ let mcserver = async function(ctx, msg, args) {
         footer: { text: "Powered by mcsrvstat.us" }
     };
 
-    let a = {
+    let img = {
         name: "icon.png"
     };
 
@@ -150,11 +150,14 @@ let mcserver = async function(ctx, msg, args) {
             });
         if (data.icon) {
             e.thumbnail.url = "attachment://icon.png";
-            a.file = Buffer.from(data.icon);
+            let icon = await ctx.libs.jimp.read(data.icon);
+            icon.resize(32, 32).getBuffer(ctx.libs.jimp.MIME_PNG, (e, f) => {
+                img.file = f;
+            });
         }
     }
 
-    msg.channel.createMessage({ embed: e, file: a });
+    msg.channel.createMessage({ embed: e, file: img });
 };
 
 module.exports = [
