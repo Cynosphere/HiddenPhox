@@ -150,10 +150,7 @@ let mcserver = async function(ctx, msg, args) {
             });
         if (data.icon) {
             e.thumbnail.url = "attachment://icon.png";
-            let icon = await ctx.libs.jimp.read(data.icon);
-            icon.getBuffer(ctx.libs.jimp.MIME_PNG, (e, f) => {
-                a.file = f;
-            });
+            a.file = Buffer.from(data.icon);
         }
     }
 
