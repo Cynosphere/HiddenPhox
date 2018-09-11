@@ -651,6 +651,7 @@ let img2braille = async function(ctx, msg, args) {
 };*/
 
 let imgfuck = function(msg, url) {
+    msg.channel.sendTyping();
     jimp.read(url).then(i => {
         i.getBuffer(jimp.MIME_JPEG, (e, f) => {
             if (e) {
