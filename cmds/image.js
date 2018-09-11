@@ -1,5 +1,7 @@
 let jimp = require("jimp");
 let c2c = require("colorcolor");
+let imgfuckr = require("../utils/imgfuckr.js");
+let imgfkr = new imgfuckr();
 //let i2b = require("image-to-braille");
 
 let mirror = function(msg, url, type) {
@@ -648,6 +650,37 @@ let img2braille = async function(ctx, msg, args) {
     }
 };*/
 
+let imgfuck = function(msg, url) {
+    jimp.read(url).then(i => {
+        i.getBuffer(jimp.MIME_JPEG, (e, f) => {
+            if (e) {
+                msg.channel.createMessage(
+                    "Image not found. Please give URL or attachment."
+                );
+                return;
+            }
+            let out = imgfkr.processBuffer(f);
+
+            msg.channel.createMessage("", {
+                name: "glitch.jpg",
+                file: Buffer.from(out, "base64")
+            });
+        });
+    });
+};
+
+let glitch = async function(ctx, msg, args) {
+    if (args && args.startsWith("http")) {
+        imgfuck(msg, args);
+    } else if (msg.attachments.length > 0) {
+        imgfuck(msg, msg.attachments[0].url);
+    } else {
+        msg.channel.createMessage(
+            "Image not found. Please give URL or attachment."
+        );
+    }
+};
+
 module.exports = [
     {
         name: "hooh",
@@ -715,6 +748,19 @@ module.exports = [
         group: "image",
         usage: "[rgb or hex]",
         aliases: ["col"]
+    },
+    {
+        name: "glitch",
+        desc: "Glitch out an image",
+        fulldesc: `
+Credit to [bootsy](https://soc.uwu.st/@bootsy) for the idea and code.
+Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
+([twitter](https://twitter.com/imgfkr) | [masto version by bootsy](https://botsin.space/@img))
+        `,
+        func: glitch,
+        group: "image",
+        usage: "[url or attachment]",
+        aliases: ["imgfkr", "imgfuck"]
     }
 
     /*{

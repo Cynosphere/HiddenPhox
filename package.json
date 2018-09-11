@@ -10,9 +10,7 @@
         "type": "git",
         "url": "git+https://github.com/Cynosphere/HiddenPhox.git"
     },
-    "keywords": [
-        "discord"
-    ],
+    "keywords": ["discord"],
     "author": "Flex",
     "license": "MIT",
     "bugs": {
@@ -27,6 +25,7 @@
         "expr-eval": "^1.0.1",
         "google-images": "^2.1.0",
         "jimp": "^0.2.28",
+        "jpeg-js": "^0.3.4",
         "lodash": "^4.17.10",
         "moment": "^2.22.1",
         "node-ffprobe": "^1.2.2",
