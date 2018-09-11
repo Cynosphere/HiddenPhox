@@ -1,7 +1,7 @@
 {
     "name": "hiddenphox",
     "version": "9.0.0",
-    "description": "A discord bot",
+    "description": "A kitchen sink Discord bot",
     "main": "bot.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,7 @@
         "url": "git+https://github.com/Cynosphere/HiddenPhox.git"
     },
     "keywords": ["discord"],
-    "author": "Flex",
+    "author": "Cynthia Foxwell (Cynosphere)",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/Cynosphere/HiddenPhox/issues"
