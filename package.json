@@ -23,7 +23,7 @@
         "deep-extend": "^0.5.1",
         "eris": "github:abalabahaha/eris#dev",
         "expr-eval": "^1.0.1",
-        "google-images": "^2.1.0",
+        "gifwrap": "^0.7.5",
         "jimp": "^0.2.28",
         "jpeg-js": "^0.3.4",
         "lodash": "^4.17.10",
