@@ -1,14 +1,43 @@
+const hasteRegex = /^(https?:\/\/)?(www\.)?(hastebin\.com|mystb\.in)\/(raw\/)?([a-z]+)(\.[a-z]+)?$/;
+
 let _eval = async function(ctx, msg, args) {
     if (msg.author.id === ctx.ownerid || ctx.elevated.includes(msg.author.id)) {
         let errored = false;
         let out;
+        let isURL = false;
 
-        try {
-            out = eval(args);
-            if (out && out.then) out = await out;
-        } catch (e) {
-            out = e.message;
-            errored = true;
+        if (hasteRegex.test(args)) {
+            let url = args.match(hasteRegex);
+            args = `${url[1]}${url[3]}/raw/${url[5]}`;
+            isURL = true;
+        }
+
+        if (isURL) {
+            let toRun = await ctx.libs.superagent.get(args).then(x => x.text);
+
+            try {
+                out = eval(toRun);
+                if (out && out.then)
+                    out = await out.catch(e => {
+                        out = e.message;
+                        errored = true;
+                    });
+            } catch (e) {
+                out = e.message;
+                errored = true;
+            }
+        } else {
+            try {
+                out = eval(args);
+                if (out && out.then)
+                    out = await out.catch(e => {
+                        out = e.message;
+                        errored = true;
+                    });
+            } catch (e) {
+                out = e.message;
+                errored = true;
+            }
         }
 
         out =
@@ -55,7 +84,7 @@ let restart = function(ctx, msg, args) {
         msg.channel.createMessage(`Restarting ${ctx.bot.user.username}...`);
         setTimeout(process.exit, 500);
     } else {
-        msg.channel.createMessage("No permission.");
+        msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
 };
 
@@ -85,7 +114,7 @@ let reload = function(ctx, msg, args) {
             msg.channel.createMessage("Command not found.");
         }
     } else {
-        msg.channel.createMessage("No permission.");
+        msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
 };
 
@@ -136,7 +165,7 @@ let ereload = function(ctx, msg, args) {
             msg.channel.createMessage("Event not found.");
         }
     } else {
-        msg.channel.createMessage("No permission.");
+        msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
 };
 
@@ -171,7 +200,7 @@ let exec = function(ctx, msg, args) {
             }
         });
     } else {
-        msg.channel.createMessage("No permission.");
+        msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
 };
 
@@ -200,7 +229,7 @@ let setav = async function(ctx, msg, args) {
             );
         });
     } else {
-        msg.channel.createMessage("No permission.");
+        msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
 };
 
