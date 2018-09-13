@@ -2,6 +2,7 @@ let jimp = require("jimp");
 let c2c = require("colorcolor");
 let imgfuckr = require("../utils/imgfuckr.js");
 let imgfkr = new imgfuckr();
+const { BitmapImage, GifFrame, GifUtil, GifCodec } = require("gifwrap");
 //let i2b = require("image-to-braille");
 
 let mirror = function(msg, url, type) {
@@ -682,6 +683,92 @@ let glitch = async function(ctx, msg, args) {
     }
 };
 
+let glitchfuck = function(ctx, msg, url) {
+    msg.channel.sendTyping();
+    async function jimpAsync(buf) {
+        return new Promise((resolve, reject) => {
+            new jimp(buf, (err, img) => {
+                if (err) reject(err);
+                resolve(img);
+            });
+        });
+    }
+
+    async function glitchFrames(inp) {
+        var outframes = [];
+
+        for (let f in inp.frames) {
+            let frame = inp.frames[f];
+            let img = frame.bitmap;
+
+            let i = await jimpAsync(img);
+            let out = await i.getBufferAsync(jimp.MIME_JPEG);
+            let glitch = Buffer.from(imgfkr.processBuffer(out), "base64");
+
+            outframes.push({ data: glitch, delay: frame.delayCentisecs });
+        }
+
+        return outframes;
+    }
+
+    const { spawn } = require("child_process");
+
+    async function makeTheGif(frames) {
+        return new Promise((resolve, reject) => {
+            let opt = {
+                stdio: [0, "pipe", "ignore"]
+            };
+            //now where could my pipe be?
+            for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
+
+            let args = ["-loop", "0"];
+            for (let f in frames) {
+                args.push("-delay");
+                args.push(frames[f].delay);
+                args.push(`fd:${parseInt(f) + 3}`);
+            }
+            args.push("gif:-");
+
+            let im = spawn("convert", args, opt);
+            for (let f = 0; f < frames.length; f++)
+                im.stdio[f + 3].write(frames[f].data);
+            for (let f = 0; f < frames.length; f++) im.stdio[f + 3].end();
+
+            let out = [];
+
+            im.stdout.on("data", c => {
+                out.push(c);
+            });
+
+            im.stdout.on("end", _ => {
+                resolve(Buffer.concat(out));
+            });
+        });
+    }
+
+    ctx.libs.superagent.get(url).then(img => {
+        GifUtil.read(img.body).then(async inp => {
+            var outframes = await glitchFrames(inp);
+
+            var gif = await makeTheGif(outframes);
+
+            msg.channel.createMessage("", { name: "glitch.gif", file: gif });
+        });
+    });
+};
+
+let gglitch = async function(ctx, msg, args) {
+    if (args && args.startsWith("http")) {
+        glitchfuck(ctx, msg, args);
+    } else if (msg.attachments.length > 0) {
+        glitchfuck(ctx, msg, msg.attachments[0].url);
+    } else {
+        msg.channel.createMessage(
+            "Image not found. Please give URL or attachment."
+        );
+    }
+};
+
 module.exports = [
     {
         name: "hooh",
@@ -762,6 +849,17 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         group: "image",
         usage: "[url or attachment]",
         aliases: ["imgfkr", "imgfuck"]
+    },
+    {
+        name: "gglitch",
+        desc: "Glitch out a GIF",
+        fulldesc: `
+GIF version of glitch.
+`,
+        func: gglitch,
+        group: "image",
+        usage: "[url or attachment]",
+        aliases: ["giffkr", "giffuck"]
     }
 
     /*{
