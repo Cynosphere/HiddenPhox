@@ -828,7 +828,7 @@ let glitchfuck = function(ctx, msg, url) {
             let args = ["-loop", "0"];
             for (let f in frames) {
                 args.push("-delay");
-                args.push(frames[f].delay);
+                args.push(Math.max(frames[f].delay, 15));
                 args.push(`fd:${parseInt(f) + 3}`);
             }
             args.push("gif:-");
