@@ -144,7 +144,7 @@ let hooh = function(ctx, msg, args) {
         mirror(msg, msg.attachments[0].url, 1);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            u = msg.channel.guild.members.get(u.id);
+            u = ctx.bot.users.get(u.id);
             mirror(msg, u.avatarURL, 1);
         });
     } else {
@@ -164,7 +164,7 @@ let haah = function(ctx, msg, args) {
         mirror(msg, msg.attachments[0].url, 2);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            u = msg.channel.guild.members.get(u.id);
+            u = ctx.bot.users.get(u.id);
             mirror(msg, u.avatarURL, 2);
         });
     } else {
@@ -184,7 +184,7 @@ let woow = function(ctx, msg, args) {
         mirror(msg, msg.attachments[0].url, 3);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            u = msg.channel.guild.members.get(u.id);
+            u = ctx.bot.users.get(u.id);
             mirror(msg, u.avatarURL, 3);
         });
     } else {
@@ -204,7 +204,7 @@ let waaw = function(ctx, msg, args) {
         mirror(msg, msg.attachments[0].url, 4);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            u = msg.channel.guild.members.get(u.id);
+            u = ctx.bot.users.get(u.id);
             mirror(msg, u.avatarURL, 4);
         });
     } else {
@@ -235,7 +235,7 @@ let invert = function(ctx, msg, args) {
         _invert(msg, msg.attachments[0].url);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            u = msg.channel.guild.members.get(u.id);
+            u = ctx.bot.users.get(u.id);
             _invert(msg, u.avatarURL);
         });
     } else {
@@ -266,7 +266,7 @@ let flip = function(ctx, msg, args) {
         });
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            u = msg.channel.guild.members.get(u.id);
+            u = ctx.bot.users.get(u.id);
             jimp.read(u.avatarURL).then(im => {
                 im.mirror(true, false);
                 im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -304,7 +304,7 @@ let flop = function(ctx, msg, args) {
         });
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            u = msg.channel.guild.members.get(u.id);
+            u = ctx.bot.users.get(u.id);
             jimp.read(u.avatarURL).then(im => {
                 im.mirror(false, true);
                 im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -729,7 +729,7 @@ let glitch = async function(ctx, msg, args) {
         imgfuck(msg, msg.attachments[0].url);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            u = msg.channel.guild.members.get(u.id);
+            u = ctx.bot.users.get(u.id);
             imgfuck(msg, u.avatarURL);
         });
     } else {
@@ -820,7 +820,7 @@ let gglitch = async function(ctx, msg, args) {
         glitchfuck(ctx, msg, msg.attachments[0].url);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            u = msg.channel.guild.members.get(u.id);
+            u = ctx.bot.users.get(u.id);
 
             if (u.avatar.startsWith("a_")) {
                 glitchfuck(ctx, msg, u.avatarURL);
