@@ -798,9 +798,9 @@ let glitchfuck = function(ctx, msg, url) {
         });
     }
 
-    async function glitchFrames(msg, inp) {
-        msg.edit(
-            "Please wait, glitching in progress. (Step: Extracting frames)"
+    async function glitchFrames(m, inp) {
+        m.edit(
+            "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Extracting frames)`"
         );
         var outframes = [];
 
@@ -820,8 +820,10 @@ let glitchfuck = function(ctx, msg, url) {
 
     const { spawn } = require("child_process");
 
-    async function makeTheGif(msg, frames) {
-        msg.edit("Please wait, glitching in progress. (Step: Creating gif)");
+    async function makeTheGif(m, frames) {
+        m.edit(
+            "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Creating gif)`"
+        );
         return new Promise((resolve, reject) => {
             let opt = {
                 stdio: [0, "pipe", "ignore"]
@@ -857,15 +859,19 @@ let glitchfuck = function(ctx, msg, url) {
     ctx.libs.superagent.get(url).then(img => {
         GifUtil.read(img.body).then(async inp => {
             let m = await msg.channel.createMessage(
-                "Please wait, glitching in progress."
+                "<a:typing:393848431413559296> Please wait, glitching in progress."
             );
 
             var outframes = await glitchFrames(m, inp);
 
             var gif = await makeTheGif(m, outframes);
 
-            msg.channel.createMessage("", { name: "glitch.gif", file: gif });
-            m.delete();
+            m.edit(
+                "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Uploading)`"
+            );
+            msg.channel
+                .createMessage("", { name: "glitch.gif", file: gif })
+                .then(_ => m.delete());
         });
     });
 };
