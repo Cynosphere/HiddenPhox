@@ -6,6 +6,8 @@ const { BitmapImage, GifFrame, GifUtil, GifCodec } = require("gifwrap");
 const { spawn } = require("child_process");
 //let i2b = require("image-to-braille");
 
+const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
+
 let mirror = function(msg, url, type) {
     switch (type) {
         case 1: //hooh
@@ -139,7 +141,7 @@ let hooh = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         mirror(msg, args, 1);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 1);
@@ -165,7 +167,7 @@ let haah = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         mirror(msg, args, 2);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 2);
@@ -191,7 +193,7 @@ let woow = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         mirror(msg, args, 3);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 3);
@@ -217,7 +219,7 @@ let waaw = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         mirror(msg, args, 4);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 4);
@@ -254,7 +256,7 @@ let invert = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         _invert(msg, args);
     } else if (msg.attachments.length > 0) {
         _invert(msg, msg.attachments[0].url);
@@ -281,7 +283,7 @@ let flip = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         jimp.read(args).then(im => {
             im.mirror(true, false);
             im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -325,7 +327,7 @@ let flop = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         jimp.read(args).then(im => {
             im.mirror(false, true);
             im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -734,7 +736,7 @@ let color = function(ctx, msg, args) {
 };
 
 let img2braille = async function(ctx, msg, args) {
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         _i2b(msg, args);
     } else if (msg.attachments.length > 0) {
         _i2b(msg, msg.attachments[0].url);
@@ -766,7 +768,7 @@ let imgfuck = function(msg, url) {
 };
 
 let glitch = async function(ctx, msg, args) {
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         imgfuck(msg, args);
     } else if (msg.attachments.length > 0) {
         imgfuck(msg, msg.attachments[0].url);
@@ -876,7 +878,7 @@ let glitchfuck = function(ctx, msg, url) {
 };
 
 let gglitch = async function(ctx, msg, args) {
-    if (args && args.startsWith("http")) {
+    if (args && urlRegex.test(args)) {
         glitchfuck(ctx, msg, args);
     } else if (msg.attachments.length > 0) {
         glitchfuck(ctx, msg, msg.attachments[0].url);
@@ -990,7 +992,7 @@ let img2glitch = async function(ctx, msg, args) {
         args = args.replace("--avatar ");
     }
 
-    if (args && args.startsWith("http")) {
+    if (args && args.indexOf("http") > 0) {
         i2gg(msg, args, avatar);
     } else if (msg.attachments.length > 0) {
         i2gg(msg, msg.attachments[0].url, avatar);
