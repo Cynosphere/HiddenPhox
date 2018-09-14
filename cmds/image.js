@@ -992,7 +992,7 @@ let img2glitch = async function(ctx, msg, args) {
         args = args.replace("--avatar ", "");
     }
 
-    if (args && args.indexOf("http") > 0) {
+    if (args && urlRegex.test(args)) {
         i2gg(msg, args, avatar);
     } else if (msg.attachments.length > 0) {
         i2gg(msg, msg.attachments[0].url, avatar);
