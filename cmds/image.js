@@ -146,11 +146,11 @@ let hooh = function(ctx, msg, args) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
                 u.avatar !== null
-                    ? `[Full Size](https://cdn.discordapp.com/avatars/${u.id}/${
-                          u.avatar
-                      }.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=1024)`
-                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png)`;
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
             mirror(msg, url, 1);
         });
     } else {
@@ -172,11 +172,11 @@ let haah = function(ctx, msg, args) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
                 u.avatar !== null
-                    ? `[Full Size](https://cdn.discordapp.com/avatars/${u.id}/${
-                          u.avatar
-                      }.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=1024)`
-                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png)`;
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
             mirror(msg, url, 2);
         });
     } else {
@@ -198,11 +198,11 @@ let woow = function(ctx, msg, args) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
                 u.avatar !== null
-                    ? `[Full Size](https://cdn.discordapp.com/avatars/${u.id}/${
-                          u.avatar
-                      }.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=1024)`
-                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png)`;
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
             mirror(msg, url, 3);
         });
     } else {
@@ -224,11 +224,11 @@ let waaw = function(ctx, msg, args) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
                 u.avatar !== null
-                    ? `[Full Size](https://cdn.discordapp.com/avatars/${u.id}/${
-                          u.avatar
-                      }.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=1024)`
-                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png)`;
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
             mirror(msg, url, 4);
         });
     } else {
@@ -261,11 +261,11 @@ let invert = function(ctx, msg, args) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
                 u.avatar !== null
-                    ? `[Full Size](https://cdn.discordapp.com/avatars/${u.id}/${
-                          u.avatar
-                      }.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=1024)`
-                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png)`;
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
             _invert(msg, url);
         });
     } else {
@@ -298,11 +298,11 @@ let flip = function(ctx, msg, args) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
                 u.avatar !== null
-                    ? `[Full Size](https://cdn.discordapp.com/avatars/${u.id}/${
-                          u.avatar
-                      }.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=1024)`
-                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png)`;
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
             jimp.read(url).then(im => {
                 im.mirror(true, false);
                 im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -342,11 +342,11 @@ let flop = function(ctx, msg, args) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
                 u.avatar !== null
-                    ? `[Full Size](https://cdn.discordapp.com/avatars/${u.id}/${
-                          u.avatar
-                      }.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=1024)`
-                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png)`;
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
             jimp.read(url).then(im => {
                 im.mirror(false, true);
                 im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -773,11 +773,11 @@ let glitch = async function(ctx, msg, args) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
                 u.avatar !== null
-                    ? `[Full Size](https://cdn.discordapp.com/avatars/${u.id}/${
-                          u.avatar
-                      }.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=1024)`
-                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png)`;
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
             imgfuck(msg, url);
         });
     } else {
@@ -870,11 +870,11 @@ let gglitch = async function(ctx, msg, args) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
                 u.avatar !== null
-                    ? `[Full Size](https://cdn.discordapp.com/avatars/${u.id}/${
-                          u.avatar
-                      }.${u.avatar.startsWith("a_") ? "gif" : "png"}?size=1024)`
-                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png)`;
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
 
             if (u.avatar.startsWith("a_")) {
                 glitchfuck(ctx, msg, url);
