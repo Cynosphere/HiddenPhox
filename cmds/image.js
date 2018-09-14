@@ -884,9 +884,14 @@ let gglitch = async function(ctx, msg, args) {
                 );
             }
         });
+    } else if (/<a:([a-zA-Z0-9_*/-:]+):([0-9]+)>/.test(args)) {
+        let emote = args.match(/<a:([a-zA-Z0-9_*/-:]+):([0-9]+)>/);
+        let url = `https://cdn.discordapp.com/emojis/${emote[2]}.gif`;
+
+        glitchfuck(ctx, msg, url);
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
+            "Image not found. Please give URL, attachment, user mention or animated emoji."
         );
     }
 };
