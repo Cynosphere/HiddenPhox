@@ -919,10 +919,10 @@ let i2gg = async function(msg, url) {
             var outframes = [];
 
             for (let i = 0; i < 10; i++) {
-                var i = await jimp.read(inp);
-                var img = await i.getBufferAsync(jimp.MIME_JPEG);
+                var img = await jimp.read(inp);
+                var jpg = await i.getBufferAsync(jimp.MIME_JPEG);
                 outframes.push(
-                    Buffer.from(imgfkr.processBuffer(img), "base64")
+                    Buffer.from(imgfkr.processBuffer(jpg), "base64")
                 );
             }
 
