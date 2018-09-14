@@ -1090,13 +1090,18 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
     {
         name: "gglitch",
         desc: "Glitch out a GIF",
-        fulldesc: `
-GIF version of glitch.
-`,
         func: gglitch,
         group: "image",
         usage: "[url or attachment]",
         aliases: ["giffkr", "giffuck"]
+    },
+    {
+        name: "img2gglitch",
+        desc: "Glitch an image multiple times and make it a GIF.",
+        func: img2glitch,
+        group: "image",
+        usage: "[url or attachment]",
+        aliases: ["i2gg"]
     }
 
     /*{
