@@ -993,14 +993,7 @@ let img2glitch = async function(ctx, msg, args) {
                       }?size=1024`
                     : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
                           5}.png`;
-
-            if (u.avatar.startsWith("a_")) {
-                i2gg(msg, url);
-            } else {
-                msg.channel.createMessage(
-                    "User does not have an animated avatar."
-                );
-            }
+            i2gg(msg, url);
         });
     } else {
         msg.channel.createMessage(
