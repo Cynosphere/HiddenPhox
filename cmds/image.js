@@ -936,7 +936,7 @@ let i2gg = async function(msg, url) {
         );
         return new Promise((resolve, reject) => {
             let opt = {
-                stdio: [0, "pipe", 2]
+                stdio: [0, "pipe", "ignore"]
             };
             //now where could my pipe be?
             for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
@@ -949,7 +949,7 @@ let i2gg = async function(msg, url) {
 
             let im = spawn("convert", args, opt);
             for (let f = 0; f < frames.length; f++)
-                im.stdio[f + 3].write(frames[f].data);
+                im.stdio[f + 3].write(frames[f]);
             for (let f = 0; f < frames.length; f++) im.stdio[f + 3].end();
 
             let out = [];
