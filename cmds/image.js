@@ -912,15 +912,17 @@ let gglitch = async function(ctx, msg, args) {
 
 let i2gg = async function(msg, url) {
     async function glitchImageXTimes(m, inp) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             m.edit(
                 "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Making glitch frames)`"
             );
             var outframes = [];
 
             for (let i = 0; i < 10; i++) {
+                var i = await jimp.read(inp);
+                var img = await i.getBufferAsync(jimp.MIME_JPEG);
                 outframes.push(
-                    Buffer.from(imgfkr.processBuffer(inp), "base64")
+                    Buffer.from(imgfkr.processBuffer(img), "base64")
                 );
             }
 
@@ -966,9 +968,7 @@ let i2gg = async function(msg, url) {
         "<a:typing:393848431413559296> Please wait, glitching in progress."
     );
 
-    var i = await jimp.read(url);
-    var img = await i.getBufferAsync(jimp.MIME_JPEG);
-    var frames = await glitchImageXTimes(m, img);
+    var frames = await glitchImageXTimes(m, url);
     var out = await makeTheGif(m, frames);
 
     m.edit(
