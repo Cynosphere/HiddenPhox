@@ -911,6 +911,101 @@ let gglitch = async function(ctx, msg, args) {
     }
 };
 
+let i2gg = async function(msg, url) {
+    async function glitchImageXTimes(m, inp) {
+        m.edit(
+            "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Making glitch frames)`"
+        );
+        var outframes = [];
+
+        for (let i = 0; i < 10; i++) {
+            outframes.push(Buffer.from(imgfkr.processBuffer(inp), "base64"));
+        }
+
+        return outframes;
+    }
+
+    async function makeTheGif(m, frames) {
+        m.edit(
+            "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Creating gif)`"
+        );
+        return new Promise((resolve, reject) => {
+            let opt = {
+                stdio: [0, "pipe", "ignore"]
+            };
+            //now where could my pipe be?
+            for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
+
+            let args = ["-loop", "0", "-delay", "15"];
+            for (let f in frames) {
+                args.push(`fd:${parseInt(f) + 3}`);
+            }
+            args.push("gif:-");
+
+            let im = spawn("convert", args, opt);
+            for (let f = 0; f < frames.length; f++)
+                im.stdio[f + 3].write(frames[f].data);
+            for (let f = 0; f < frames.length; f++) im.stdio[f + 3].end();
+
+            let out = [];
+
+            im.stdout.on("data", c => {
+                out.push(c);
+            });
+
+            im.stdout.on("end", _ => {
+                resolve(Buffer.concat(out));
+            });
+        });
+    }
+
+    let m = await msg.channel.createMessage(
+        "<a:typing:393848431413559296> Please wait, glitching in progress."
+    );
+
+    var i = await jimp.read(url);
+    var img = await i.getBufferAsync(jimp.MIME_JPEG);
+    var frames = await glitchImageXTimes(m, img);
+    var out = await makeTheGif(m, frames);
+
+    m.edit(
+        "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Uploading)`"
+    );
+    msg.channel
+        .createMessage("", { name: "img2glitch.gif", file: out })
+        .then(_ => m.delete());
+};
+
+let img2glitch = async function(ctx, msg, args) {
+    if (args && args.startsWith("http")) {
+        i2gg(msg, args);
+    } else if (msg.attachments.length > 0) {
+        i2gg(msg, msg.attachments[0].url);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            let url =
+                u.avatar !== null
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
+
+            if (u.avatar.startsWith("a_")) {
+                i2gg(msg, url);
+            } else {
+                msg.channel.createMessage(
+                    "User does not have an animated avatar."
+                );
+            }
+        });
+    } else {
+        msg.channel.createMessage(
+            "Image not found. Please give URL, attachment or user mention."
+        );
+    }
+};
+
 module.exports = [
     {
         name: "hooh",
