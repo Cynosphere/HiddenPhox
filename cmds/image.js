@@ -989,7 +989,7 @@ let img2glitch = async function(ctx, msg, args) {
 
     if (args.startsWith("--avatar")) {
         avatar = true;
-        args = args.replace("--avatar ");
+        args = args.replace("--avatar ", "");
     }
 
     if (args && args.indexOf("http") > 0) {
