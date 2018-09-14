@@ -919,7 +919,7 @@ let i2gg = async function(msg, url, avatar) {
             var outframes = [];
 
             var img = await jimp.read(inp);
-            var orig = img.getBufferAsync(jimp.MIME_PNG);
+            var orig = await img.getBufferAsync(jimp.MIME_PNG);
             if (avatar) outframes.push(orig);
 
             for (let i = 0; i < 10; i++) {
