@@ -142,9 +142,14 @@ let hooh = function(ctx, msg, args) {
         mirror(msg, args, 1);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 1);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            u = msg.channel.guild.members.get(u.id);
+            mirror(msg, u.avatarURL, 1);
+        });
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };
@@ -157,9 +162,14 @@ let haah = function(ctx, msg, args) {
         mirror(msg, args, 2);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 2);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            u = msg.channel.guild.members.get(u.id);
+            mirror(msg, u.avatarURL, 2);
+        });
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };
@@ -172,9 +182,14 @@ let woow = function(ctx, msg, args) {
         mirror(msg, args, 3);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 3);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            u = msg.channel.guild.members.get(u.id);
+            mirror(msg, u.avatarURL, 3);
+        });
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };
@@ -187,9 +202,14 @@ let waaw = function(ctx, msg, args) {
         mirror(msg, args, 4);
     } else if (msg.attachments.length > 0) {
         mirror(msg, msg.attachments[0].url, 4);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            u = msg.channel.guild.members.get(u.id);
+            mirror(msg, u.avatarURL, 4);
+        });
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };
@@ -213,9 +233,14 @@ let invert = function(ctx, msg, args) {
         _invert(msg, args);
     } else if (msg.attachments.length > 0) {
         _invert(msg, msg.attachments[0].url);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            u = msg.channel.guild.members.get(u.id);
+            _invert(msg, u.avatarURL);
+        });
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };
@@ -239,9 +264,22 @@ let flip = function(ctx, msg, args) {
                 msg.channel.createMessage("", { name: "flip.png", file: f });
             });
         });
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            u = msg.channel.guild.members.get(u.id);
+            jimp.read(u.avatarURL).then(im => {
+                im.mirror(true, false);
+                im.getBuffer(jimp.MIME_PNG, (e, f) => {
+                    msg.channel.createMessage("", {
+                        name: "flip.png",
+                        file: f
+                    });
+                });
+            });
+        });
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };
@@ -264,9 +302,22 @@ let flop = function(ctx, msg, args) {
                 msg.channel.createMessage("", { name: "flop.png", file: f });
             });
         });
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            u = msg.channel.guild.members.get(u.id);
+            jimp.read(u.avatarURL).then(im => {
+                im.mirror(false, true);
+                im.getBuffer(jimp.MIME_PNG, (e, f) => {
+                    msg.channel.createMessage("", {
+                        name: "flop.png",
+                        file: f
+                    });
+                });
+            });
+        });
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };
@@ -646,7 +697,7 @@ let img2braille = async function(ctx, msg, args) {
         _i2b(msg, msg.attachments[0].url);
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };*/
@@ -657,7 +708,7 @@ let imgfuck = function(msg, url) {
         i.getBuffer(jimp.MIME_JPEG, (e, f) => {
             if (e) {
                 msg.channel.createMessage(
-                    "Image not found. Please give URL or attachment."
+                    "Image not found. Please give URL, attachment or user mention."
                 );
                 return;
             }
@@ -676,9 +727,14 @@ let glitch = async function(ctx, msg, args) {
         imgfuck(msg, args);
     } else if (msg.attachments.length > 0) {
         imgfuck(msg, msg.attachments[0].url);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            u = msg.channel.guild.members.get(u.id);
+            imgfuck(msg, u.avatarURL);
+        });
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };
@@ -762,9 +818,21 @@ let gglitch = async function(ctx, msg, args) {
         glitchfuck(ctx, msg, args);
     } else if (msg.attachments.length > 0) {
         glitchfuck(ctx, msg, msg.attachments[0].url);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            u = msg.channel.guild.members.get(u.id);
+
+            if (u.avatar.startsWith("a_")) {
+                glitchfuck(ctx, msg, u.avatarURL);
+            } else {
+                msg.channel.createMessage(
+                    "User does not have an animated avatar."
+                );
+            }
+        });
     } else {
         msg.channel.createMessage(
-            "Image not found. Please give URL or attachment."
+            "Image not found. Please give URL, attachment or user mention."
         );
     }
 };
