@@ -1,8 +1,9 @@
-let jimp = require("jimp");
-let c2c = require("colorcolor");
-let imgfuckr = require("../utils/imgfuckr.js");
-let imgfkr = new imgfuckr();
+const jimp = require("jimp");
+const c2c = require("colorcolor");
+const imgfuckr = require("../utils/imgfuckr.js");
+const imgfkr = new imgfuckr();
 const { BitmapImage, GifFrame, GifUtil, GifCodec } = require("gifwrap");
+const { spawn } = require("child_process");
 //let i2b = require("image-to-braille");
 
 let mirror = function(msg, url, type) {
@@ -817,8 +818,6 @@ let glitchfuck = function(ctx, msg, url) {
 
         return outframes;
     }
-
-    const { spawn } = require("child_process");
 
     async function makeTheGif(m, frames) {
         m.edit(
