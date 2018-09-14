@@ -936,7 +936,7 @@ let i2gg = async function(msg, url) {
         );
         return new Promise((resolve, reject) => {
             let opt = {
-                stdio: [0, "pipe", "ignore"]
+                stdio: [0, "pipe", 2]
             };
             //now where could my pipe be?
             for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
