@@ -792,6 +792,9 @@ let glitch = async function(ctx, msg, args) {
 
 let glitchfuck = function(ctx, msg, url) {
     msg.channel.sendTyping();
+
+    let limited = false;
+
     async function jimpAsync(buf) {
         return new Promise((resolve, reject) => {
             new jimp(buf, (err, img) => {
@@ -807,7 +810,9 @@ let glitchfuck = function(ctx, msg, url) {
         );
         var outframes = [];
 
-        for (let f in inp.frames) {
+        if (inp.frames.length > 25) limited = true;
+
+        for (let f = 0; f < Math.min(25, inp.frames.length); f++) {
             let frame = inp.frames[f];
             let img = frame.bitmap;
 
@@ -871,7 +876,12 @@ let glitchfuck = function(ctx, msg, url) {
                 "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Uploading)`"
             );
             msg.channel
-                .createMessage("", { name: "glitch.gif", file: gif })
+                .createMessage(
+                    limited
+                        ? ":warning: **Frames were limited to only 25 glitched to reduce execution time.**"
+                        : "",
+                    { name: "glitch.gif", file: gif }
+                )
                 .then(_ => m.delete());
         });
     });
