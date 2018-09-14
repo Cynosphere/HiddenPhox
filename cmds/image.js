@@ -866,6 +866,11 @@ let gglitch = async function(ctx, msg, args) {
         glitchfuck(ctx, msg, args);
     } else if (msg.attachments.length > 0) {
         glitchfuck(ctx, msg, msg.attachments[0].url);
+    } else if (/<a:([a-zA-Z0-9_*/-:]+):([0-9]+)>/.test(args)) {
+        let emote = args.match(/<a:([a-zA-Z0-9_*/-:]+):([0-9]+)>/);
+        let url = `https://cdn.discordapp.com/emojis/${emote[2]}.gif`;
+
+        glitchfuck(ctx, msg, url);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
@@ -884,11 +889,6 @@ let gglitch = async function(ctx, msg, args) {
                 );
             }
         });
-    } else if (/<a:([a-zA-Z0-9_*/-:]+):([0-9]+)>/.test(args)) {
-        let emote = args.match(/<a:([a-zA-Z0-9_*/-:]+):([0-9]+)>/);
-        let url = `https://cdn.discordapp.com/emojis/${emote[2]}.gif`;
-
-        glitchfuck(ctx, msg, url);
     } else {
         msg.channel.createMessage(
             "Image not found. Please give URL, attachment, user mention or animated emoji."
