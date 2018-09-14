@@ -910,7 +910,7 @@ let gglitch = async function(ctx, msg, args) {
     }
 };
 
-let i2gg = async function(msg, url) {
+let i2gg = async function(msg, url, avatar) {
     async function glitchImageXTimes(m, inp) {
         return new Promise(async (resolve, reject) => {
             m.edit(
@@ -918,8 +918,11 @@ let i2gg = async function(msg, url) {
             );
             var outframes = [];
 
+            var img = await jimp.read(inp);
+            var orig = img.getBufferAsync(jimp.MIME_PNG);
+            if (avatar) outframes.push(orig);
+
             for (let i = 0; i < 10; i++) {
-                var img = await jimp.read(inp);
                 var jpg = await img.getBufferAsync(jimp.MIME_JPEG);
                 outframes.push(
                     Buffer.from(imgfkr.processBuffer(jpg), "base64")
@@ -980,10 +983,17 @@ let i2gg = async function(msg, url) {
 };
 
 let img2glitch = async function(ctx, msg, args) {
+    let avatar = false;
+
+    if (args.startsWith("--avatar")) {
+        avatar = true;
+        args = args.replace("--avatar ");
+    }
+
     if (args && args.startsWith("http")) {
-        i2gg(msg, args);
+        i2gg(msg, args, avatar);
     } else if (msg.attachments.length > 0) {
-        i2gg(msg, msg.attachments[0].url);
+        i2gg(msg, msg.attachments[0].url, avatar);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
@@ -993,7 +1003,7 @@ let img2glitch = async function(ctx, msg, args) {
                       }?size=1024`
                     : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
                           5}.png`;
-            i2gg(msg, url);
+            i2gg(msg, url, avatar);
         });
     } else {
         msg.channel.createMessage(
@@ -1093,7 +1103,8 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
     },
     {
         name: "img2gglitch",
-        desc: "Glitch an image multiple times and make it a GIF.",
+        desc:
+            "Glitch an image multiple times and make it a GIF. Add `--avatar` before URL to add original as first frame.",
         func: img2glitch,
         group: "image",
         usage: "[url or attachment]",
