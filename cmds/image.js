@@ -912,16 +912,20 @@ let gglitch = async function(ctx, msg, args) {
 
 let i2gg = async function(msg, url) {
     async function glitchImageXTimes(m, inp) {
-        m.edit(
-            "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Making glitch frames)`"
-        );
-        var outframes = [];
+        return new Promise((resolve, reject) => {
+            m.edit(
+                "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Making glitch frames)`"
+            );
+            var outframes = [];
 
-        for (let i = 0; i < 10; i++) {
-            outframes.push(Buffer.from(imgfkr.processBuffer(inp), "base64"));
-        }
+            for (let i = 0; i < 10; i++) {
+                outframes.push(
+                    Buffer.from(imgfkr.processBuffer(inp), "base64")
+                );
+            }
 
-        return outframes;
+            resolve(outframes);
+        });
     }
 
     async function makeTheGif(m, frames) {
