@@ -158,13 +158,7 @@ let hooh = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             mirror(msg, img, 1);
         } catch (e) {
             msg.channel.createMessage(
@@ -195,13 +189,7 @@ let haah = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             mirror(msg, img, 2);
         } catch (e) {
             msg.channel.createMessage(
@@ -232,13 +220,7 @@ let woow = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             mirror(msg, img, 3);
         } catch (e) {
             msg.channel.createMessage(
@@ -269,13 +251,7 @@ let waaw = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             mirror(msg, img, 4);
         } catch (e) {
             msg.channel.createMessage(
@@ -317,13 +293,7 @@ let invert = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             _invert(msg, img);
         } catch (e) {
             msg.channel.createMessage(
@@ -373,13 +343,7 @@ let flip = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             jimp.read(img).then(im => {
                 im.mirror(true, false);
                 im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -436,13 +400,7 @@ let flop = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             jimp.read(url).then(im => {
                 im.mirror(false, true);
                 im.getBuffer(jimp.MIME_PNG, (e, f) => {
@@ -875,13 +833,7 @@ let glitch = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             imgfuck(msg, img);
         } catch (e) {
             msg.channel.createMessage(
@@ -1026,13 +978,7 @@ let gglitch = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             glitchfuck(ctx, msg, img);
         } catch (e) {
             msg.channel.createMessage(
@@ -1149,13 +1095,7 @@ let img2glitch = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils
-                .findLastImage(ctx, msg)
-                .catch(e =>
-                    msg.channel.createMessage(
-                        "Image not found. Please give URL, attachment or user mention."
-                    )
-                );
+            let img = await ctx.utils.findLastImage(ctx, msg);
             i2gg(msg, img, avatar);
         } catch (e) {
             msg.channel.createMessage(
