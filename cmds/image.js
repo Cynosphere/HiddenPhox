@@ -840,23 +840,14 @@ let img2braille = async function(ctx, msg, args) {
     }
 };*/
 
-let imgfuck = function(msg, url) {
+let imgfuck = async function(msg, url) {
     msg.channel.sendTyping();
-    jimp.read(url).then(i => {
-        i.getBuffer(jimp.MIME_JPEG, (e, f) => {
-            if (e) {
-                msg.channel.createMessage(
-                    "Image not found. Please give URL, attachment or user mention."
-                );
-                return;
-            }
-            let out = imgfkr.processBuffer(f);
+    let i = await jimp.read(url).catch(e=>msg.channel.createMessage(`:warning: An error occurred reading image: \`${e}\``);
+    let img = await i.getBufferAsync(jimp.MIME_JPEG);
 
-            msg.channel.createMessage("", {
-                name: "glitch.jpg",
-                file: Buffer.from(out, "base64")
-            });
-        });
+    msg.channel.createMessage("", {
+        name: "glitch.jpg",
+        file: Buffer.from(imgfkr.processBuffer(img), "base64")
     });
 };
 
@@ -972,9 +963,9 @@ let glitchfuck = function(ctx, msg, url) {
                 "<a:typing:393848431413559296> Please wait, glitching in progress."
             );
 
-            var outframes = await glitchFrames(m, inp);
+            var outframes = await glitchFrames(m, inp).catch(e=>m.edit(`:warning: An error occurred extracting frames: \`${e}\``);
 
-            var gif = await makeTheGif(m, outframes);
+            var gif = await makeTheGif(m, outframes).catch(e=>m.edit(`:warning: An error occurred creating gif: \`${e}\``);
 
             m.edit(
                 "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Uploading)`"
@@ -1098,8 +1089,8 @@ let i2gg = async function(msg, url, avatar) {
         "<a:typing:393848431413559296> Please wait, glitching in progress."
     );
 
-    var frames = await glitchImageXTimes(m, url);
-    var out = await makeTheGif(m, frames);
+    var frames = await glitchImageXTimes(m, url).catch(e=>m.edit(`:warning: An error occurred making frames: \`${e}\``));
+    var out = await makeTheGif(m, frames).catch(e=>m.edit(`:warning: An error occurred creating gif: \`${e}\``);
 
     m.edit(
         "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Uploading)`"
