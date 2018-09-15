@@ -331,6 +331,63 @@ let currency = async function(ctx, msg, args) {
     }
 };
 
+const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/(.+)$/;
+let rave = async function(ctx, msg, args) {
+    args = ctx.utils.formatArgs(args);
+    let vid1 = args[0];
+    let vid2 = args[1];
+
+    if (!ytregex.test(vid1)) {
+        msg.channel.createMessage("Video 1 did not match YouTube format.");
+        return;
+    }
+    if (!ytregex.test(vid2)) {
+        msg.channel.createMessage("Video 2 did not match YouTube format.");
+        return;
+    }
+
+    let id1 = vid1.match(ytregex)[4].replace("watch?v=", "");
+    let id2 = vid2.match(ytregex)[4].replace("watch?v=", "");
+
+    let token = await ctx.libs.superagent
+        .post(
+            "https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyCB24TzTgYXl4sXwLyeY8y-XXgm0RX_eRQ"
+        )
+        .set({
+            "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36",
+            Referer: "https://rave.dj/",
+            Origin: "https://rave.dj/"
+        })
+        .send({ returnSecureToken: true })
+        .then(x => x.body.idToken);
+
+    let rdjid = await await ctx.libs.superagent
+        .post("https://api.red.wemesh.ca/ravedj")
+        .set({
+            "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36",
+            Referer: "https://rave.dj/mix",
+            Origin: "https://rave.dj/",
+            "Content-Type": "application/json;charset=UTF-8",
+            "wemesh-api-version": "5.0",
+            "wemesh-platform": "Android",
+            "client-version": "5.0",
+            Authorization: `Bearer ${token}`
+        })
+        .send({
+            style: "MASHUP",
+            title: null,
+            media: [
+                { providerId: id1, provider: "YOUTUBE" },
+                { providerId: id2, provider: "YOUTUBE" }
+            ]
+        })
+        .then(x => x.body.data.id);
+
+    msg.channel.createMessage(`https://rave.dj/${rdjid}`);
+};
+
 module.exports = [
     {
         name: "calc",
@@ -428,7 +485,16 @@ For a list of available currencies (as CSV files):
  - [Cryptocurrencies](https://www.alphavantage.co/digital_currency_list/)
         `,
         func: currency,
+        usage: "[amount] [from] [to]",
         group: "fun",
         aliases: ["money"]
+    },
+    {
+        name: "rave",
+        desc: "Create a rave.dj from two YouTube videos.",
+        func: rave,
+        usage: "[youtube video] [youtube video]",
+        group: "fun",
+        aliases: ["ravedj", "rdj"]
     }
 ];
