@@ -917,7 +917,9 @@ let glitchfuck = function(ctx, msg, url) {
             let frame = inp.frames[f];
             let img = frame.bitmap;
 
-            let i = await jimpAsync(img);
+            let i = await jimpAsync(img).catch(e =>
+                m.edit(`:warning: An error occurred reading image: \`${e}\``)
+            );
             let out = await i.getBufferAsync(jimp.MIME_JPEG);
             let glitch = Buffer.from(imgfkr.processBuffer(out), "base64");
 
@@ -1048,7 +1050,13 @@ let i2gg = async function(msg, url, avatar) {
             );
             var outframes = [];
 
-            var img = await jimp.read(inp);
+            var img = await jimp
+                .read(inp)
+                .catch(e =>
+                    m.edit(
+                        `:warning: An error occurred reading image: \`${e}\``
+                    )
+                );
             var orig = await img.getBufferAsync(jimp.MIME_PNG);
             if (avatar) outframes.push(orig);
 
