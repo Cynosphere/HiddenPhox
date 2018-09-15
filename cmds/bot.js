@@ -19,7 +19,7 @@ let _eval = async function(ctx, msg, args) {
                 out = eval(toRun);
                 if (out && out.then)
                     out = await out.catch(e => {
-                        out = e.message;
+                        out = e;
                         errored = true;
                     });
             } catch (e) {
@@ -31,7 +31,7 @@ let _eval = async function(ctx, msg, args) {
                 out = eval(args);
                 if (out && out.then)
                     out = await out.catch(e => {
-                        out = e.message;
+                        out = e;
                         errored = true;
                     });
             } catch (e) {

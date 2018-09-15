@@ -157,9 +157,14 @@ let hooh = function(ctx, msg, args) {
             mirror(msg, url, 1);
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            mirror(msg, img, 1);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 
@@ -183,9 +188,14 @@ let haah = function(ctx, msg, args) {
             mirror(msg, url, 2);
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            mirror(msg, img, 2);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 
@@ -209,9 +219,14 @@ let woow = function(ctx, msg, args) {
             mirror(msg, url, 3);
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            mirror(msg, img, 3);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 
@@ -235,9 +250,14 @@ let waaw = function(ctx, msg, args) {
             mirror(msg, url, 4);
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            mirror(msg, img, 4);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 
@@ -272,9 +292,14 @@ let invert = function(ctx, msg, args) {
             _invert(msg, url);
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            _invert(msg, img);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 
@@ -317,9 +342,22 @@ let flip = function(ctx, msg, args) {
             });
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            jimp.read(img).then(im => {
+                im.mirror(true, false);
+                im.getBuffer(jimp.MIME_PNG, (e, f) => {
+                    msg.channel.createMessage("", {
+                        name: "flip.png",
+                        file: f
+                    });
+                });
+            });
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 
@@ -361,9 +399,22 @@ let flop = function(ctx, msg, args) {
             });
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            jimp.read(url).then(im => {
+                im.mirror(false, true);
+                im.getBuffer(jimp.MIME_PNG, (e, f) => {
+                    msg.channel.createMessage("", {
+                        name: "flop.png",
+                        file: f
+                    });
+                });
+            });
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 
@@ -784,9 +835,14 @@ let glitch = async function(ctx, msg, args) {
             imgfuck(msg, url);
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            imgfuck(msg, img);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 
@@ -916,9 +972,14 @@ let gglitch = async function(ctx, msg, args) {
             }
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment, user mention or animated emoji."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            glitchfuck(ctx, msg, img);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 
@@ -1018,9 +1079,14 @@ let img2glitch = async function(ctx, msg, args) {
             i2gg(msg, url, avatar);
         });
     } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
+        try {
+            let img = ctx.utils.findLastImage(ctx, msg);
+            i2gg(msg, img, avatar);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
     }
 };
 

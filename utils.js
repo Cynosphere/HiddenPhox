@@ -480,6 +480,31 @@ utils.topColor = function(ctx, msg, id, fallback = 0x7289da) {
     return roles[0] ? roles[0].color : fallback;
 };
 
+utils.findLastImage = function(ctx, msg) {
+    return new Promise(async (resolve, reject) => {
+        let msgs = await msg.channel.getMessages(20);
+        let img = "";
+
+        for (let i = 0; i < msgs.length; i++) {
+            let m = msgs[i];
+            if (m.attachments.length > 0) {
+                img = m.attachments[0].url;
+                break;
+            }
+            if (m.embeds.length > 0) {
+                img = m.embeds[0].url;
+                break;
+            }
+        }
+
+        if (img == "") {
+            reject("Image not found in last 20 messages");
+        } else {
+            resolve(img);
+        }
+    });
+};
+
 utils.google = require("./utils/google.js");
 
 utils.table = require("./utils/table.js");
