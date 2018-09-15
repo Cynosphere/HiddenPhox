@@ -810,9 +810,9 @@ let glitchfuck = function(ctx, msg, url) {
         );
         var outframes = [];
 
-        if (inp.frames.length > 25) limited = true;
+        if (inp.frames.length > 100) limited = true;
 
-        for (let f = 0; f < Math.min(25, inp.frames.length); f++) {
+        for (let f = 0; f < Math.min(100, inp.frames.length); f++) {
             let frame = inp.frames[f];
             let img = frame.bitmap;
 
@@ -878,7 +878,7 @@ let glitchfuck = function(ctx, msg, url) {
             msg.channel
                 .createMessage(
                     limited
-                        ? ":warning: **Frames were limited to only 25 glitched to reduce execution time.**"
+                        ? ":warning: **Frames were limited to only 100 glitched to reduce execution time.**"
                         : "",
                     { name: "glitch.gif", file: gif }
                 )
