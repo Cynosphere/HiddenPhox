@@ -137,7 +137,7 @@ let mirror = function(msg, url, type) {
     }
 };
 
-let hooh = function(ctx, msg, args) {
+let hooh = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
@@ -174,7 +174,7 @@ let hooh = function(ctx, msg, args) {
     }
 };
 
-let haah = function(ctx, msg, args) {
+let haah = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
@@ -211,7 +211,7 @@ let haah = function(ctx, msg, args) {
     }
 };
 
-let woow = function(ctx, msg, args) {
+let woow = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
@@ -248,7 +248,7 @@ let woow = function(ctx, msg, args) {
     }
 };
 
-let waaw = function(ctx, msg, args) {
+let waaw = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
@@ -296,7 +296,7 @@ let _invert = function(msg, url) {
     });
 };
 
-let invert = function(ctx, msg, args) {
+let invert = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
@@ -334,7 +334,7 @@ let invert = function(ctx, msg, args) {
 };
 
 //flippity floop
-let flip = function(ctx, msg, args) {
+let flip = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
@@ -397,7 +397,7 @@ let flip = function(ctx, msg, args) {
     }
 };
 
-let flop = function(ctx, msg, args) {
+let flop = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
     let jimp = ctx.libs.jimp;
