@@ -1105,6 +1105,44 @@ let img2glitch = async function(ctx, msg, args) {
     }
 };
 
+let _jpeg = async function(msg, url) {
+    let img = await jimp.read(url);
+    let out = await img
+        .quality(Math.floor(Math.random() * 10) + 1)
+        .getBufferAsync(jimp.MIME_JPEG);
+
+    msg.channel.createMessage("", { file: out, name: "jpeg.jpg" });
+};
+
+let jpeg = async function(ctx, msg, args) {
+    let jimp = ctx.libs.jimp;
+    if (args && urlRegex.test(args)) {
+        _jpeg(msg, args);
+    } else if (msg.attachments.length > 0) {
+        _jpeg(msg, msg.attachments[0].url);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            let url =
+                u.avatar !== null
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
+            _jpeg(msg, url);
+        });
+    } else {
+        try {
+            let img = await ctx.utils.findLastImage(ctx, msg);
+            _jpeg(msg, img);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
+    }
+};
+
 module.exports = [
     {
         name: "hooh",
@@ -1202,6 +1240,14 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         group: "image",
         usage: "[url or attachment]",
         aliases: ["i2gg"]
+    },
+    {
+        name: "jpeg",
+        desc: "Typical JPEG command.",
+        func: jpeg,
+        group: "image",
+        usage: "[url or attachment]",
+        aliases: ["nmj", "needsmorejpeg"]
     }
 
     /*{
