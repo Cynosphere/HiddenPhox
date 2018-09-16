@@ -480,20 +480,37 @@ utils.topColor = function(ctx, msg, id, fallback = 0x7289da) {
     return roles[0] ? roles[0].color : fallback;
 };
 
-utils.findLastImage = function(ctx, msg) {
+utils.findLastImage = function(ctx, msg, gifcheck = false) {
     return new Promise(async (resolve, reject) => {
         let msgs = await msg.channel.getMessages(20);
-        let img = "";
 
         for (let i = 0; i < msgs.length; i++) {
             let m = msgs[i];
             if (m.attachments.length > 0) {
                 img = m.attachments[0].url;
-                break;
+                if (gifcheck) {
+                    let type = await ctx.libs.superagent
+                        .get(img)
+                        .then(x => x.type);
+                    if (type == "image/gif") {
+                        break;
+                    }
+                } else {
+                    break;
+                }
             }
             if (m.embeds.length > 0) {
                 img = m.embeds[0].url;
-                break;
+                if (gifcheck) {
+                    let type = await ctx.libs.superagent
+                        .get(img)
+                        .then(x => x.type);
+                    if (type == "image/gif") {
+                        break;
+                    }
+                } else {
+                    break;
+                }
             }
         }
 

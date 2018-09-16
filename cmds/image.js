@@ -978,7 +978,7 @@ let gglitch = async function(ctx, msg, args) {
         });
     } else {
         try {
-            let img = await ctx.utils.findLastImage(ctx, msg);
+            let img = await ctx.utils.findLastImage(ctx, msg, true);
             glitchfuck(ctx, msg, img);
         } catch (e) {
             msg.channel.createMessage(
@@ -988,7 +988,7 @@ let gglitch = async function(ctx, msg, args) {
     }
 };
 
-let i2gg = async function(msg, url, avatar) {
+let i2gg = async function(msg, url, avatar = false) {
     async function glitchImageXTimes(m, inp) {
         return new Promise(async (resolve, reject) => {
             m.edit(
