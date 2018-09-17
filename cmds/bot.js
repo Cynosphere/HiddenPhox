@@ -239,13 +239,13 @@ let pprefix = async function(ctx, msg, args) {
         let pre = args[1];
         try {
             let find = await ctx.db.models.udata.findOrCreate({
-                where: { id: msg.channel.guild.id }
+                where: { id: msg.author.id }
             });
             if (find) {
                 await ctx.db.models.udata.update(
                     { prefix: pre },
                     {
-                        where: { id: msg.channel.guild.id }
+                        where: { id: msg.author.id }
                     }
                 );
                 msg.channel.createMessage(
