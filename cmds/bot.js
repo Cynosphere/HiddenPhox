@@ -233,31 +233,42 @@ let setav = async function(ctx, msg, args) {
     }
 };
 
-let pprefix = async function(ctx,msg,args){
+let pprefix = async function(ctx, msg, args) {
     args = ctx.utils.formatArgs("");
-    if(args && args[0] == "set"){
+    if (args && args[0] == "set") {
         let pre = args[1];
         try {
             let find = await ctx.db.models.udata.findOrCreate({
                 where: { id: msg.channel.guild.id }
             });
             if (find) {
-                await ctx.db.models.udata.update({prefix:pre}, {
-                    where: { id: msg.channel.guild.id }
-                });
+                await ctx.db.models.udata.update(
+                    { prefix: pre },
+                    {
+                        where: { id: msg.channel.guild.id }
+                    }
+                );
                 msg.channel.createMessage(
-                    pre == "" ? "Disabled personal prefix" : `Set personal prefix to \`${pre}\`.`
+                    pre == ""
+                        ? "Disabled personal prefix"
+                        : `Set personal prefix to \`${pre}\`.`
                 );
             }
         } catch (e) {
             msg.channel.createMessage("Could not set prefix, try again later.");
             ctx.utils.logWarn(ctx, e);
         }
-    }else{
-        let out = await ctx.db.models.udata.findOrCreate({where: { id: msg.author.id }}).then(x=>x[0].dataValues.prefix);
-        msg.channel.createMessage(`<@${msg.author.id}>, `out == "" ? "You have no personal prefix set." : `Your personal prefix is \`${out}\``);
+    } else {
+        let out = await ctx.db.models.udata
+            .findOrCreate({ where: { id: msg.author.id } })
+            .then(x => x[0].dataValues.prefix);
+        msg.channel.createMessage(
+            `<@${msg.author.id}>, ` + out == ""
+                ? "You have no personal prefix set."
+                : `Your personal prefix is \`${out}\``
+        );
     }
-}
+};
 
 module.exports = [
     {
@@ -300,6 +311,13 @@ module.exports = [
         desc: "Sets bot's avatar.",
         func: setav,
         usage: "<url/attachment>",
+        group: "bot"
+    },
+    {
+        name: "pprefix",
+        desc: "Sets your personal prefix to use with the bot.",
+        func: pprefix,
+        usage: "[set] [prefix]",
         group: "bot"
     }
 ];
