@@ -234,7 +234,7 @@ let setav = async function(ctx, msg, args) {
 };
 
 let pprefix = async function(ctx, msg, args) {
-    args = ctx.utils.formatArgs("");
+    args = ctx.utils.formatArgs(args);
     if (args && args[0] == "set") {
         let pre = args[1];
         try {
