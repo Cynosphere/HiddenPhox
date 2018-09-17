@@ -102,6 +102,24 @@ module.exports = function(ctx) {
             type: ctx.libs.sequelize.BOOLEAN,
             defaultValue: false,
             allowNull: false
+        },
+        prefix: {
+            type: ctx.libs.sequelize.STRING,
+            defaultValue: "",
+            allowNull: false
+        }
+    });
+
+    dbs.udata = ctx.db.define("udata", {
+        id: {
+            type: ctx.libs.sequelize.STRING,
+            unique: true,
+            primaryKey: true
+        },
+        prefix: {
+            type: ctx.libs.sequelize.STRING,
+            defaultValue: "",
+            allowNull: false
         }
     });
 
@@ -131,6 +149,7 @@ module.exports = function(ctx) {
     dbs.econ.sync({ force: false, alter: true });
     dbs.taxbanks.sync({ force: false, alter: true });
     dbs.sdata.sync({ force: false, alter: true });
+    dbs.udata.sync({ force: false, alter: true });
     dbs.analytics.sync({ force: false, alter: true });
 
     return dbs;

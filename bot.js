@@ -230,15 +230,33 @@ for (let f of files) {
     }
 }
 
-client.on("messageCreate", msg => {
+client.on("messageCreate", async msg => {
     if (msg.author && !msg.author.bot) {
         let prefix = ctx.prefix;
         let prefix2 = ctx.bot.user.mention + " ";
+        let prefix3 = await ctx.db.models.sdata
+            .findOrCreate({ where: { id: msg.channel.guild.id } })
+            .then(x => x[0].dataValues.prefix); //guild
+        let prefix4 = await ctx.db.models.udata
+            .findOrCreate({ where: { id: msg.author.id } })
+            .then(x => x[0].dataValues.prefix); //personal
         let hasRan = false;
         let content = msg.content;
 
         if (content.startsWith(prefix2)) {
             content = content.replace(prefix2, prefix);
+        }
+
+        if (
+            msg.channel.guild &&
+            prefix3 !== "" &&
+            content.startsWith(prefix3)
+        ) {
+            content = content.replace(prefix3, prefix);
+        }
+
+        if (prefix4 !== "" && content.startsWith(prefix4)) {
+            content = content.replace(prefix4, prefix);
         }
 
         let [cmd, ...args] = content.split(" ");

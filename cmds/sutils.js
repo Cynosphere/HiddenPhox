@@ -319,10 +319,15 @@ let sconfig = async function(ctx, msg, args) {
             name: "shortlinks",
             desc: "Shortcuts for longer urls",
             type: "boolean"
+        },
+        {
+            name: "prefix",
+            desc: "Guild prefix",
+            type: "string"
         }
     ];
 
-    args = args.split(" ");
+    args = ctx.utils.formatArgs(args);
 
     let cmd = args[0];
     let key = args[1];

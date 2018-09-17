@@ -233,6 +233,32 @@ let setav = async function(ctx, msg, args) {
     }
 };
 
+let pprefix = async function(ctx,msg,args){
+    args = ctx.utils.formatArgs("");
+    if(args && args[0] == "set"){
+        let pre = args[1];
+        try {
+            let find = await ctx.db.models.udata.findOrCreate({
+                where: { id: msg.channel.guild.id }
+            });
+            if (find) {
+                await ctx.db.models.udata.update({prefix:pre}, {
+                    where: { id: msg.channel.guild.id }
+                });
+                msg.channel.createMessage(
+                    pre == "" ? "Disabled personal prefix" : `Set personal prefix to \`${pre}\`.`
+                );
+            }
+        } catch (e) {
+            msg.channel.createMessage("Could not set prefix, try again later.");
+            ctx.utils.logWarn(ctx, e);
+        }
+    }else{
+        let out = await ctx.db.models.udata.findOrCreate({where: { id: msg.author.id }}).then(x=>x[0].dataValues.prefix);
+        msg.channel.createMessage(`<@${msg.author.id}>, `out == "" ? "You have no personal prefix set." : `Your personal prefix is \`${out}\``);
+    }
+}
+
 module.exports = [
     {
         name: "eval",
