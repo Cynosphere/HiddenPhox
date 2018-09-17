@@ -263,9 +263,10 @@ let pprefix = async function(ctx, msg, args) {
             .findOrCreate({ where: { id: msg.author.id } })
             .then(x => x[0].dataValues.prefix);
         msg.channel.createMessage(
-            `<@${msg.author.id}>, ` + out == ""
-                ? "You have no personal prefix set."
-                : `Your personal prefix is \`${out}\``
+            `<@${msg.author.id}>, ` +
+                (out == ""
+                    ? "You have no personal prefix set."
+                    : `Your personal prefix is \`${out}\``)
         );
     }
 };
