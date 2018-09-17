@@ -322,7 +322,7 @@ let sconfig = async function(ctx, msg, args) {
         },
         {
             name: "prefix",
-            desc: "Guild prefix",
+            desc: "Guild prefix, set to $RESETME$ to reset.",
             type: "string"
         }
     ];
@@ -350,6 +350,10 @@ let sconfig = async function(ctx, msg, args) {
                 }config list\` for valid keys.`
             );
             return;
+        }
+
+        if (val == "$RESETME$" && key == "prefix") {
+            val = "";
         }
 
         let data = {};
