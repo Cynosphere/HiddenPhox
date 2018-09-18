@@ -234,9 +234,11 @@ client.on("messageCreate", async msg => {
     if (msg.author && !msg.author.bot) {
         let prefix = ctx.prefix;
         let prefix2 = ctx.bot.user.mention + " ";
-        let prefix3 = await ctx.db.models.sdata
-            .findOrCreate({ where: { id: msg.channel.guild.id } })
-            .then(x => x[0].dataValues.prefix); //guild
+        let prefix3 = msg.channel.guild
+            ? await ctx.db.models.sdata
+                  .findOrCreate({ where: { id: msg.channel.guild.id } })
+                  .then(x => x[0].dataValues.prefix)
+            : ""; //guild
         let prefix4 = await ctx.db.models.udata
             .findOrCreate({ where: { id: msg.author.id } })
             .then(x => x[0].dataValues.prefix); //personal

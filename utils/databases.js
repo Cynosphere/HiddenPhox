@@ -103,6 +103,11 @@ module.exports = function(ctx) {
             defaultValue: false,
             allowNull: false
         },
+        twimg: {
+            type: ctx.libs.sequelize.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
+        },
         prefix: {
             type: ctx.libs.sequelize.STRING,
             defaultValue: "",

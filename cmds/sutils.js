@@ -321,6 +321,11 @@ let sconfig = async function(ctx, msg, args) {
             type: "boolean"
         },
         {
+            name: "twimg",
+            desc: "Embed other images from Twitter posts",
+            type: "boolean"
+        },
+        {
             name: "prefix",
             desc: "Guild prefix, set to $RESETME$ to reset.",
             type: "string"
