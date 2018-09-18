@@ -20,7 +20,7 @@ async function getBearer(ctx) {
     });
 }
 
-async function getTweetImages(ctx, snowflake) {
+async function getTweetImages(ctx, snowflake, msg) {
     return new Promise(async (resolve, reject) => {
         let token = await getBearer(ctx);
 
@@ -32,10 +32,23 @@ async function getTweetImages(ctx, snowflake) {
             )
             .set("Authorization", `Bearer ${token}`)
             .then(x => x.body);
-        let media = tweet.extended_entities.media.splice(1);
+        if (tweet.extended_entities) {
+            if (tweet.extended_entities.media[0].type == "video") {
+                let vid = tweet.extended_entities.media[0];
+                msg.channel.createMessage({
+                    embed: {
+                        description: `[Twitter Video File](${
+                            vid.video_info.variants[0].url
+                        })`
+                    }
+                });
+            }
 
-        for (m in media) {
-            imgs.push(media[m].media_url_https + ":orig");
+            let media = tweet.extended_entities.media.splice(1);
+
+            for (m in media) {
+                imgs.push(media[m].media_url_https + ":orig");
+            }
         }
 
         resolve(imgs);
@@ -59,7 +72,7 @@ let onMessage = async function(msg, ctx) {
         url = url.map(x => (x.startsWith(" ") ? x.substring(1) : x))[0];
 
         let id = url.match(/[0-9]{17,21}$/)[0];
-        let imgs = await getTweetImages(ctx, id);
+        let imgs = await getTweetImages(ctx, id, msg);
 
         if (imgs.length > 0) {
             msg.channel.createMessage(imgs.join("\n"));
