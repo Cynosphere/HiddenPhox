@@ -27,7 +27,7 @@ async function getTweetImages(ctx, snowflake) {
         let imgs = [];
 
         let tweet = ctx.libs.superagent
-            .post(
+            .get(
                 `https://api.twitter.com/1.1/statuses/show.json?id=${snowflake}&trim_user=1&include_entities=1`
             )
             .set("Authorization", `Bearer ${token}`)
