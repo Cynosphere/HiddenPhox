@@ -58,7 +58,7 @@ client.on("ready", () => {
         c.createMessage(":white_check_mark: Loaded HiddenPhox.");
     });
 
-    if (ctx.apikeys.dbots)
+    /*if (ctx.apikeys.dbots)
         ctx.libs.superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
             .set("Authorization", ctx.apikeys.dbots)
@@ -80,7 +80,7 @@ client.on("ready", () => {
             })
             .catch(e => {
                 ctx.utils.logWarn(ctx, `[dbl] Failed to post stats: "${e}"`);
-            });
+            });*/
 
     ctx.bot.guilds.forEach(g => {
         g.emojis.forEach(e => {
@@ -96,7 +96,7 @@ client.on("guildCreate", function(guild) {
         if (m.bot) ++bots;
     });
 
-    if (ctx.apikeys.dbots)
+    /*if (ctx.apikeys.dbots)
         ctx.libs.superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
             .set("Authorization", ctx.apikeys.dbots)
@@ -118,7 +118,7 @@ client.on("guildCreate", function(guild) {
             })
             .catch(e => {
                 ctx.utils.logWarn(ctx, `[dbl] Failed to post stats: "${e}"`);
-            });
+            });*/
 
     ctx.utils.logInfo(
         ctx,
@@ -141,7 +141,7 @@ client.on("guildCreate", function(guild) {
 });
 
 client.on("guildDelete", function(guild) {
-    if (ctx.apikeys.dbots)
+    /*if (ctx.apikeys.dbots)
         ctx.libs.superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
             .set("Authorization", ctx.apikeys.dbots)
@@ -163,7 +163,7 @@ client.on("guildDelete", function(guild) {
             })
             .catch(e => {
                 ctx.utils.logWarn(ctx, `[dbl] Failed to post stats: "${e}"`);
-            });
+            });*/
 
     ctx.utils.logInfo(
         ctx,

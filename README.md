@@ -1,7 +1,12 @@
 # HiddenPhox
 HiddenPhox is a kitchen sink bot of sorts providing utilities, moderation tools and fun.
 
-[![Discord Bots](https://discordbots.org/api/widget/152172984373608449.svg)](https://discordbots.org/bot/152172984373608449)
+**I am not getting anything out of having HiddenPhox on bot lists and have decided to go semi-private.**
+
+I will still have the invite command avaliable and linked [right here](https://discordapp.com/oauth2/authorize?client_id=173441062243663872&scope=bot), but those will be the only public places to get them.
+I just find bot lists a waste of time and resources more than anything.
+
+Also yes, bot collection server detection will still exist.
 
 ## Features
 * Various lookup utility commands such as user, role, guild, invites, emotes, etc.
