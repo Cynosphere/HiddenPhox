@@ -33,11 +33,14 @@ async function getTweetImages(ctx, snowflake, msg) {
             .set("Authorization", `Bearer ${token}`)
             .then(x => x.body);
         if (tweet.extended_entities) {
-            if (tweet.extended_entities.media[0].type == "video") {
+            if (
+                tweet.extended_entities.media[0].type == "video" ||
+                tweet.extended_entities.media[0].type == "animated_gif"
+            ) {
                 let vid = tweet.extended_entities.media[0];
                 msg.channel.createMessage({
                     embed: {
-                        description: `[Twitter Video File](${
+                        description: `[Twitter Video/GIF File](${
                             vid.video_info.variants[0].url
                         })`
                     }
