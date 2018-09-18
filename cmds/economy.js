@@ -34,13 +34,7 @@ let wallet = async function(ctx, msg, args) {
             if (wallet) {
                 if (u.id == msg.author.id) {
                     msg.channel.createMessage(
-                        `<@${u.id}>, your balance is \`${
-                            wallet.currency
-                        }FC\`.\n\nNeed more money? You can vote every 12 hours at <https://discordbots.org/bot/152172984373608449> and claim your reward with \`${
-                            ctx.prefix
-                        }votereward\`.\nAlternatively, you can do \`${
-                            ctx.prefix
-                        }daily\` every 24 hours.`
+                        `<@${u.id}>, your balance is \`${wallet.currency}FC\`.`
                     );
                 } else {
                     msg.channel.createMessage(
@@ -340,7 +334,7 @@ let daily = async function(ctx, msg, args) {
     if (acc) {
         let now = new Date().getTime();
         if (now >= acc.lastdaily) {
-            let value = 50 + Math.floor(Math.random() * 51);
+            let value = 10 + Math.floor(Math.random() * 91);
 
             ctx.db.models.econ.update(
                 { currency: acc.currency + value, lastdaily: now + 86400000 },
@@ -1042,18 +1036,18 @@ module.exports = [
     },
     {
         name: "daily",
-        desc: "Get 50-100 daily PhoxCoins",
+        desc: "Get 10-100 daily PhoxCoins",
         func: daily,
         group: "economy"
     },
-    {
+    /*{
         name: "votereward",
         desc:
             "Get 25-50 PhoxCoins every 12 hours for voting on discordbots.org",
         func: votereward,
         group: "economy",
         aliases: ["getreward", "claimreward", "claimvote"]
-    },
+    },*/
     {
         name: "transfer",
         desc: "Send PhoxCoins to someone",
