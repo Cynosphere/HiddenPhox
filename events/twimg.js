@@ -42,7 +42,7 @@ async function getTweetImages(ctx, snowflake, msg) {
                     embed: {
                         description: `[Twitter Video/GIF File](${
                             vid.video_info.variants
-                                .fliter(x => x.bitrate)
+                                .filter(x => x.bitrate)
                                 .sort((a, b) => b.bitrate - a.bitrate)[0].url
                         })`
                     }
