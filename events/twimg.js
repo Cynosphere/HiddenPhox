@@ -174,7 +174,7 @@ let plembed = async function(msg, ctx) {
     url = url[0];
     url = url.startsWith(" ") ? url.substring(1) : url;
 
-    let postData = await ctx.libs.superagent
+    let post = await ctx.libs.superagent
         .get(url)
         .set("Accept", "application/activity+json")
         .then(x => x.body);
