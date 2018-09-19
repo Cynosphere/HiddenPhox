@@ -93,7 +93,7 @@ async function getMastoImages(ctx, url, msg) {
         let imgs = [];
 
         let post = await ctx.libs.superagent
-            .get(`${url}`)
+            .get(url)
             .set("Accept", "application/activity+json")
             .then(x => x.body);
         if (post.attachment.length > 0 && !post.sensitive) {
@@ -152,6 +152,85 @@ let fediimg = async function(msg, ctx) {
     }
 };
 
+//pleroma embeds
+const plurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(objects|notice)\/([a-zA-Z0-9-_/]*)/;
+const pluser = /^https?:\/\/([^:\/\s]+)\/users\/([a-zA-Z0-9-_/]*)$/;
+
+let plembed = async function(msg, ctx) {
+    if (!msg) return;
+    if (!msg.channel.guild) return;
+    if (msg.author.bot) return;
+
+    const enabled = await ctx.db.models.sdata
+        .findOrCreate({
+            where: { id: msg.channel.guild.id }
+        })
+        .then(x => x[0].dataValues.twimg);
+
+    if (!enabled) return;
+
+    let url = msg.content.match(plurl);
+    if (!url) return;
+    url = url[0];
+    url = url.startsWith(" ") ? url.substring(1) : url;
+
+    let postData = await ctx.libs.superagent
+        .get(url)
+        .set("Accept", "application/activity+json")
+        .then(x => x.body);
+
+    let authorData = await ctx.libs.superagent
+        .get(post.attributedTo)
+        .set("Accept", "application/activity+json")
+        .then(x => x.body);
+
+    let uninst = post.attributedTo.match(pluser);
+
+    msg.channel.createMessage({
+        embed: {
+            author: {
+                name: authorData.preferredUsername,
+                url: post.attributedTo
+            },
+            title: `${authorData.preferredUsername} (@${uninst[2]}@${
+                uninst[1]
+            })`,
+            url: url,
+            description: `${
+                post.attachment
+                    ? `Attachments: ${post.attachment.length}\n\n`
+                    : ""
+            }${
+                post.sensitive
+                    ? `Content Warning: ${(post.object
+                          ? post.object.summary
+                          : post.summary
+                      )
+                          .replace(/<br>/g, "\n")
+                          .replace(
+                              /<a href=\"https?:\/\/([a-zA-Z0-9-_/]*)">([a-zA-Z0-9-_/]*)<\/a>/g,
+                              "[$2]($1)"
+                          )}`
+                    : (post.object ? post.object.content : post.content)
+                          .replace(/<br>/g, "\n")
+                          .replace(
+                              /<a href="https?:\/\/([a-zA-Z0-9-_/]*)">([a-zA-Z0-9-_/]*)<\/a>/g,
+                              "[$2]($1)"
+                          )
+            }`,
+            thumbnail: {
+                url: authorData.icon.url
+            },
+            image: {
+                url: post.sensitive
+                    ? ""
+                    : post.attachment ? post.attachment[0].url : ""
+            },
+            color: 0x282c37
+        }
+    });
+};
+
 module.exports = [
     {
         event: "messageCreate",
@@ -162,5 +241,10 @@ module.exports = [
         event: "messageCreate",
         name: "fediimg",
         func: fediimg
+    },
+    {
+        event: "messageCreate",
+        name: "plembed",
+        func: plembed
     }
 ];
