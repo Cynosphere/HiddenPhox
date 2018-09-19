@@ -224,7 +224,7 @@ let plembed = async function(msg, ctx) {
             image: {
                 url: post.sensitive
                     ? ""
-                    : post.attachment ? post.attachment[0].url : ""
+                    : post.attachment.length > 0 ? post.attachment[0].url : ""
             },
             color: 0x282c37
         }
