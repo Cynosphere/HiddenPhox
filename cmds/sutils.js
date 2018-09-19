@@ -322,7 +322,8 @@ let sconfig = async function(ctx, msg, args) {
         },
         {
             name: "twimg",
-            desc: "Embed other images from Twitter posts",
+            desc:
+                "Embed other images and grab video URLs from Twitter/Fediverse posts",
             type: "boolean"
         },
         {

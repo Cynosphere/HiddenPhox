@@ -58,7 +58,7 @@ async function getTweetImages(ctx, snowflake, msg) {
     });
 }
 
-let onMessage = async function(msg, ctx) {
+let twiimg = async function(msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
     if (msg.author.bot) return;
@@ -83,8 +83,88 @@ let onMessage = async function(msg, ctx) {
     }
 };
 
-module.exports = {
-    event: "messageCreate",
-    name: "twimg",
-    func: onMessage
+//fediimg
+const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))?((objects|notice)\/([a-zA-Z0-9-_/]*))?/;
+
+async function getMastoImages(ctx, url, masto = false, msg) {
+    return new Promise(async (resolve, reject) => {
+        let imgs = [];
+
+        let post = await ctx.libs.superagent
+            .get(`${url}${masto ? ".json" : ""}`)
+            .set("Accept", "application/activity+json")
+            .then(x => x.body);
+        if (post.attachments) {
+            let vids = [];
+
+            let cw = post.sensitive;
+            let warning = post.summary;
+
+            for (v in post.attachments) {
+                let vid = post.attachments[v];
+
+                if (vid.mediaType == "video/mp4") {
+                    vids.push(vid.url);
+                }
+            }
+
+            if (vids.length > 0) {
+                msg.channel.createMessage({
+                    embed: {
+                        title: "Video/GIF URLs",
+                        description:
+                            `${cw ? `**Content Warning:** ${warning}\n` : ""}` +
+                            vids.map(x => `- [Video](${x})`).join("\n")
+                    }
+                });
+            }
+
+            let media = post.attachments.splice(1);
+
+            for (m in media) {
+                if (cw) break;
+                imgs.push(media[m].url);
+            }
+        }
+
+        resolve(imgs);
+    });
+}
+
+let fediimg = async function(msg, ctx) {
+    if (!msg) return;
+    if (!msg.channel.guild) return;
+    if (msg.author.bot) return;
+
+    const enabled = await ctx.db.models.sdata
+        .findOrCreate({
+            where: { id: msg.channel.guild.id }
+        })
+        .then(x => x[0].dataValues.twimg);
+
+    if (enabled) {
+        let url = msg.content.match(fediurl);
+        if (!url) return;
+        url = url.map(x => (x.startsWith(" ") ? x.substring(1) : x))[0];
+
+        let masto = /[0-9]{17,21}$/.test(url);
+        let imgs = await getMastoImages(ctx, url, masto, msg);
+
+        if (imgs.length > 0) {
+            msg.channel.createMessage(imgs.join("\n"));
+        }
+    }
 };
+
+module.exports = [
+    {
+        event: "messageCreate",
+        name: "twimg",
+        func: twimg
+    },
+    {
+        event: "messageCreate",
+        name: "fediimg",
+        func: fediimg
+    }
+];
