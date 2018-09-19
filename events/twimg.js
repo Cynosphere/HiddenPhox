@@ -197,7 +197,7 @@ let plembed = async function(msg, ctx) {
             })`,
             url: url,
             description: `${
-                post.attachment
+                post.attachment.length > 0
                     ? `Attachments: ${post.attachment.length}\n\n`
                     : ""
             }${
