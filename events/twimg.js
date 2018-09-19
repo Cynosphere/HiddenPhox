@@ -91,7 +91,7 @@ async function getMastoImages(ctx, url, masto = false, msg) {
         let imgs = [];
 
         let post = await ctx.libs.superagent
-            .get(`${url}${masto ? ".json" : ""}`)
+            .get(`${url}`)
             .set("Accept", "application/activity+json")
             .then(x => x.body);
         if (post.attachments) {
@@ -147,7 +147,6 @@ let fediimg = async function(msg, ctx) {
         if (!url) return;
         url = url.startsWith(" ") ? url.substring(1) : url;
 
-        let masto = /[0-9]{17,21}$/.test(url);
         let imgs = await getMastoImages(ctx, url, masto, msg);
 
         if (imgs.length > 0) {
