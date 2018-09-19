@@ -143,8 +143,9 @@ let fediimg = async function(msg, ctx) {
         .then(x => x[0].dataValues.twimg);
 
     if (enabled) {
-        let url = msg.content.match(fediurl)[0];
+        let url = msg.content.match(fediurl);
         if (!url) return;
+        url = url[0];
         url = url.startsWith(" ") ? url.substring(1) : url;
 
         let imgs = await getMastoImages(ctx, url, msg);
