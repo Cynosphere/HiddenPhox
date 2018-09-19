@@ -7,6 +7,7 @@ let statusIcons = {
 
 let avatar = function(ctx, msg, args) {
     ctx.utils.lookupUser(ctx, msg, args ? args : msg.author.mention).then(u => {
+        u = ctx.bot.users.get(u.id);
         let av = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
             u.avatar.startsWith("a_") ? "gif?size=1024&_=.gif" : "png?size=1024"
         }`;
