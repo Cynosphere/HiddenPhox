@@ -86,7 +86,7 @@ let twimg = async function(msg, ctx) {
 //fediimg
 const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))?((objects|notice)\/([a-zA-Z0-9-_/]*))?/;
 
-async function getMastoImages(ctx, url, masto = false, msg) {
+async function getMastoImages(ctx, url, msg) {
     return new Promise(async (resolve, reject) => {
         let imgs = [];
 
@@ -147,7 +147,7 @@ let fediimg = async function(msg, ctx) {
         if (!url) return;
         url = url.startsWith(" ") ? url.substring(1) : url;
 
-        let imgs = await getMastoImages(ctx, url, masto, msg);
+        let imgs = await getMastoImages(ctx, url, msg);
 
         if (imgs.length > 0) {
             msg.channel.createMessage(imgs.join("\n"));
