@@ -157,7 +157,9 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                                 m.delete().catch(() => {
                                     return;
                                 });
-                                resolve(userpool[value - 1]);
+                                resolve(
+                                    ctx.bot.users.get(userpool[value - 1].id)
+                                );
                                 ctx.bot.removeListener(
                                     "messageCreate",
                                     ctx.awaitMsgs.get(msg.channel.id)[msg.id]
