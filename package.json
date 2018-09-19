@@ -33,8 +33,6 @@
         "lodash": "^4.17.10",
         "moment": "^2.22.1",
         "node-ffprobe": "^1.2.2",
-        "node-opus": "^0.2.7",
-        "opusscript": "0.0.6",
         "require-reload": "^0.2.2",
         "sequelize": "^4.37.6",
         "sodium-native": "^2.1.5",

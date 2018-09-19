@@ -121,61 +121,51 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                                 : "")
                     );
                 }
-                ctx.utils
-                    .awaitMessage(
-                        ctx,
-                        msg,
-                        "Multiple users found. Please pick from this list. \n```ini\n" +
-                            a.join("\n") +
-                            (userpool.length > 20
-                                ? "\n; Displaying 20/" +
-                                  userpool.length +
-                                  " results, might want to refine your search."
-                                : "") +
-                            "\n\n[c] Cancel```",
-                        async m => {
-                            let value = parseInt(m.content);
-                            if (m.content.toLowerCase() == "c") {
-                                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                    .botmsg).delete();
-                                m.delete().catch(() => {
-                                    return;
-                                });
-                                reject("Canceled");
-                                ctx.bot.removeListener(
-                                    "messageCreate",
-                                    ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                        .func
-                                );
-                                clearTimeout(
-                                    ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                        .timer
-                                );
-                            } else if (m.content == value) {
-                                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                    .botmsg).delete();
-                                m.delete().catch(() => {
-                                    return;
-                                });
-                                resolve(
-                                    ctx.bot.users.get(userpool[value - 1].id)
-                                );
-                                ctx.bot.removeListener(
-                                    "messageCreate",
-                                    ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                        .func
-                                );
-                                clearTimeout(
-                                    ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                        .timer
-                                );
-                            }
-                        },
-                        60000
-                    )
-                    .then(r => {
-                        resolve(r);
-                    });
+                ctx.utils.awaitMessage(
+                    ctx,
+                    msg,
+                    "Multiple users found. Please pick from this list. \n```ini\n" +
+                        a.join("\n") +
+                        (userpool.length > 20
+                            ? "\n; Displaying 20/" +
+                              userpool.length +
+                              " results, might want to refine your search."
+                            : "") +
+                        "\n\n[c] Cancel```",
+                    async m => {
+                        let value = parseInt(m.content);
+                        if (m.content.toLowerCase() == "c") {
+                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                .botmsg).delete();
+                            m.delete().catch(() => {
+                                return;
+                            });
+                            reject("Canceled");
+                            ctx.bot.removeListener(
+                                "messageCreate",
+                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                            );
+                            clearTimeout(
+                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer
+                            );
+                        } else if (m.content == value) {
+                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                .botmsg).delete();
+                            m.delete().catch(() => {
+                                return;
+                            });
+                            resolve(userpool[value - 1]);
+                            ctx.bot.removeListener(
+                                "messageCreate",
+                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                            );
+                            clearTimeout(
+                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer
+                            );
+                        }
+                    },
+                    60000
+                );
             } else {
                 resolve(userpool[0]);
             }
@@ -228,54 +218,48 @@ utils.lookupGuild = function(ctx, msg, str, filter) {
                 ) {
                     a.push("[" + (i + 1) + "] " + userpool[i].name);
                 }
-                ctx.utils
-                    .awaitMessage(
-                        ctx,
-                        msg,
-                        "Multiple guilds found. Please pick from this list. \n```ini\n" +
-                            a.join("\n") +
-                            (userpool.length > 20
-                                ? "\n; Displaying 20/" +
-                                  userpool.length +
-                                  " results, might want to refine your search."
-                                : "") +
-                            "\n\n[c] Cancel```",
-                        async m => {
-                            let value = parseInt(m.content);
-                            if (m.content.toLowerCase() == "c") {
-                                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                    .botmsg).delete();
-                                m.delete().catch(() => {
-                                    return;
-                                });
-                                reject("Canceled");
-                                ctx.bot.removeListener(
-                                    "messageCreate",
-                                    ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                        .func
-                                );
-                            } else if (m.content == value) {
-                                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                    .botmsg).delete();
-                                m.delete().catch(() => {
-                                    return;
-                                });
-                                resolve(userpool[value - 1]);
-                                ctx.bot.removeListener(
-                                    "messageCreate",
-                                    ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                        .func
-                                );
-                            }
-                            clearTimeout(
-                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer
+                ctx.utils.awaitMessage(
+                    ctx,
+                    msg,
+                    "Multiple guilds found. Please pick from this list. \n```ini\n" +
+                        a.join("\n") +
+                        (userpool.length > 20
+                            ? "\n; Displaying 20/" +
+                              userpool.length +
+                              " results, might want to refine your search."
+                            : "") +
+                        "\n\n[c] Cancel```",
+                    async m => {
+                        let value = parseInt(m.content);
+                        if (m.content.toLowerCase() == "c") {
+                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                .botmsg).delete();
+                            m.delete().catch(() => {
+                                return;
+                            });
+                            reject("Canceled");
+                            ctx.bot.removeListener(
+                                "messageCreate",
+                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
                             );
-                        },
-                        60000
-                    )
-                    .then(r => {
-                        resolve(r);
-                    });
+                        } else if (m.content == value) {
+                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                .botmsg).delete();
+                            m.delete().catch(() => {
+                                return;
+                            });
+                            resolve(userpool[value - 1]);
+                            ctx.bot.removeListener(
+                                "messageCreate",
+                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                            );
+                        }
+                        clearTimeout(
+                            ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer
+                        );
+                    },
+                    60000
+                );
             } else {
                 resolve(userpool[0]);
             }
@@ -320,54 +304,48 @@ utils.lookupRole = function(ctx, msg, str, filter) {
                 ) {
                     a.push("[" + (i + 1) + "] " + userpool[i].name);
                 }
-                ctx.utils
-                    .awaitMessage(
-                        ctx,
-                        msg,
-                        "Multiple roles found. Please pick from this list. \n```ini\n" +
-                            a.join("\n") +
-                            (userpool.length > 20
-                                ? "\n; Displaying 20/" +
-                                  userpool.length +
-                                  " results, might want to refine your search."
-                                : "") +
-                            "\n\n[c] Cancel```",
-                        async m => {
-                            let value = parseInt(m.content);
-                            if (m.content.toLowerCase() == "c") {
-                                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                    .botmsg).delete();
-                                m.delete().catch(() => {
-                                    return;
-                                });
-                                reject("Canceled");
-                                ctx.bot.removeListener(
-                                    "messageCreate",
-                                    ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                        .func
-                                );
-                            } else if (m.content == value) {
-                                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                    .botmsg).delete();
-                                m.delete().catch(() => {
-                                    return;
-                                });
-                                resolve(userpool[value - 1]);
-                                ctx.bot.removeListener(
-                                    "messageCreate",
-                                    ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                        .func
-                                );
-                            }
-                            clearTimeout(
-                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer
+                ctx.utils.awaitMessage(
+                    ctx,
+                    msg,
+                    "Multiple roles found. Please pick from this list. \n```ini\n" +
+                        a.join("\n") +
+                        (userpool.length > 20
+                            ? "\n; Displaying 20/" +
+                              userpool.length +
+                              " results, might want to refine your search."
+                            : "") +
+                        "\n\n[c] Cancel```",
+                    async m => {
+                        let value = parseInt(m.content);
+                        if (m.content.toLowerCase() == "c") {
+                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                .botmsg).delete();
+                            m.delete().catch(() => {
+                                return;
+                            });
+                            reject("Canceled");
+                            ctx.bot.removeListener(
+                                "messageCreate",
+                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
                             );
-                        },
-                        30000
-                    )
-                    .then(r => {
-                        resolve(r);
-                    });
+                        } else if (m.content == value) {
+                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                .botmsg).delete();
+                            m.delete().catch(() => {
+                                return;
+                            });
+                            resolve(userpool[value - 1]);
+                            ctx.bot.removeListener(
+                                "messageCreate",
+                                ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                            );
+                        }
+                        clearTimeout(
+                            ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer
+                        );
+                    },
+                    30000
+                );
             } else {
                 resolve(userpool[0]);
             }
