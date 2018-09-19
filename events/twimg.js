@@ -58,7 +58,7 @@ async function getTweetImages(ctx, snowflake, msg) {
     });
 }
 
-let twiimg = async function(msg, ctx) {
+let twimg = async function(msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
     if (msg.author.bot) return;
