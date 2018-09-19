@@ -94,14 +94,11 @@ async function getMastoImages(ctx, url, msg) {
             .get(`${url}`)
             .set("Accept", "application/activity+json")
             .then(x => x.body);
-        if (post.attachments) {
+        if (post.attachment.length > 0 && !post.sensitive) {
             let vids = [];
 
-            let cw = post.sensitive;
-            let warning = post.summary;
-
-            for (v in post.attachments) {
-                let vid = post.attachments[v];
+            for (v in post.attachment) {
+                let vid = post.attachment[v];
 
                 if (vid.mediaType == "video/mp4") {
                     vids.push(vid.url);
@@ -112,17 +109,14 @@ async function getMastoImages(ctx, url, msg) {
                 msg.channel.createMessage({
                     embed: {
                         title: "Video/GIF URLs",
-                        description:
-                            `${cw ? `**Content Warning:** ${warning}\n` : ""}` +
-                            vids.map(x => `- [Video](${x})`).join("\n")
+                        description: vids.map(x => `- [bloop](${x})`).join("\n")
                     }
                 });
             }
 
-            let media = post.attachments.splice(1);
+            let media = post.attachment.splice(1);
 
             for (m in media) {
-                if (cw) break;
                 imgs.push(media[m].url);
             }
         }
