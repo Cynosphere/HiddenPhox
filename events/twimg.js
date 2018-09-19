@@ -208,13 +208,13 @@ let plembed = async function(msg, ctx) {
                       )
                           .replace(/<br>/g, "\n")
                           .replace(
-                              /<a href=\"https?:\/\/([a-zA-Z0-9-_/]*)">([a-zA-Z0-9-_/]*)<\/a>/g,
+                              /<a href=\"https?:\/\/([a-zA-Z0-9-_/]*)" class='attachment'>([a-zA-Z0-9-_/]*)<\/a>/g,
                               "[$2]($1)"
                           )}`
                     : (post.object ? post.object.content : post.content)
                           .replace(/<br>/g, "\n")
                           .replace(
-                              /<a href="https?:\/\/([a-zA-Z0-9-_/]*)">([a-zA-Z0-9-_/]*)<\/a>/g,
+                              /<a href="https?:\/\/([a-zA-Z0-9-_/]*)" class='attachment'>([a-zA-Z0-9-_/]*)<\/a>/g,
                               "[$2]($1)"
                           )
             }`,
