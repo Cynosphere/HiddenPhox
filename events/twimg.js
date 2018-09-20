@@ -86,7 +86,7 @@ let twimg = async function(msg, ctx) {
 };
 
 //fediimg
-const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))?((objects|notice)\/([a-zA-Z0-9-_/]*))?/;
+const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/((@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))|(objects|notice)\/([a-zA-Z0-9-_/]*))/;
 
 async function getMastoImages(ctx, url, msg) {
     return new Promise(async (resolve, reject) => {
@@ -207,16 +207,10 @@ let plembed = async function(msg, ctx) {
                           : post.summary
                       )
                           .replace(/<br>/g, "\n")
-                          .replace(
-                              /<a href=\"https?:\/\/([a-zA-Z0-9-_/]*)" class='attachment'>([a-zA-Z0-9-_/]*)<\/a>/g,
-                              "[$2]($1)"
-                          )}`
+                          .replace(/<(?:.|\n)*?>/gm, "")}`
                     : (post.object ? post.object.content : post.content)
                           .replace(/<br>/g, "\n")
-                          .replace(
-                              /<a href="https?:\/\/([a-zA-Z0-9-_/]*)" class='attachment'>([a-zA-Z0-9-_/]*)<\/a>/g,
-                              "[$2]($1)"
-                          )
+                          .replace(/<(?:.|\n)*?>/gm, "")
             }`,
             thumbnail: {
                 url: authorData.icon.url
