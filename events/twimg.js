@@ -212,12 +212,12 @@ let plembed = async function(msg, ctx) {
                     : ""
             }${
                 post.sensitive
-                    ? `Content Warning: ${entites.decode(
+                    ? `Content Warning: ${entities.decode(
                           post.summary
                               .replace(/<br>/g, "\n")
                               .replace(/<(?:.|\n)*?>/gm, "")
                       )}`
-                    : entites.decode(
+                    : entities.decode(
                           post.content
                               .replace(/<br>/g, "\n")
                               .replace(/<(?:.|\n)*?>/gm, "")
