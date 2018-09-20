@@ -186,6 +186,9 @@ let plembed = async function(msg, ctx) {
 
     let uninst = post.attributedTo.match(pluser);
 
+    if (!post || !authorData) return;
+    if (!post.content || !post.object) return;
+
     msg.channel.createMessage({
         embed: {
             author: {
@@ -197,7 +200,7 @@ let plembed = async function(msg, ctx) {
             })`,
             url: url,
             description: `${
-                post.attachment.length > 0
+                post.attachment && post.attachment.length > 0
                     ? `Attachments: ${post.attachment.length}\n\n`
                     : ""
             }${
@@ -224,7 +227,9 @@ let plembed = async function(msg, ctx) {
             image: {
                 url: post.sensitive
                     ? ""
-                    : post.attachment.length > 0 ? post.attachment[0].url : ""
+                    : post.attachment && post.attachment.length > 0
+                      ? post.attachment[0].url
+                      : ""
             },
             color: 0x282c37
         }
