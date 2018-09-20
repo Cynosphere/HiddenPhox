@@ -1,3 +1,6 @@
+const Entities = require("html-entities").AllHtmlEntities;
+const entities = new Entities();
+
 const twitterurl = /(?:\s|^)https?:\/\/(www\.)?twitter\.com\/.+\/status\/([0-9]{17,21})/g;
 
 // don't complain at me, do not PR for removal
@@ -184,6 +187,13 @@ let plembed = async function(msg, ctx) {
         .set("Accept", "application/activity+json")
         .then(x => x.body);
 
+    if (post.object) {
+        post = await ctx.libs.superagent
+            .get(post.object.id)
+            .set("Accept", "application/activity+json")
+            .then(x => x.body);
+    }
+
     let uninst = post.attributedTo.match(pluser);
 
     msg.channel.createMessage({
@@ -202,15 +212,16 @@ let plembed = async function(msg, ctx) {
                     : ""
             }${
                 post.sensitive
-                    ? `Content Warning: ${(post.object
-                          ? post.object.summary
-                          : post.summary
+                    ? `Content Warning: ${entites.decode(
+                          post.summary
+                              .replace(/<br>/g, "\n")
+                              .replace(/<(?:.|\n)*?>/gm, "")
+                      )}`
+                    : entites.decode(
+                          post.content
+                              .replace(/<br>/g, "\n")
+                              .replace(/<(?:.|\n)*?>/gm, "")
                       )
-                          .replace(/<br>/g, "\n")
-                          .replace(/<(?:.|\n)*?>/gm, "")}`
-                    : (post.object ? post.object.content : post.content)
-                          .replace(/<br>/g, "\n")
-                          .replace(/<(?:.|\n)*?>/gm, "")
             }`,
             thumbnail: {
                 url: authorData.icon.url

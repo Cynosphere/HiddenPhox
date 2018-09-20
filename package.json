@@ -27,6 +27,7 @@
         "expr-eval": "^1.0.1",
         "gifwrap": "^0.7.5",
         "google-images": "^2.1.0",
+        "html-entities": "^1.2.1",
         "inkjet": "^2.1.2",
         "jimp": "^0.4.0",
         "jpeg-js": "^0.3.4",
