@@ -44,9 +44,12 @@ async function getTweetImages(ctx, snowflake, msg) {
                 msg.channel.createMessage({
                     embed: {
                         description: `[Twitter Video/GIF File](${
-                            vid.video_info.variants
-                                .filter(x => x.bitrate)
-                                .sort((a, b) => b.bitrate - a.bitrate)[0].url
+                            vid.video_info.variants.length > 1
+                                ? vid.video_info.variants
+                                      .filter(x => x.bitrate)
+                                      .sort((a, b) => b.bitrate - a.bitrate)[0]
+                                      .url
+                                : vid.video_info.variants[0].url
                         })`
                     }
                 });
