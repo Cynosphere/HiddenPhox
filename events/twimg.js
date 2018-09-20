@@ -186,9 +186,6 @@ let plembed = async function(msg, ctx) {
 
     let uninst = post.attributedTo.match(pluser);
 
-    if (!post || !authorData) return;
-    if (!post.content || !post.object) return;
-
     msg.channel.createMessage({
         embed: {
             author: {
