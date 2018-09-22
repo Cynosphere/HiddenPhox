@@ -859,7 +859,7 @@ let glitchfuck = function(ctx, msg, url) {
 
     async function glitchFrames(m, inp) {
         m.edit(
-            "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Extracting frames)`"
+            "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Extracting frames)`"
         );
         var outframes = [];
 
@@ -883,7 +883,7 @@ let glitchfuck = function(ctx, msg, url) {
 
     async function makeTheGif(m, frames) {
         m.edit(
-            "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Creating gif)`"
+            "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Creating gif)`"
         );
         return new Promise((resolve, reject) => {
             let opt = {
@@ -920,7 +920,7 @@ let glitchfuck = function(ctx, msg, url) {
     ctx.libs.superagent.get(url).then(img => {
         GifUtil.read(img.body).then(async inp => {
             let m = await msg.channel.createMessage(
-                "<a:typing:393848431413559296> Please wait, glitching in progress."
+                "<a:typing:493087964742549515> Please wait, glitching in progress."
             );
 
             var outframes = await glitchFrames(m, inp).catch(e =>
@@ -934,7 +934,7 @@ let glitchfuck = function(ctx, msg, url) {
             );
 
             m.edit(
-                "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Uploading)`"
+                "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Uploading)`"
             );
             msg.channel
                 .createMessage(
@@ -992,7 +992,7 @@ let i2gg = async function(msg, url, avatar = false) {
     async function glitchImageXTimes(m, inp) {
         return new Promise(async (resolve, reject) => {
             m.edit(
-                "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Making glitch frames)`"
+                "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Making glitch frames)`"
             );
             var outframes = [];
 
@@ -1019,7 +1019,7 @@ let i2gg = async function(msg, url, avatar = false) {
 
     async function makeTheGif(m, frames) {
         m.edit(
-            "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Creating gif)`"
+            "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Creating gif)`"
         );
         return new Promise((resolve, reject) => {
             let opt = {
@@ -1052,7 +1052,7 @@ let i2gg = async function(msg, url, avatar = false) {
     }
 
     let m = await msg.channel.createMessage(
-        "<a:typing:393848431413559296> Please wait, glitching in progress."
+        "<a:typing:493087964742549515> Please wait, glitching in progress."
     );
 
     var frames = await glitchImageXTimes(m, url).catch(e =>
@@ -1063,7 +1063,7 @@ let i2gg = async function(msg, url, avatar = false) {
     );
 
     m.edit(
-        "<a:typing:393848431413559296> Please wait, glitching in progress. `(Step: Uploading)`"
+        "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Uploading)`"
     );
     msg.channel
         .createMessage("", { name: "img2glitch.gif", file: out })

@@ -1,8 +1,8 @@
 let statusIcons = {
-    online: "<:online:313956277808005120>",
-    idle: "<:away:313956277220802560>",
-    dnd: "<:dnd:313956276893646850>",
-    offline: "<:offline:313956277237710868>"
+    online: "<:online:493173082421461002>",
+    idle: "<:idle:493173082006093836>",
+    dnd: "<:dnd:493173082261815307>",
+    offline: "<:offline:493173082253426688>"
 };
 
 let avatar = function(ctx, msg, args) {
@@ -320,7 +320,7 @@ let uinfo = function(ctx, msg, args) {
                             name: "Status",
                             value: u.game
                                 ? u.game.url
-                                  ? "<:streaming:313956277132853248> [Streaming](" +
+                                  ? "<:streaming:493173082308083722> [Streaming](" +
                                     u.game.url +
                                     ")"
                                   : statusIcons[u.status] + " " + u.status
@@ -562,7 +562,7 @@ let sinfo = async function(ctx, msg, args) {
 
         info.fields.push({
             name: "Flags",
-            value: `<:partner:314068430556758017>: ${
+            value: `<:partner:493173082345832448>: ${
                 g.features &&
                 (g.features.includes("VANITY_URL") ||
                     g.features.includes("INVITE_SPLASH") ||

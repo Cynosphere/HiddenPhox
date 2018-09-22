@@ -82,7 +82,7 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
     let processed = 0;
     let out = await msg.channel.createMessage({
         embed: {
-            title: "<a:typing:393848431413559296> Processing playlist...",
+            title: "<a:typing:493087964742549515> Processing playlist...",
             description: `Processed ${processed} of ${data.length} items.`,
             color: 0xff80c0
         }
@@ -93,7 +93,7 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
             out.edit({
                 embed: {
                     title:
-                        "<a:typing:393848431413559296> Processing playlist...",
+                        "<a:typing:493087964742549515> Processing playlist...",
                     description: `Processed ${processed} of ${
                         data.length
                     } items.`,
