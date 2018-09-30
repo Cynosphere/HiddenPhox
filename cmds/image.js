@@ -501,7 +501,12 @@ let colsquare = function(ctx, msg, args) {
     }
 
     im.getBuffer(jimp.MIME_PNG, (e, f) => {
-        msg.channel.createMessage(`\`\`\`${colors.join(", ")}\`\`\``, {
+        let out = "";
+        for (let i in colors) {
+            out += `#${colors[i]}${i % 8 == "0" ? "\n" : ","}`;
+        }
+
+        msg.channel.createMessage(`\`\`\`${out}\`\`\``, {
             name: "colors.png",
             file: f
         });
