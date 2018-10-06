@@ -86,9 +86,7 @@ let twimg = async function(msg, ctx) {
         let imgs = await getTweetImages(ctx, id, msg);
 
         if (imgs.length > 0) {
-            for (let i in imgs) {
-                msg.channel.createMessage(imgs[i]);
-            }
+            msg.channel.createMessage(imgs.join("\n"));
         }
     }
 };

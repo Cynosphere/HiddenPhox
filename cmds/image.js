@@ -504,7 +504,7 @@ let colsquare = function(ctx, msg, args) {
         let out = "";
         for (let i in colors) {
             out += `#${colors[i]}${
-                (i != 0 && i % 8 == 0) || i == colors.length - 1 ? "\n" : ", "
+                (i !== 0 && i % 8 === 0) || i == colors.length - 1 ? "\n" : ", "
             }`;
         }
 

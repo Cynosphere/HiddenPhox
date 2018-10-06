@@ -1,7 +1,7 @@
 let scol = {
-    green: "<:online:313956277808005120>",
-    yellow: "<:away:313956277220802560>",
-    red: "<:dnd:313956276893646850>"
+    green: "<:online:493173082421461002>",
+    yellow: "<:idle:493173082006093836>",
+    red: "<:dnd:493173082261815307>"
 };
 
 let stxt = {
@@ -97,8 +97,8 @@ let mcserver = async function(ctx, msg, args) {
             {
                 name: "Status",
                 value: data.offline
-                    ? "<:offline:313956277237710868> Offline"
-                    : "<:online:313956277808005120> Online",
+                    ? "<:offline:493173082253426688> Offline"
+                    : "<:online:493173082421461002> Online",
                 inline: true
             }
         ],
@@ -109,6 +109,10 @@ let mcserver = async function(ctx, msg, args) {
     };
 
     let img = {
+        file: await ctx.libs.superagent
+            .get("https://cdn.discordapp.com/emojis/402275812637933598.png")
+            .buffer(1)
+            .then(x => x.body),
         name: "icon.png"
     };
 
