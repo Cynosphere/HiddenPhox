@@ -103,7 +103,7 @@ let mcserver = async function(ctx, msg, args) {
             }
         ],
         thumbnail: {
-            url: "https://cdn.discordapp.com/emojis/402275812637933598.png?v=1"
+            url: "attachment://icon.png"
         },
         footer: { text: "Powered by mcsrvstat.us" }
     };
@@ -153,7 +153,6 @@ let mcserver = async function(ctx, msg, args) {
                 inline: true
             });
         if (data.icon) {
-            e.thumbnail.url = "attachment://icon.png";
             img.file = Buffer.from(
                 data.icon.replace(/data:image\/png;base64,/, ""),
                 "base64"
