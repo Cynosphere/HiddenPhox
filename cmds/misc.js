@@ -104,10 +104,7 @@ let search = async function(ctx, msg, args) {
                     {
                         name: "See Also",
                         value: extras
-                            .map(
-                                x =>
-                                    `[${x.title}](${x.url})\n\t${x.description}`
-                            )
+                            .map(x => `[${x.title}](${x.url})`)
                             .join("\n")
                     }
                 ],
