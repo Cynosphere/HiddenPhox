@@ -109,10 +109,8 @@ let search = async function(ctx, msg, args) {
                     }
                 ],
                 footer: {
-                    icon: {
-                        url:
-                            "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png"
-                    },
+                    icon_url:
+                        "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png",
                     text: "Powered by DuckDuckGo"
                 }
             }
