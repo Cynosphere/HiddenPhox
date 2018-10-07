@@ -115,6 +115,19 @@ async function getMastoImages(ctx, url, msg) {
 
             if (vids.length > 0) {
                 msg.channel.createMessage({
+                    content: `**Post Content:** ${
+                        post.sensitive
+                            ? `Content Warning: ${entities.decode(
+                                  post.summary
+                                      .replace(/<br>/g, "\n")
+                                      .replace(/<(?:.|\n)*?>/gm, "")
+                              )}`
+                            : entities.decode(
+                                  post.content
+                                      .replace(/<br>/g, "\n")
+                                      .replace(/<(?:.|\n)*?>/gm, "")
+                              )
+                    }`,
                     embed: {
                         title: "Video/GIF URLs",
                         description: vids.map(x => `- [bloop](${x})`).join("\n")
