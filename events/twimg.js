@@ -39,7 +39,7 @@ async function getTweetImages(ctx, snowflake, msg) {
             msg.channel
                 .createMessage(
                     `Quoted Tweet: https://twitter.com/statuses/${
-                        tweet.quoted_status_id
+                        tweet.quoted_status_id_str
                     }`
                 )
                 .then(x => getTweetImages(ctx, tweet.quoted_status_id, msg));
