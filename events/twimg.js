@@ -1,7 +1,7 @@
 const Entities = require("html-entities").AllHtmlEntities;
 const entities = new Entities();
 
-const twitterurl = /(?:\s|^)https?:\/\/(www\.)?twitter\.com\/.+\/status\/([0-9]{17,21})/g;
+const twitterurl = /(?:\s|^)https?:\/\/(www\.)?twitter\.com\/(.+\/status\/|statuses\/)([0-9]{17,21})/g;
 
 // don't complain at me, do not PR for removal
 // taken from https://gist.github.com/shobotch/5160017
@@ -35,6 +35,15 @@ async function getTweetImages(ctx, snowflake, msg) {
             )
             .set("Authorization", `Bearer ${token}`)
             .then(x => x.body);
+        if (tweet.is_quote_status && tweet.quoted_status_id) {
+            msg.channel
+                .createMessage(
+                    `Quoted Tweet: https://twitter.com/statuses/${
+                        tweet.quoted_status_id
+                    }`
+                )
+                .then(x => getTweetImages(ctx, tweet.quoted_status_id, msg));
+        }
         if (tweet.extended_entities) {
             if (
                 tweet.extended_entities.media[0].type == "video" ||
