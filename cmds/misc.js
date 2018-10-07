@@ -1,3 +1,6 @@
+const DuckDuckScrape = require("duck-duck-scrape");
+const ddg = new DuckDuckScrape();
+
 let calc = function(ctx, msg, args) {
     let a = args.split("|");
     let exp = a[0];
@@ -74,32 +77,47 @@ let fyt = async function(ctx, msg, args) {
     }
 };
 
-let search = function(ctx, msg, args) {
+let search = async function(ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage("Arguments are required!");
     } else {
-        ctx.utils.google
-            .search(
-                args,
-                msg.channel &&
-                    msg.channel.nsfw &&
-                    !msg.channel.topic.includes("[no_nsfw]")
-            )
-            .then(({ card, results }) => {
-                if (card) {
-                    msg.channel.createMessage(card);
-                } else if (results.length) {
-                    const links = results.map(r => r.link);
-                    msg.channel.createMessage(
-                        `${links[0]}\n\n**See Also:**\n${links
-                            .slice(1, 5)
-                            .map(l => `<${l}>`)
-                            .join("\n")}`.trim()
-                    );
-                } else {
-                    msg.channel.createMessage("No results found.");
+        const data = await ddg.search(
+            "test",
+            msg.channel &&
+                msg.channel.nsfw &&
+                !msg.channel.topic.includes("[no_nsfw]")
+        );
+
+        let first = data[0];
+        let extras = data.splice(1, 5);
+
+        msg.channel.createMessage({
+            embed: {
+                color: 0xe37151,
+                title: first.title,
+                url: first.url,
+                description: first.description,
+                thumbnail: {
+                    url: first.icon
+                },
+                fields: [
+                    {
+                        name: "See Also",
+                        value: extras
+                            .map(
+                                x =>
+                                    `[${x.title}](${x.url})\n\t${x.description}`
+                            )
+                            .join("\n")
+                    }
+                ],
+                footer: {
+                    icon:
+                        "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png",
+                    text: "Powered by DuckDuckGo"
                 }
-            });
+            }
+        });
     }
 };
 
@@ -424,7 +442,7 @@ add "[no_nsfw]" (without quotemarks) to the channel topic.
         `,
         func: search,
         group: "misc",
-        aliases: ["g", "search"]
+        aliases: ["g", "search", "ddg"]
     },
     {
         name: "gimg",
