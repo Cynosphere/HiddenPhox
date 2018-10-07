@@ -502,7 +502,7 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
     });
 };
 
-utils.google = require("./utils/google.js");
+//utils.google = require("./utils/google.js");
 
 utils.table = require("./utils/table.js");
 
