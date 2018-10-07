@@ -82,7 +82,7 @@ let search = async function(ctx, msg, args) {
         msg.channel.createMessage("Arguments are required!");
     } else {
         const data = await ddg.search(
-            "test",
+            args,
             msg.channel &&
                 msg.channel.nsfw &&
                 !msg.channel.topic.includes("[no_nsfw]")
