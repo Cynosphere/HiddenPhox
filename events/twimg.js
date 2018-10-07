@@ -42,9 +42,16 @@ async function getTweetImages(ctx, snowflake, msg) {
                         tweet.quoted_status_id_str
                     }`
                 )
-                .then(x =>
-                    getTweetImages(ctx, tweet.quoted_status_id_str, msg)
-                );
+                .then(async x => {
+                    let imgs = await getTweetImages(
+                        ctx,
+                        tweet.quoted_status_id_str,
+                        msg
+                    );
+                    if (imgs.length > 0) {
+                        msg.channel.createMessage(imgs.join("\n"));
+                    }
+                });
         }
         if (tweet.extended_entities) {
             if (
