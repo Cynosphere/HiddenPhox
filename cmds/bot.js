@@ -17,25 +17,17 @@ let _eval = async function(ctx, msg, args) {
 
             try {
                 out = eval(toRun);
-                if (out && out.then)
-                    out = await out.catch(e => {
-                        out = e;
-                        errored = true;
-                    });
+                if (out && out.then) out = await out;
             } catch (e) {
-                out = e.message;
+                out = e.message ? e.message : e;
                 errored = true;
             }
         } else {
             try {
                 out = eval(args);
-                if (out && out.then)
-                    out = await out.catch(e => {
-                        out = e;
-                        errored = true;
-                    });
+                if (out && out.then) out = await out;
             } catch (e) {
-                out = e.message;
+                out = e.message ? e.message : e;
                 errored = true;
             }
         }
