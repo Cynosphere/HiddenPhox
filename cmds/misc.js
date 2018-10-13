@@ -118,7 +118,7 @@ let search = async function(ctx, msg, args) {
             });
         } else {
             //Assume a DDG bang was used.
-            const redir = ctx.libs.superagent
+            const redir = await ctx.libs.superagent
                 .get(
                     `https://api.duckduckgo.com/?q=${encodeURIComponent(
                         args
