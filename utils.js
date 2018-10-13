@@ -479,8 +479,13 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
                     break;
                 }
             }
-            if (m.embeds.length > 0) {
-                img = m.embeds[0].url;
+            if (
+                m.embeds.length > 0 &&
+                (m.embeds[0].thumbnail || m.embeds[0].image)
+            ) {
+                img = m.embeds[0].thumbnail
+                    ? m.embeds[0].thumbnail.url
+                    : m.embeds[0].image && m.embeds[0].image.url;
                 if (gifcheck) {
                     let type = await ctx.libs.superagent
                         .get(img)
