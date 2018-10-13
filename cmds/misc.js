@@ -88,33 +88,47 @@ let search = async function(ctx, msg, args) {
                 !msg.channel.topic.includes("[no_nsfw]")
         );
 
-        let first = data[0];
-        let extras = data.splice(1, 5);
+        if (data.length > 0) {
+            let first = data[0];
+            let extras = data.splice(1, 5);
 
-        msg.channel.createMessage({
-            embed: {
-                color: 0xe37151,
-                title: first.title,
-                url: first.url,
-                description: first.description,
-                thumbnail: {
-                    url: first.icon
-                },
-                fields: [
-                    {
-                        name: "See Also",
-                        value: extras
-                            .map(x => `[${x.title}](${x.url})`)
-                            .join("\n")
+            msg.channel.createMessage({
+                embed: {
+                    color: 0xe37151,
+                    title: first.title,
+                    url: first.url,
+                    description: first.description,
+                    thumbnail: {
+                        url: first.icon
+                    },
+                    fields: [
+                        {
+                            name: "See Also",
+                            value: extras
+                                .map(x => `[${x.title}](${x.url})`)
+                                .join("\n")
+                        }
+                    ],
+                    footer: {
+                        icon_url:
+                            "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png",
+                        text: "Powered by DuckDuckGo"
                     }
-                ],
-                footer: {
-                    icon_url:
-                        "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png",
-                    text: "Powered by DuckDuckGo"
                 }
-            }
-        });
+            });
+        } else {
+            //Assume a DDG bang was used.
+            const redir = ctx.libs.superagent
+                .get(
+                    `https://api.duckduckgo.com/?q=${encodeURIComponent(
+                        args
+                    )}&format=json`
+                )
+                .then(x => x.redirects);
+            if (!redir) return;
+
+            msg.channel.createMessage(redir[redir.length - 1]);
+        }
     }
 };
 
