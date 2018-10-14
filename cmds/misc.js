@@ -428,6 +428,17 @@ let wolfram = async function(ctx, msg, args) {
         .then(x => JSON.parse(x.text));
     data = data.queryresult.pods;
 
+    if (!data) {
+        msg.channel.createMessage(":no_entry_sign: No answer.");
+        return;
+    }
+
+    if (data[0].subpods[0].plaintext.includes("geoIP")) {
+        //fake no answer
+        msg.channel.createMessage(":no_entry_sign: No answer.");
+        return;
+    }
+
     const embed = {
         title: `Result for: \`${args}\``,
         fields: [],
