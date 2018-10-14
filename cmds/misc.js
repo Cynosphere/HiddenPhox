@@ -436,11 +436,11 @@ let wolfram = async function(ctx, msg, args) {
             text: "Powered by Wolfram Alpha"
         },
         image: {
-            url: data[0].subpods[0].img.src
+            url: data[1].subpods[0].img.src
         }
     };
 
-    data.splice(0, 5).forEach(x => {
+    data.splice(1, 6).forEach(x => {
         embed.fields.push({
             name: x.title,
             value: `[${
