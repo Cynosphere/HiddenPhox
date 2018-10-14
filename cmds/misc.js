@@ -417,6 +417,40 @@ let rave = async function(ctx, msg, args) {
     msg.channel.createMessage(`https://rave.dj/${rdjid}`);
 };
 
+let wolfram = async function(ctx, msg, args) {
+    //not my key, not telling where i got it from tho
+    let data = await ctx.libs.superagent
+        .get(
+            `http://api.wolframalpha.com/v2/query?input=${encodeURIComponent(
+                args
+            )}&appid=LH2K8H-T3QKETAGT3&output=json`
+        )
+        .then(x => JSON.parse(x.text));
+    data = data.queryresult.pods;
+
+    const embed = {
+        title: `Result for: \`${args}\``,
+        fields: [],
+        footer: {
+            icon_url: "http://www.wolframalpha.com/share.png",
+            text: "Powered by Wolfram Alpha"
+        },
+        image: {
+            url: data[0].subpods[0].img.src
+        }
+    };
+
+    data.splice(0, 5).forEach(x => {
+        fields.push({
+            name: x.title,
+            value: `[${x.subpods[0].plaintext}](${x.subpods[0].img.src})`,
+            inline: true
+        });
+    });
+
+    msg.channel.createMessage({ embed: embed });
+};
+
 module.exports = [
     {
         name: "calc",
@@ -525,5 +559,13 @@ For a list of available currencies (as CSV files):
         usage: "[youtube video] [youtube video]",
         group: "fun",
         aliases: ["ravedj", "rdj"]
+    },
+    {
+        name: "wolfram",
+        desc: "Wolfram Alpha Query.",
+        func: wolfram,
+        usage: "[query]",
+        group: "fun",
+        aliases: ["wa"]
     }
 ];
