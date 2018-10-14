@@ -441,7 +441,7 @@ let wolfram = async function(ctx, msg, args) {
     };
 
     data.splice(0, 5).forEach(x => {
-        fields.push({
+        embed.fields.push({
             name: x.title,
             value: `[${x.subpods[0].plaintext}](${x.subpods[0].img.src})`,
             inline: true
