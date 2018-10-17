@@ -8,7 +8,7 @@ const { spawn } = require("child_process");
 
 const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
 
-let mirror = function(msg, url, type) {
+let mirror = async function(msg, url, type) {
     switch (type) {
         case 1: //hooh
             jimp.read(url).then(im => {
@@ -38,12 +38,7 @@ let mirror = function(msg, url, type) {
                     }
                 );
 
-                out.getBuffer(jimp.MIME_PNG, (e, f) => {
-                    msg.channel.createMessage("", {
-                        name: "hooh.png",
-                        file: f
-                    });
-                });
+                msg.channel.createMessage("", { name: "hooh.png", file: await out.getBufferAsync(jimp.MIME_PNG) });
             });
             break;
         case 2: //haah
@@ -64,12 +59,7 @@ let mirror = function(msg, url, type) {
                     }
                 );
 
-                out.getBuffer(jimp.MIME_PNG, (e, f) => {
-                    msg.channel.createMessage("", {
-                        name: "haah.png",
-                        file: f
-                    });
-                });
+                msg.channel.createMessage("", { name: "haah.png", file: await out.getBufferAsync(jimp.MIME_PNG) });
             });
             break;
         case 3: //woow
@@ -90,15 +80,10 @@ let mirror = function(msg, url, type) {
                     }
                 );
 
-                out.getBuffer(jimp.MIME_PNG, (e, f) => {
-                    msg.channel.createMessage("", {
-                        name: "woow.png",
-                        file: f
-                    });
-                });
+                msg.channel.createMessage("", { name: "woow.png", file: await out.getBufferAsync(jimp.MIME_PNG) });
             });
             break;
-        case 4:
+        case 4: //waaw
             jimp.read(url).then(im => {
                 let a = im.clone();
                 let b = im.clone();
@@ -126,12 +111,7 @@ let mirror = function(msg, url, type) {
                     }
                 );
 
-                out.getBuffer(jimp.MIME_PNG, (e, f) => {
-                    msg.channel.createMessage("", {
-                        name: "waaw.png",
-                        file: f
-                    });
-                });
+                msg.channel.createMessage("", { name: "waaw.png", file: await out.getBufferAsync(jimp.MIME_PNG) });
             });
             break;
     }
@@ -261,14 +241,10 @@ let waaw = async function(ctx, msg, args) {
     }
 };
 
-let _invert = function(msg, url) {
+let _invert = async function(msg, url) {
     jimp.read(url).then(im => {
-        let inv = im.clone();
-        inv.invert();
-
-        inv.getBuffer(jimp.MIME_PNG, (e, f) => {
-            msg.channel.createMessage("", { name: "invert.png", file: f });
-        });
+        im.invert();
+        msg.channel.createMessage("", { name: "invert.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
     });
 };
 
@@ -311,16 +287,12 @@ let flip = async function(ctx, msg, args) {
     if (args && urlRegex.test(args)) {
         jimp.read(args).then(im => {
             im.mirror(true, false);
-            im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                msg.channel.createMessage("", { name: "flip.png", file: f });
-            });
+            msg.channel.createMessage("", { name: "flip.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
         });
     } else if (msg.attachments.length > 0) {
         jimp.read(msg.attachments[0].url).then(im => {
             im.mirror(true, false);
-            im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                msg.channel.createMessage("", { name: "flip.png", file: f });
-            });
+            msg.channel.createMessage("", { name: "flip.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
         });
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
@@ -333,12 +305,7 @@ let flip = async function(ctx, msg, args) {
                           5}.png`;
             jimp.read(url).then(im => {
                 im.mirror(true, false);
-                im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                    msg.channel.createMessage("", {
-                        name: "flip.png",
-                        file: f
-                    });
-                });
+                msg.channel.createMessage("", { name: "flip.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
             });
         });
     } else {
@@ -346,12 +313,7 @@ let flip = async function(ctx, msg, args) {
             let img = await ctx.utils.findLastImage(ctx, msg);
             jimp.read(img).then(im => {
                 im.mirror(true, false);
-                im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                    msg.channel.createMessage("", {
-                        name: "flip.png",
-                        file: f
-                    });
-                });
+                msg.channel.createMessage("", { name: "flip.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
             });
         } catch (e) {
             msg.channel.createMessage(
@@ -368,16 +330,12 @@ let flop = async function(ctx, msg, args) {
     if (args && urlRegex.test(args)) {
         jimp.read(args).then(im => {
             im.mirror(false, true);
-            im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                msg.channel.createMessage("", { name: "flop.png", file: f });
-            });
+            msg.channel.createMessage("", { name: "flop.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
         });
     } else if (msg.attachments.length > 0) {
         jimp.read(msg.attachments[0].url).then(im => {
             im.mirror(false, true);
-            im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                msg.channel.createMessage("", { name: "flop.png", file: f });
-            });
+            msg.channel.createMessage("", { name: "flop.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
         });
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
@@ -390,12 +348,7 @@ let flop = async function(ctx, msg, args) {
                           5}.png`;
             jimp.read(url).then(im => {
                 im.mirror(false, true);
-                im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                    msg.channel.createMessage("", {
-                        name: "flop.png",
-                        file: f
-                    });
-                });
+                msg.channel.createMessage("", { name: "flop.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
             });
         });
     } else {
@@ -403,12 +356,7 @@ let flop = async function(ctx, msg, args) {
             let img = await ctx.utils.findLastImage(ctx, msg);
             jimp.read(url).then(im => {
                 im.mirror(false, true);
-                im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                    msg.channel.createMessage("", {
-                        name: "flop.png",
-                        file: f
-                    });
-                });
+                msg.channel.createMessage("", { name: "flop.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
             });
         } catch (e) {
             msg.channel.createMessage(
