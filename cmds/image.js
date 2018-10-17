@@ -515,53 +515,56 @@ let colsquare = function(ctx, msg, args) {
     });
 };
 
-let color = function(ctx, msg, args) {
+let color = async function(ctx, msg, args) {
+    async function createColMsg(ctx, msg, col) {
+        let im = new jimp(128, 128, parseInt(`0x${col}FF`));
+        let img = await im.getBufferAsync(jimp.MIME_PNG);
+        msg.channel.createMessage(
+            {
+                embed: {
+                    color: parseInt("0x" + col),
+                    fields: [
+                        {
+                            name: "Hex",
+                            value: c2c(`#${col}`, "hex"),
+                            inline: true
+                        },
+                        {
+                            name: "RGB",
+                            value: c2c(`#${col}`, "rgb"),
+                            inline: true
+                        },
+                        {
+                            name: "HSL",
+                            value: c2c(`#${col}`, "hsl"),
+                            inline: true
+                        },
+                        {
+                            name: "HSV",
+                            value: c2c(`#${col}`, "hsv"),
+                            inline: true
+                        },
+                        {
+                            name: "Integer",
+                            value: parseInt(`0x${col}`),
+                            inline: true
+                        }
+                    ],
+                    thumbnail: {
+                        url: `attachment://${col}.png`
+                    }
+                }
+            },
+            { name: `${col}.png`, file: img }
+        );
+    }
+
     if (args) {
         if (/#[0-9a-fA-F]{3,6}/.test(args)) {
             let hex = args.match(/#[0-9a-fA-F]{3,6}/)[0].replace("#", "");
             let col = c2c(`#${hex}`, "hex").replace("#", "");
 
-            let im = new jimp(128, 128, parseInt(`0x${col}FF`));
-            im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                msg.channel.createMessage(
-                    {
-                        embed: {
-                            color: parseInt("0x" + col),
-                            fields: [
-                                {
-                                    name: "Hex",
-                                    value: c2c(`#${col}`, "hex"),
-                                    inline: true
-                                },
-                                {
-                                    name: "RGB",
-                                    value: c2c(`#${col}`, "rgb"),
-                                    inline: true
-                                },
-                                {
-                                    name: "HSL",
-                                    value: c2c(`#${col}`, "hsl"),
-                                    inline: true
-                                },
-                                {
-                                    name: "HSV",
-                                    value: c2c(`#${col}`, "hsv"),
-                                    inline: true
-                                },
-                                {
-                                    name: "Integer",
-                                    value: parseInt(`0x${col}`),
-                                    inline: true
-                                }
-                            ],
-                            thumbnail: {
-                                url: `attachment://${col}.png`
-                            }
-                        }
-                    },
-                    { name: `${col}.png`, file: f }
-                );
-            });
+            createColMsg(ctx, msg, col);
         } else if (/^\d{1,8}$/.test(args)) {
             let int = parseInt(args.match(/\d{1,8}/)[0]);
             if (int > 0xffffff) int = 0xffffff;
@@ -570,140 +573,28 @@ let color = function(ctx, msg, args) {
             hex = "0".repeat(6 - hex.length) + hex;
             let col = c2c(`#${hex}`, "hex").replace("#", "");
 
-            let im = new jimp(128, 128, parseInt(`0x${col}FF`));
-            im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                msg.channel.createMessage(
-                    {
-                        embed: {
-                            color: parseInt("0x" + col),
-                            fields: [
-                                {
-                                    name: "Hex",
-                                    value: c2c(`#${col}`, "hex"),
-                                    inline: true
-                                },
-                                {
-                                    name: "RGB",
-                                    value: c2c(`#${col}`, "rgb"),
-                                    inline: true
-                                },
-                                {
-                                    name: "HSL",
-                                    value: c2c(`#${col}`, "hsl"),
-                                    inline: true
-                                },
-                                {
-                                    name: "HSV",
-                                    value: c2c(`#${col}`, "hsv"),
-                                    inline: true
-                                },
-                                {
-                                    name: "Integer",
-                                    value: parseInt(`0x${col}`),
-                                    inline: true
-                                }
-                            ],
-                            thumbnail: {
-                                url: `attachment://${col}.png`
-                            }
-                        }
-                    },
-                    { name: `${col}.png`, file: f }
-                );
-            });
+            createColMsg(ctx, msg, col);
         } else if (/(\d{1,3}),(\d{1,3}),(\d{1,3})/.test(args)) {
             let rgb = args.match(/(\d{1,3}),(\d{1,3}),(\d{1,3})/);
             let col = c2c(`rgb(${rgb[0]})`, "hex").replace("#", "");
 
-            let im = new jimp(128, 128, parseInt(`0x${col}FF`));
-            im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                msg.channel.createMessage(
-                    {
-                        embed: {
-                            color: parseInt("0x" + col),
-                            fields: [
-                                {
-                                    name: "Hex",
-                                    value: c2c(`#${col}`, "hex"),
-                                    inline: true
-                                },
-                                {
-                                    name: "RGB",
-                                    value: c2c(`#${col}`, "rgb"),
-                                    inline: true
-                                },
-                                {
-                                    name: "HSL",
-                                    value: c2c(`#${col}`, "hsl"),
-                                    inline: true
-                                },
-                                {
-                                    name: "HSV",
-                                    value: c2c(`#${col}`, "hsv"),
-                                    inline: true
-                                },
-                                {
-                                    name: "Integer",
-                                    value: parseInt(`0x${col}`),
-                                    inline: true
-                                }
-                            ],
-                            thumbnail: {
-                                url: `attachment://${col}.png`
-                            }
-                        }
-                    },
-                    { name: `${col}.png`, file: f }
-                );
-            });
+            createColMsg(ctx, msg, col);
+        } else if (
+            /(rgb|hsv|hsl)\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/.test(args)
+        ) {
+            let exp = args.match(
+                /(rgb|hsv|hsl)\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/
+            );
+            let col = c2c(exp[0], "hex").replace("#", "");
+
+            createColMsg(ctx, msg, col);
         } else {
             let col = Math.floor(Math.random() * 0xffffff).toString("16");
             if (col.length < 6) {
                 col += Math.floor(Math.random() * 16).toString("16");
             }
 
-            let im = new jimp(128, 128, parseInt(`0x${col}FF`));
-            im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                msg.channel.createMessage(
-                    {
-                        embed: {
-                            title: "Random Color",
-                            color: parseInt("0x" + col),
-                            fields: [
-                                {
-                                    name: "Hex",
-                                    value: c2c(`#${col}`, "hex"),
-                                    inline: true
-                                },
-                                {
-                                    name: "RGB",
-                                    value: c2c(`#${col}`, "rgb"),
-                                    inline: true
-                                },
-                                {
-                                    name: "HSL",
-                                    value: c2c(`#${col}`, "hsl"),
-                                    inline: true
-                                },
-                                {
-                                    name: "HSV",
-                                    value: c2c(`#${col}`, "hsv"),
-                                    inline: true
-                                },
-                                {
-                                    name: "Integer",
-                                    value: parseInt(`0x${col}`),
-                                    inline: true
-                                }
-                            ],
-                            thumbnail: {
-                                url: `attachment://${col}.png`
-                            }
-                        }
-                    },
-                    { name: `${col}.png`, file: f }
-                );
-            });
+            createColMsg(ctx, msg, col);
         }
     } else {
         let col = Math.floor(Math.random() * 0xffffff).toString("16");
@@ -714,43 +605,7 @@ let color = function(ctx, msg, args) {
             }
         }
 
-        let im = new jimp(128, 128, parseInt(`0x${col}FF`));
-        im.getBuffer(jimp.MIME_PNG, (e, f) => {
-            msg.channel.createMessage(
-                {
-                    embed: {
-                        title: "Random Color",
-                        color: parseInt("0x" + col),
-                        fields: [
-                            {
-                                name: "Hex",
-                                value: c2c(`#${col}`, "hex"),
-                                inline: true
-                            },
-                            {
-                                name: "RGB",
-                                value: c2c(`#${col}`, "rgb"),
-                                inline: true
-                            },
-                            {
-                                name: "HSL",
-                                value: c2c(`#${col}`, "hsl"),
-                                inline: true
-                            },
-                            {
-                                name: "HSV",
-                                value: c2c(`#${col}`, "hsv"),
-                                inline: true
-                            }
-                        ],
-                        thumbnail: {
-                            url: `attachment://${col}.png`
-                        }
-                    }
-                },
-                { name: `${col}.png`, file: f }
-            );
-        });
+        createColMsg(ctx, msg, col);
     }
 };
 
