@@ -9,12 +9,14 @@ const { spawn } = require("child_process");
 const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
 
 let mirror = async function(msg, url, type) {
-    switch (type) {
-        case 1: //hooh
-            jimp.read(url).then(im => {
-                let a = im.clone();
-                let b = im.clone();
+    const names = [null, "hooh", "haah", "woow", "waaw"];
 
+    jimp.read(url).then(async im => {
+        let a = im.clone();
+        let b = im.clone();
+
+        switch (type) {
+            case 1:
                 a.crop(
                     0,
                     im.bitmap.height / 2,
@@ -28,66 +30,18 @@ let mirror = async function(msg, url, type) {
                     im.bitmap.height / 2
                 );
                 b.mirror(false, true);
-
-                let out = new jimp(
-                    im.bitmap.width,
-                    im.bitmap.height,
-                    (e, i) => {
-                        i.composite(a, 0, im.bitmap.height / 2);
-                        i.composite(b, 0, 0);
-                    }
-                );
-
-                msg.channel.createMessage("", { name: "hooh.png", file: await out.getBufferAsync(jimp.MIME_PNG) });
-            });
-            break;
-        case 2: //haah
-            jimp.read(url).then(im => {
-                let a = im.clone();
-                let b = im.clone();
-
+                break;
+            case 2:
                 a.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
                 b.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
                 b.mirror(true, false);
-
-                let out = new jimp(
-                    im.bitmap.width,
-                    im.bitmap.height,
-                    (e, i) => {
-                        i.composite(a, 0, 0);
-                        i.composite(b, im.bitmap.width / 2, 0);
-                    }
-                );
-
-                msg.channel.createMessage("", { name: "haah.png", file: await out.getBufferAsync(jimp.MIME_PNG) });
-            });
-            break;
-        case 3: //woow
-            jimp.read(url).then(im => {
-                let a = im.clone();
-                let b = im.clone();
-
+                break;
+            case 3:
                 a.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
                 b.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
                 b.mirror(false, true);
-
-                let out = new jimp(
-                    im.bitmap.width,
-                    im.bitmap.height,
-                    (e, i) => {
-                        i.composite(a, 0, 0);
-                        i.composite(b, 0, im.bitmap.height / 2);
-                    }
-                );
-
-                msg.channel.createMessage("", { name: "woow.png", file: await out.getBufferAsync(jimp.MIME_PNG) });
-            });
-            break;
-        case 4: //waaw
-            jimp.read(url).then(im => {
-                let a = im.clone();
-                let b = im.clone();
-
+                break;
+            case 4:
                 a.crop(
                     im.bitmap.width / 2,
                     0,
@@ -101,20 +55,40 @@ let mirror = async function(msg, url, type) {
                     im.bitmap.height
                 );
                 a.mirror(true, false);
+                break;
+            default:
+                break;
+        }
 
-                let out = new jimp(
-                    im.bitmap.width,
-                    im.bitmap.height,
-                    (e, i) => {
-                        i.composite(a, 0, 0);
-                        i.composite(b, im.bitmap.width / 2, 0);
-                    }
-                );
+        let out = new jimp(im.bitmap.width, im.bitmap.height, (e, i) => {
+            switch (type) {
+                case 1:
+                    i.composite(a, 0, im.bitmap.height / 2);
+                    i.composite(b, 0, 0);
+                    break;
+                case 2:
+                    i.composite(a, 0, 0);
+                    i.composite(b, im.bitmap.width / 2, 0);
+                    break;
+                case 3:
+                    i.composite(a, 0, 0);
+                    i.composite(b, 0, im.bitmap.height / 2);
+                    break;
+                case 4:
+                    i.composite(a, 0, 0);
+                    i.composite(b, im.bitmap.width / 2, 0);
+                    break;
+                default:
+                    break;
+            }
+        });
 
-                msg.channel.createMessage("", { name: "waaw.png", file: await out.getBufferAsync(jimp.MIME_PNG) });
-            });
-            break;
-    }
+        let file = await out.getBufferAsync(jimp.MIME_PNG);
+        msg.channel.createMessage("", {
+            name: `${names[type]}.png`,
+            file: file
+        });
+    });
 };
 
 let hooh = async function(ctx, msg, args) {
@@ -242,9 +216,10 @@ let waaw = async function(ctx, msg, args) {
 };
 
 let _invert = async function(msg, url) {
-    jimp.read(url).then(im => {
+    jimp.read(url).then(async im => {
         im.invert();
-        msg.channel.createMessage("", { name: "invert.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
+        let file = await im.getBufferAsync(jimp.MIME_PNG);
+        msg.channel.createMessage("", { name: "invert.png", file: file });
     });
 };
 
@@ -285,14 +260,16 @@ let flip = async function(ctx, msg, args) {
 
     let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
-        jimp.read(args).then(im => {
+        jimp.read(args).then(async im => {
             im.mirror(true, false);
-            msg.channel.createMessage("", { name: "flip.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
+            let file = await im.getBufferAsync(jimp.MIME_PNG);
+            msg.channel.createMessage("", { name: "flip.png", file: file });
         });
     } else if (msg.attachments.length > 0) {
-        jimp.read(msg.attachments[0].url).then(im => {
+        jimp.read(msg.attachments[0].url).then(async im => {
             im.mirror(true, false);
-            msg.channel.createMessage("", { name: "flip.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
+            let file = await im.getBufferAsync(jimp.MIME_PNG);
+            msg.channel.createMessage("", { name: "flip.png", file: file });
         });
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
@@ -303,17 +280,19 @@ let flip = async function(ctx, msg, args) {
                       }?size=1024`
                     : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
                           5}.png`;
-            jimp.read(url).then(im => {
+            jimp.read(url).then(async im => {
                 im.mirror(true, false);
-                msg.channel.createMessage("", { name: "flip.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
+                let file = await im.getBufferAsync(jimp.MIME_PNG);
+                msg.channel.createMessage("", { name: "flip.png", file: file });
             });
         });
     } else {
         try {
             let img = await ctx.utils.findLastImage(ctx, msg);
-            jimp.read(img).then(im => {
+            jimp.read(img).then(async im => {
                 im.mirror(true, false);
-                msg.channel.createMessage("", { name: "flip.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
+                let file = await im.getBufferAsync(jimp.MIME_PNG);
+                msg.channel.createMessage("", { name: "flip.png", file: file });
             });
         } catch (e) {
             msg.channel.createMessage(
@@ -328,14 +307,16 @@ let flop = async function(ctx, msg, args) {
 
     let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
-        jimp.read(args).then(im => {
+        jimp.read(args).then(async im => {
             im.mirror(false, true);
-            msg.channel.createMessage("", { name: "flop.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
+            let file = await im.getBufferAsync(jimp.MIME_PNG);
+            msg.channel.createMessage("", { name: "flop.png", file: file });
         });
     } else if (msg.attachments.length > 0) {
-        jimp.read(msg.attachments[0].url).then(im => {
+        jimp.read(msg.attachments[0].url).then(async im => {
             im.mirror(false, true);
-            msg.channel.createMessage("", { name: "flop.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
+            let file = await im.getBufferAsync(jimp.MIME_PNG);
+            msg.channel.createMessage("", { name: "flop.png", file: file });
         });
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
@@ -346,17 +327,19 @@ let flop = async function(ctx, msg, args) {
                       }?size=1024`
                     : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
                           5}.png`;
-            jimp.read(url).then(im => {
+            jimp.read(url).then(async im => {
                 im.mirror(false, true);
-                msg.channel.createMessage("", { name: "flop.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
+                let file = await im.getBufferAsync(jimp.MIME_PNG);
+                msg.channel.createMessage("", { name: "flop.png", file: file });
             });
         });
     } else {
         try {
             let img = await ctx.utils.findLastImage(ctx, msg);
-            jimp.read(url).then(im => {
+            jimp.read(url).then(async im => {
                 im.mirror(false, true);
-                msg.channel.createMessage("", { name: "flop.png", file: await im.getBufferAsync(jimp.MIME_PNG) });
+                let file = await im.getBufferAsync(jimp.MIME_PNG);
+                msg.channel.createMessage("", { name: "flop.png", file: file });
             });
         } catch (e) {
             msg.channel.createMessage(
