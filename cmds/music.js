@@ -1128,11 +1128,18 @@ let func = function(ctx, msg, args) {
         }
     } else if (cmd == "queue" || cmd == "q") {
         if (
-            msg.member.voiceState &&
-            msg.member.voiceState.channelID &&
-            ctx.vc.get(msg.member.voiceState.channelID)
+            msg.channel.guild.members.get(ctx.bot.user.id).voiceState &&
+            msg.channel.guild.members.get(ctx.bot.user.id).voiceState
+                .channelID &&
+            ctx.vc.get(
+                msg.channel.guild.members.get(ctx.bot.user.id).voiceState
+                    .channelID
+            )
         ) {
-            let conn = ctx.vc.get(msg.member.voiceState.channelID);
+            let conn = ctx.vc.get(
+                msg.channel.guild.members.get(ctx.bot.user.id).voiceState
+                    .channelID
+            );
             conn.queue = conn.queue || [];
 
             let lqueue = [];
@@ -1163,7 +1170,7 @@ let func = function(ctx, msg, args) {
                 .then(x => setTimeout(() => x.delete(), 10000));
         } else {
             msg.channel
-                .createMessage("You or the bot isn't in a voice channel.")
+                .createMessage("The bot isn't in a voice channel.")
                 .then(x => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "skip" || cmd == "s") {
@@ -1412,7 +1419,7 @@ let func = function(ctx, msg, args) {
                 }
                 msg.channel
                     .createMessage(
-                        ":lock: Skips and queue are now locked to users with manage messages or the person who queued the song.\n<:blankboi:393555375389016065> Run `hf!music skipunlock` to return to open it back up."
+                        ":lock: Skips and queue are now locked to users with manage messages or the person who queued the song.\n<:blankboi:393555375389016065> Run `hf!music unlock` to return to open it back up."
                     )
                     .then(x => setTimeout(() => x.delete(), 10000));
                 conn.skiplocked = true;
@@ -1478,7 +1485,7 @@ let func = function(ctx, msg, args) {
             }
         } else {
             msg.channel
-                .createMessage("Haha no. I'm not that trusting.")
+                .createMessage("No\n\nSent from my iPhone.")
                 .then(x => setTimeout(() => x.delete(), 10000));
         }
     } else {
