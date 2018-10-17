@@ -574,18 +574,18 @@ let color = async function(ctx, msg, args) {
             let col = c2c(`#${hex}`, "hex").replace("#", "");
 
             createColMsg(ctx, msg, col);
+        } else if (
+            /(rgb|hsv|hsl)\((\d{1,3}),(\d{1,3}%?),(\d{1,3}%?)\)/.test(args)
+        ) {
+            let exp = args.match(
+                /(rgb|hsv|hsl)\((\d{1,3}),(\d{1,3}%?),(\d{1,3}%?)\)/
+            );
+            let col = c2c(exp[0], "hex").replace("#", "");
+
+            createColMsg(ctx, msg, col);
         } else if (/(\d{1,3}),(\d{1,3}),(\d{1,3})/.test(args)) {
             let rgb = args.match(/(\d{1,3}),(\d{1,3}),(\d{1,3})/);
             let col = c2c(`rgb(${rgb[0]})`, "hex").replace("#", "");
-
-            createColMsg(ctx, msg, col);
-        } else if (
-            /(rgb|hsv|hsl)\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/.test(args)
-        ) {
-            let exp = args.match(
-                /(rgb|hsv|hsl)\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/
-            );
-            let col = c2c(exp[0], "hex").replace("#", "");
 
             createColMsg(ctx, msg, col);
         } else {
