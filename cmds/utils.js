@@ -977,6 +977,7 @@ let jumbo = async function(ctx, msg, args) {
         let emojiurl = emojiSets[pack].url + emoji + emojiSets[pack].ext;
         ctx.libs.superagent
             .get(emojiurl)
+            .buffer(1)
             .then(x => {
                 if (emojiSets[pack].ext == ".png") {
                     msg.channel.createMessage({
@@ -993,7 +994,10 @@ let jumbo = async function(ctx, msg, args) {
                         }
                     });
                 } else {
-                    svg2png(x.body, { width: 512, height: 512 }).then(y => {
+                    svg2png(x.body ? x.body : x.text, {
+                        width: 512,
+                        height: 512
+                    }).then(y => {
                         msg.channel.createMessage(
                             {
                                 embed: {
