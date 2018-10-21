@@ -922,7 +922,7 @@ const emojiSets = {
     },
     mustd: {
         url:
-            "https://cdn.jsdelivr.net/gh/Mstrodl/mutant-standard-mirror@master/emoji/",
+            "https://cdn.jsdelivr.net/gh/Mstrodl/mutant-standard-mirror/emoji/",
         joiner: "-",
         ext: ".svg"
     },
@@ -942,9 +942,7 @@ const svg2png = require("svg2png");
 
 let jumbo = async function(ctx, msg, args) {
     let emojiNames = await ctx.libs.superagent
-        .get(
-            "https://cdn.jsdelivr.net/gh/omnidan/node-emoji@master/lib/emoji.json"
-        )
+        .get("https://cdn.jsdelivr.net/gh/omnidan/node-emoji/lib/emoji.json")
         .then(x => x.body);
     let temp = [];
     Object.keys(emojiNames).map(x => (temp[emojiNames[x]] = x));
