@@ -60,16 +60,16 @@ let linvite = async function(ctx, msg, args) {
                 },
                 {
                     name: "Member Count",
-                    value: `<:online:313956277808005120>${
+                    value: `${statusIcons["online"]}${
                         inv.approximate_presence_count
-                    } online\t\t<:offline:313956277237710868> ${
+                    } online\t\t${statusIcons["offline"]} ${
                         inv.approximate_member_count
                     } members`,
                     inline: false
                 },
                 {
                     name: "Flags",
-                    value: `<:partner:314068430556758017>: ${
+                    value: `<:partner:493173082345832448>: ${
                         inv.guild.features.includes("VANITY_URL") ||
                         inv.guild.features.includes("INVITE_SPLASH") ||
                         inv.guild.features.includes("VIP_REGIONS")
