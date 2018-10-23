@@ -112,6 +112,11 @@ module.exports = function(ctx) {
             type: ctx.libs.sequelize.STRING,
             defaultValue: "",
             allowNull: false
+        },
+        noreactglobal: {
+            type: ctx.libs.sequelize.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
         }
     });
 

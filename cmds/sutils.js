@@ -330,6 +330,11 @@ let sconfig = async function(ctx, msg, args) {
             name: "prefix",
             desc: "Guild prefix, set to $RESETME$ to reset.",
             type: "string"
+        },
+        {
+            name: "noreactglobal",
+            desc: "Disables economy reactions guild-wide",
+            type: "boolean"
         }
     ];
 

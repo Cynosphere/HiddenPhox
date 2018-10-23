@@ -3,6 +3,12 @@ let messageCreate = async function(msg, ctx) {
     if (!msg.channel.guild) return;
     if (msg.author.bot) return;
 
+    const disabled = await ctx.db.models.sdata
+        .findOrCreate({
+            where: { id: msg.channel.guild.id }
+        })
+        .then(x => x[0].dataValues.noreactglobal);
+
     let wallet = await ctx.db.models.econ.findOne({
         where: { id: msg.author.id }
     });
@@ -24,7 +30,8 @@ let messageCreate = async function(msg, ctx) {
                 msg.channel
                     .permissionsOf(ctx.bot.user.id)
                     .has("addReactions") &&
-                wallet.noreact === false
+                wallet.noreact === false &&
+                disabled === false
             )
                 msg.addReaction("\uD83D\uDCB8");
         }
