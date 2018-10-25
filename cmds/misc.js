@@ -466,6 +466,14 @@ let wolfram = async function(ctx, msg, args) {
     msg.channel.createMessage({ embed: embed });
 };
 
+let no = function(ctx, msg, args) {
+    msg.channel.createMessage("No\n\nSent from my iPhone.");
+};
+
+let br = function(ctx, msg, args) {
+    msg.channel.createMessage("br?");
+};
+
 module.exports = [
     {
         name: "calc",
@@ -582,5 +590,17 @@ For a list of available currencies (as CSV files):
         usage: "[query]",
         group: "fun",
         aliases: ["wa"]
+    },
+    {
+        name: "no",
+        desc: "No",
+        func: no,
+        group: "fun"
+    },
+    {
+        name: "br",
+        desc: "br?",
+        func: br,
+        group: "fun"
     }
 ];
