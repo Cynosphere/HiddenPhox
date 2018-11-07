@@ -241,12 +241,10 @@ let plembed = async function(msg, ctx) {
     msg.channel.createMessage({
         embed: {
             author: {
-                name: authorData.preferredUsername,
+                name: authorData.name,
                 url: post.attributedTo
             },
-            title: `${authorData.preferredUsername} (@${uninst[2]}@${
-                uninst[1]
-            })`,
+            title: `${authorData.name} (@${uninst[2]}@${uninst[1]})`,
             url: url,
             description: `${
                 post.attachment && post.attachment.length > 0
@@ -278,6 +276,14 @@ let plembed = async function(msg, ctx) {
             color: 0x282c37
         }
     });
+    if (post.attachment && post.attachment.length > 1) {
+        msg.channel.createMessage(
+            post.attachment
+                .splice(1)
+                .map(x => x.url)
+                .join("\n")
+        );
+    }
 };
 
 module.exports = [
