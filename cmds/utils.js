@@ -551,7 +551,13 @@ let sinfo = async function(ctx, msg, args) {
                     inline: true
                 },
                 { name: "Shard", value: g.shard.id, inline: true },
-                { name: "Roles", value: `${g.roles.size}/250`, inline: true },
+                {
+                    name: "Roles",
+                    value: `${g.roles.size}/250 (${
+                        g.roles.filter(x => x.managed).length
+                    } managed)`,
+                    inline: true
+                },
                 {
                     name: "Emoji Count",
                     value: `${g.emojis.length}/100 (${
