@@ -478,6 +478,15 @@ let sinfo = async function(ctx, msg, args) {
         russia: ":flag_ru:"
     };
 
+    let levels = [
+        "None",
+        "Low",
+        "Medium",
+        "(╯°□°）╯︵ ┻━┻ (High)",
+        "┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻ (Very High/Phone)"
+    ];
+    let notifs = ["All Messages", "Mentions Only"];
+
     if (msg.channel.guild) {
         let g = msg.channel.guild;
 
@@ -522,7 +531,17 @@ let sinfo = async function(ctx, msg, args) {
                     )}% of members)`,
                     inline: true
                 },
-                { name: "Channels", value: g.channels.size, inline: true },
+                {
+                    name: "Channels",
+                    value: `${g.channels.size}/500 (${
+                        g.channels.filter(x => x.type == 0).length
+                    } text, ${
+                        g.channels.filter(x => x.type == 2).length
+                    } voice, ${
+                        g.channels.filter(x => x.type == 4).length
+                    } categories)`,
+                    inline: true
+                },
                 {
                     name: "Region",
                     value:
@@ -532,11 +551,46 @@ let sinfo = async function(ctx, msg, args) {
                     inline: true
                 },
                 { name: "Shard", value: g.shard.id, inline: true },
-                { name: "Roles", value: g.roles.size, inline: true },
-                { name: "Emoji Count", value: g.emojis.length, inline: true },
+                { name: "Roles", value: `${g.roles.size}/250`, inline: true },
+                {
+                    name: "Emoji Count",
+                    value: `${g.emojis.length}/100 (${
+                        g.emojis.filter(x => x.animated).length
+                    } animated, ${
+                        g.emojis.filter(x => x.managed).length
+                    } managed)`,
+                    inline: true
+                },
                 {
                     name: "Created At",
                     value: new Date(g.createdAt).toUTCString(),
+                    inline: true
+                },
+                {
+                    name: "Verification Level",
+                    value: levels[g.verificationLevel],
+                    inline: true
+                },
+                {
+                    name: "Voice AFK",
+                    value: `Timeout: ${g.afkTimeout}s\nChannel: ${
+                        g.afkChannelID == null ? "None" : `<#${g.afkChannelID}>`
+                    }`,
+                    inline: true
+                },
+                {
+                    name: "Default Notifications",
+                    value: notifs[g.defaultNotifications],
+                    inline: true
+                },
+                {
+                    name: "MFA For Perms",
+                    value: g.mfaLevel == 0 ? "False" : "True",
+                    inline: true
+                },
+                {
+                    name: 'Considered "Large"',
+                    value: g.large,
                     inline: true
                 },
                 {
