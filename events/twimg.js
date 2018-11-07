@@ -110,7 +110,7 @@ let twimg = async function(msg, ctx) {
 };
 
 //fediimg
-const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/((@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))|(objects|notice)\/([a-zA-Z0-9-_/]*))/;
+const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(((@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))|(users\/([a-zA-Z0-9-_/]*)\/statuses\/([0-9]{17,21})))|(objects|notice)\/([a-zA-Z0-9-_/]*))/;
 
 async function getMastoImages(ctx, url, msg) {
     return new Promise(async (resolve, reject) => {
@@ -181,6 +181,16 @@ let fediimg = async function(msg, ctx) {
         url = url[0];
         url = url.startsWith(" ") ? url.substring(1) : url;
 
+        if (
+            url.matches(/(users\/([a-zA-Z0-9-_/]*)\/statuses\/([0-9]{17,21}))/)
+        ) {
+            let post = await ctx.libs.superagent
+                .get(url)
+                .set("Accept", "application/activity+json")
+                .then(x => x.body);
+            url = post.url;
+        }
+
         let imgs = await getMastoImages(ctx, url, msg);
 
         if (imgs.length > 0) {
@@ -221,9 +231,9 @@ let plembed = async function(msg, ctx) {
         .set("Accept", "application/activity+json")
         .then(x => x.body);
 
-    if (post.object) {
+    if (post.object && (post.object.id || post.object.url)) {
         post = await ctx.libs.superagent
-            .get(post.object.id)
+            .get(post.object.id ? post.object.id : post.object.url)
             .set("Accept", "application/activity+json")
             .then(x => x.body);
     }
