@@ -181,9 +181,7 @@ let fediimg = async function(msg, ctx) {
         url = url[0];
         url = url.startsWith(" ") ? url.substring(1) : url;
 
-        if (
-            url.matches(/(users\/([a-zA-Z0-9-_/]*)\/statuses\/([0-9]{17,21}))/)
-        ) {
+        if (url.match(/(users\/([a-zA-Z0-9-_/]*)\/statuses\/([0-9]{17,21}))/)) {
             let post = await ctx.libs.superagent
                 .get(url)
                 .set("Accept", "application/activity+json")
