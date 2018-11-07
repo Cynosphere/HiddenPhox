@@ -494,6 +494,7 @@ let sinfo = async function(ctx, msg, args) {
 
         let emojis = [];
         g.emojis.forEach(e => {
+            if (e.managed) return;
             emojis.push(`<${e.animated ? "a" : ""}:${e.name}:${e.id}>`);
         });
 
@@ -640,10 +641,7 @@ let sinfo = async function(ctx, msg, args) {
         if (emojis.length > 0) {
             info.fields.push({
                 name: "Emojis (1-25)",
-                value: emojis
-                    .filter(x => !x.managed)
-                    .slice(0, 25)
-                    .join(" "),
+                value: emojis.slice(0, 25).join(" "),
                 inline: true
             });
         }
@@ -651,10 +649,7 @@ let sinfo = async function(ctx, msg, args) {
         if (emojis.length > 25) {
             info.fields.push({
                 name: "Emojis (26-50)",
-                value: emojis
-                    .filter(x => !x.managed)
-                    .slice(25, 50)
-                    .join(" "),
+                value: emojis.slice(25, 50).join(" "),
                 inline: true
             });
         }
@@ -662,10 +657,7 @@ let sinfo = async function(ctx, msg, args) {
         if (emojis.length > 50) {
             info.fields.push({
                 name: "Emojis (51-75)",
-                value: emojis
-                    .filter(x => !x.managed)
-                    .slice(50, 75)
-                    .join(" "),
+                value: emojis.slice(50, 75).join(" "),
                 inline: true
             });
         }
@@ -673,10 +665,7 @@ let sinfo = async function(ctx, msg, args) {
         if (emojis.length > 75) {
             info.fields.push({
                 name: "Emojis (76-100)",
-                value: emojis
-                    .filter(x => !x.managed)
-                    .slice(75, 100)
-                    .join(" "),
+                value: emojis.slice(75, 100).join(" "),
                 inline: true
             });
         }
@@ -684,10 +673,7 @@ let sinfo = async function(ctx, msg, args) {
         if (emojis.length > 100) {
             info.fields.push({
                 name: "Emojis (101-150)",
-                value: emojis
-                    .filter(x => !x.managed)
-                    .slice(100, 150)
-                    .join(" "),
+                value: emojis.slice(100, 150).join(" "),
                 inline: true
             });
         }
@@ -695,10 +681,7 @@ let sinfo = async function(ctx, msg, args) {
         if (emojis.length > 150) {
             info.fields.push({
                 name: "Emojis (151-200+)",
-                value: emojis
-                    .filter(x => !x.managed)
-                    .slice(150)
-                    .join(" "),
+                value: emojis.slice(150).join(" "),
                 inline: true
             });
         }
