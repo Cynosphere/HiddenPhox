@@ -494,7 +494,14 @@ let sinfo = async function(ctx, msg, args) {
 
         let emojis = [];
         g.emojis.forEach(e => {
-            if (e.managed) return;
+            let hasRole = false;
+
+            e.roles.forEach(x => {
+                if (g.members.get(ctx.bot.user.id).roles.includes(x))
+                    hasRole = true;
+            });
+
+            if (e.managed && hasRole == false) return;
             emojis.push(`<${e.animated ? "a" : ""}:${e.name}:${e.id}>`);
         });
 
