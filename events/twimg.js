@@ -5,9 +5,9 @@ const twitterurl = /(?:\s|^)https?:\/\/(www\.)?twitter\.com\/(.+\/status\/|statu
 
 // don't complain at me, do not PR for removal
 // taken from https://gist.github.com/shobotch/5160017
-// exact key: Twitter for Google TV
+// exact key: Twitter for Android
 const twiKey = Buffer.from(
-    "iAtYJ4HpUVfIUoNnif1DA:172fOpzuZoYzNYaU3mMYvE8m8MEyLbztOdbrUolU"
+    "3nVuSoBZnx6U4vzUxf5w:Bcs59EFbbsdF6Sl9Ng71smgStWEGwXXKSjYvPVt7qys"
 ).toString("base64");
 
 async function getBearer(ctx) {
