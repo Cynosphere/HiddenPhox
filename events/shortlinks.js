@@ -2,7 +2,7 @@ const regex = /(?:\s|^)(gh|gl|a3|owo|sg|teknik|bb|yt|bc|bcu|sc|aur|bot|sw|tw)\/(
 const reglinks = {
     gl: "https://gitlab.com/$link$",
     gh: "https://github.com/$link$",
-    a3: "https://git.a3.pm/$link$",
+    gd: "https://gitdab.com/$link$",
     owo: "https://owo.codes/$link$",
     sg: "https://git.supernets.org/$link$",
     teknik: "https://git.teknik.io/$link$",
