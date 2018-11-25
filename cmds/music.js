@@ -675,6 +675,7 @@ let doMusicThingsOk = async function(
                 }
             } else {
                 try {
+                    conn.play(url, { inlineVolume: true });
                     probe(url, function(e, data) {
                         let title = url;
                         let stream = false;
@@ -755,8 +756,6 @@ let doMusicThingsOk = async function(
                               : 0;
                         conn.start = Date.now();
                         conn.end = Date.now() + conn.len;
-
-                        conn.play(url, { inlineVolume: true });
                     });
                 } catch (e) {
                     msg.channel
@@ -775,6 +774,7 @@ let doMusicThingsOk = async function(
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
                     try {
+                        conn.play(url, { inlineVolume: true });
                         probe(url, function(e, data) {
                             let title = url;
                             let stream = false;
@@ -855,8 +855,6 @@ let doMusicThingsOk = async function(
                                   : 0;
                             conn.start = Date.now();
                             conn.end = Date.now() + conn.len;
-
-                            conn.play(url, { inlineVolume: true });
                         });
                         createEndFunction(id, url, type, msg, ctx);
                     } catch (e) {
