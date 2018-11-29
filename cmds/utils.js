@@ -1242,7 +1242,8 @@ module.exports = [
         desc: "Get the avatar of a user.",
         func: avatar,
         usage: "[user]",
-        group: "utils"
+        group: "utils",
+        aliases: ["pfp"]
     },
     {
         name: "lookupinvite",
@@ -1263,30 +1264,33 @@ Mods are defined as members which have any of those permissions:
         func: mods,
         group: "utils"
     },
-    {
+    /*{
         name: "binfo",
         desc: "Displays info on a bot or lists a users bots if any.",
         func: binfo,
         usage: "[user]",
         group: "utils"
-    },
+    },*/
     {
         name: "uinfo",
         desc: "Get info on a user.",
         func: uinfo,
-        group: "utils"
+        group: "utils",
+        aliases: ["userinfo"]
     },
     {
         name: "sinfo",
         desc: "Displays info of a server",
         func: sinfo,
-        group: "utils"
+        group: "utils",
+        aliases: ["ginfo", "guildinfo", "serverinfo"]
     },
     {
         name: "rinfo",
         desc: "Displays info of a role",
         func: rinfo,
-        group: "utils"
+        group: "utils",
+        aliases: ["roleinfo"]
     },
     {
         name: "cflake",
@@ -1311,7 +1315,8 @@ generated, not any other info or what type it is.
         name: "slist",
         desc: "Server list of servers HiddenPhox is in.",
         func: slist,
-        group: "utils"
+        group: "utils",
+        aliases: ["servers", "serverlist"]
     },
     {
         name: "presence",
@@ -1324,14 +1329,15 @@ generated, not any other info or what type it is.
         name: "jumbo",
         desc: "Get the raw image of an emoji.",
         func: jumbo,
-        group: "utils"
+        group: "utils",
+        aliases: ["e"]
     },
     {
         name: "einfo",
         desc: "Get info of an emoji.",
         func: einfo,
         group: "utils",
-        aliases: ["e", "emote", "emoji"]
+        aliases: ["emote", "emoji", "emoteinfo", "emojiinfo"]
     },
     {
         name: "translate",
