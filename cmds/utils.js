@@ -851,42 +851,38 @@ let presence = function(ctx, msg, args) {
             };
 
             if (u.game.application_id || u.game.flags == 48) {
-                embed.fields.push({
-                    name: "Details",
-                    value: u.game.details ? u.game.details : "None provided.",
-                    inline: true
-                });
-                embed.fields.push({
-                    name: "State",
-                    value: u.game.state ? u.game.state : "None provided.",
-                    inline: true
-                });
-                embed.fields.push({
-                    name: "Party Size",
-                    value:
-                        u.game.party && u.game.party.size
-                            ? `${u.game.party.size[0]} of ${
-                                  u.game.party.size[1]
-                              }`
-                            : "None provided.",
-                    inline: true
-                });
-                embed.fields.push({
-                    name: "Large Icon Text",
-                    value:
-                        u.game.assets && u.game.assets.large_text
-                            ? u.game.assets.large_text
-                            : "None provided.",
-                    inline: true
-                });
-                embed.fields.push({
-                    name: "Small Icon Text",
-                    value:
-                        u.game.assets && u.game.assets.small_text
-                            ? u.game.assets.small_text
-                            : "None provided.",
-                    inline: true
-                });
+                if (u.game.details)
+                    embed.fields.push({
+                        name: "Details",
+                        value: u.game.details,
+                        inline: true
+                    });
+                if (u.game.state)
+                    embed.fields.push({
+                        name: "State",
+                        value: u.game.state,
+                        inline: true
+                    });
+                if (u.game.party)
+                    embed.fields.push({
+                        name: "Party Size",
+                        value: `${u.game.party.size[0]} of ${
+                            u.game.party.size[1]
+                        }`,
+                        inline: true
+                    });
+                if (u.game.assets && u.game.assets.large_text)
+                    embed.fields.push({
+                        name: "Large Icon Text",
+                        value: u.game.assets.large_text,
+                        inline: true
+                    });
+                if (u.game.assets && u.game.assets.small_text)
+                    embed.fields.push({
+                        name: "Small Icon Text",
+                        value: u.game.assets.small_text,
+                        inline: true
+                    });
 
                 embed.thumbnail = {
                     url:
@@ -896,26 +892,31 @@ let presence = function(ctx, msg, args) {
                 };
             }
 
-            embed.fields.push({
-                name: "Time Elapsed",
-                value:
-                    u.game.timestamps && u.game.timestamps.start
-                        ? ctx.utils.remainingTime(
-                              new Date().getTime() - u.game.timestamps.start
-                          ) + " elapsed"
-                        : "None provided.",
-                inline: true
-            });
-            embed.fields.push({
-                name: "End Time",
-                value:
-                    u.game.timestamps && u.game.timestamps.end
-                        ? ctx.utils.remainingTime(
-                              u.game.timestamps.end - u.game.timestamps.start
-                          ) + " remaining"
-                        : "None provided.",
-                inline: true
-            });
+            if (u.game.timestamps && u.game.timestamps.start)
+                embed.fields.push({
+                    name: "Time Elapsed",
+                    value:
+                        ctx.utils.remainingTime(
+                            new Date().getTime() - u.game.timestamps.start
+                        ) + " elapsed",
+                    inline: true
+                });
+            if (u.game.timestamps && u.game.timestamps.end)
+                embed.fields.push({
+                    name: "End Time",
+                    value:
+                        ctx.utils.remainingTime(
+                            u.game.timestamps.end - u.game.timestamps.start
+                        ) + " remaining",
+                    inline: true
+                });
+
+            if (u.game.created_at) {
+                embeds.timestamp = new Date(u.game.created_at).toISOString();
+                embeds.footer = {
+                    text: "Started at "
+                };
+            }
 
             if (u.game.assets && u.game.assets.large_image) {
                 let jimp = require("jimp");
