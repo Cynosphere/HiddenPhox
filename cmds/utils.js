@@ -906,7 +906,7 @@ let presence = function(ctx, msg, args) {
                     name: "End Time",
                     value:
                         ctx.utils.remainingTime(
-                            u.game.timestamps.end - u.game.timestamps.start
+                            u.game.timestamps.end - u.game.created_at
                         ) + " remaining",
                     inline: true
                 });
