@@ -912,8 +912,8 @@ let presence = function(ctx, msg, args) {
                 });
 
             if (u.game.created_at) {
-                embeds.timestamp = new Date(u.game.created_at).toISOString();
-                embeds.footer = {
+                embed.timestamp = new Date(u.game.created_at).toISOString();
+                embed.footer = {
                     text: "Started at "
                 };
             }
