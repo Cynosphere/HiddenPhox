@@ -8,6 +8,15 @@ const { spawn } = require("child_process");
 
 const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
 
+async function jimpAsync(buf) {
+    return new Promise((resolve, reject) => {
+        new jimp(buf, (err, img) => {
+            if (err) reject(err);
+            resolve(img);
+        });
+    });
+}
+
 let mirror = async function(msg, url, type) {
     const names = [null, "hooh", "haah", "woow", "waaw"];
 
@@ -60,28 +69,26 @@ let mirror = async function(msg, url, type) {
                 break;
         }
 
-        let out = new jimp(im.bitmap.width, im.bitmap.height, (e, i) => {
-            switch (type) {
-                case 1:
-                    i.composite(a, 0, im.bitmap.height / 2);
-                    i.composite(b, 0, 0);
-                    break;
-                case 2:
-                    i.composite(a, 0, 0);
-                    i.composite(b, im.bitmap.width / 2, 0);
-                    break;
-                case 3:
-                    i.composite(a, 0, 0);
-                    i.composite(b, 0, im.bitmap.height / 2);
-                    break;
-                case 4:
-                    i.composite(a, 0, 0);
-                    i.composite(b, im.bitmap.width / 2, 0);
-                    break;
-                default:
-                    break;
-            }
-        });
+        switch (type) {
+            case 1:
+                im.composite(a, 0, im.bitmap.height / 2);
+                im.composite(b, 0, 0);
+                break;
+            case 2:
+                im.composite(a, 0, 0);
+                im.composite(b, im.bitmap.width / 2, 0);
+                break;
+            case 3:
+                im.composite(a, 0, 0);
+                im.composite(b, 0, im.bitmap.height / 2);
+                break;
+            case 4:
+                im.composite(a, 0, 0);
+                im.composite(b, im.bitmap.width / 2, 0);
+                break;
+            default:
+                break;
+        }
 
         let file = await out.getBufferAsync(jimp.MIME_PNG);
         msg.channel.createMessage("", {
@@ -336,7 +343,7 @@ let flop = async function(ctx, msg, args) {
     } else {
         try {
             let img = await ctx.utils.findLastImage(ctx, msg);
-            jimp.read(url).then(async im => {
+            jimp.read(img).then(async im => {
                 im.mirror(false, true);
                 let file = await im.getBufferAsync(jimp.MIME_PNG);
                 msg.channel.createMessage("", { name: "flop.png", file: file });
@@ -385,7 +392,7 @@ let orly = function(ctx, msg, args) {
         msg.channel.createMessage(
             "Usage: `" +
                 ctx.prefix +
-                'orly "title" "bottom text" "top text" (optional)"author" (optional)`'
+                'orly "title" "bottom text" "top text" (optional) "author" (optional)`'
         );
     } else {
         jimp
@@ -401,15 +408,7 @@ let orly = function(ctx, msg, args) {
                 )}&guide_text_placement=bottom_right`
             )
             .then(im => {
-                let out = new jimp(
-                    im.bitmap.width,
-                    im.bitmap.height,
-                    (e, i) => {
-                        i.composite(im, 0, 0);
-                    }
-                );
-
-                out.getBuffer(jimp.MIME_PNG, (e, f) => {
+                im.getBuffer(jimp.MIME_PNG, (e, f) => {
                     msg.channel.createMessage("", {
                         name: "orly.png",
                         file: f
@@ -640,15 +639,6 @@ let glitchfuck = function(ctx, msg, url) {
     msg.channel.sendTyping();
 
     let limited = false;
-
-    async function jimpAsync(buf) {
-        return new Promise((resolve, reject) => {
-            new jimp(buf, (err, img) => {
-                if (err) reject(err);
-                resolve(img);
-            });
-        });
-    }
 
     async function glitchFrames(m, inp) {
         m.edit(
