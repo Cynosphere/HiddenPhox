@@ -359,12 +359,14 @@ let flop = async function(ctx, msg, args) {
 let orly = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
-    if (!args)
+    if (!args) {
         msg.channel.createMessage(
             "Usage: `" +
                 ctx.prefix +
                 'orly "title" "bottom text" "top text" (optional) "author" (optional)`'
         );
+        return;
+    }
 
     let [title, text, top, author] = ctx.utils.formatArgs(args);
     let img = Math.floor(Math.random() * 40) + 1;
