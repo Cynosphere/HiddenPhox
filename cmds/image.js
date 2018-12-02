@@ -359,6 +359,13 @@ let flop = async function(ctx, msg, args) {
 let orly = function(ctx, msg, args) {
     msg.channel.sendTyping();
 
+    if (!args)
+        msg.channel.createMessage(
+            "Usage: `" +
+                ctx.prefix +
+                'orly "title" "bottom text" "top text" (optional) "author" (optional)`'
+        );
+
     let [title, text, top, author] = ctx.utils.formatArgs(args);
     let img = Math.floor(Math.random() * 40) + 1;
     let theme = Math.floor(Math.random() * 16) + 1;
@@ -388,7 +395,7 @@ let orly = function(ctx, msg, args) {
               .splice(0, 26)
               .join("");
 
-    if (!args || !title || !text) {
+    if (!title || !text) {
         msg.channel.createMessage(
             "Usage: `" +
                 ctx.prefix +
@@ -974,10 +981,10 @@ module.exports = [
 
     {
         name: "orly",
-        desc: "Creates an O RLY parody book cover.",
+        desc: "Creates an O'Riley parody book cover.",
         func: orly,
         group: "image",
-        usage: '"title" "bottom text" "top text"(optional) "author"(optional)'
+        usage: '"title" "bottom text" "top text" (optional) "author" (optional)'
     },
 
     {
