@@ -408,16 +408,26 @@ let sconfig = async function(ctx, msg, args) {
         msg.channel.createMessage(
             `Key \`${key}\` has value \`${data[0].dataValues[key]}\`.`
         );
-    } else if (cmd == "list") {
-        let data = [];
-        keys.map(k => data.push(`${k.type} | ${k.name} | ${k.desc}`));
+    } else if (cmd == "keys") {
+        let out = [];
+        keys.map(k => out.push(`${k.type} | ${k.name} | ${k.desc}`));
 
         msg.channel.createMessage(
-            `__Config Options__\n\`\`\`\n${data.join("\n")}\n\`\`\``
+            `__Config Options__\n\`\`\`\n${out.join("\n")}\n\`\`\``
         );
+    } else if (cmd == "list") {
+        let out = [];
+
+        let data = await ctx.db.models.sdata.findOrCreate({
+            where: { id: msg.channel.guild.id }
+        });
+
+        keys.map(k => out.push(`${k.name} | ${data[0].dataValues[k.name]}`));
+
+        msg.channel.createMessage(`\`\`\`\n${out.join("\n")}\n\`\`\``);
     } else {
         msg.channel.createMessage(
-            "__**Subcommands for config**__\n  set - Set value\n  get - Get value\n  list - List all possible keys"
+            "__**Subcommands for config**__\n  set - Set value\n  get - Get value\n  keys - List all possible keys\n  list - Lists values of all "
         );
     }
 };
