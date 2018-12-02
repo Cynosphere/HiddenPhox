@@ -90,7 +90,7 @@ let mirror = async function(msg, url, type) {
                 break;
         }
 
-        let file = await out.getBufferAsync(jimp.MIME_PNG);
+        let file = await im.getBufferAsync(jimp.MIME_PNG);
         msg.channel.createMessage("", {
             name: `${names[type]}.png`,
             file: file
