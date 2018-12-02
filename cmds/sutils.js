@@ -409,12 +409,13 @@ let sconfig = async function(ctx, msg, args) {
             `Key \`${key}\` has value \`${data[0].dataValues[key]}\`.`
         );
     } else if (cmd == "keys") {
-        let out = [];
-        keys.map(k => out.push(`${k.type} | ${k.name} | ${k.desc}`));
+        let table = new ctx.utils.table(["Key", "Type", "Description"]);
+        for (let i = 0; i < keys.length; i++) {
+            let k = keys[i];
+            table.addRow([k.name, k.type, k.desc]);
+        }
 
-        msg.channel.createMessage(
-            `__Config Options__\n\`\`\`\n${out.join("\n")}\n\`\`\``
-        );
+        msg.channel.createMessage(`\`\`\`\n${table.render()}\n\`\`\``);
     } else if (cmd == "list") {
         let out = [];
 
@@ -422,9 +423,13 @@ let sconfig = async function(ctx, msg, args) {
             where: { id: msg.channel.guild.id }
         });
 
-        keys.map(k => out.push(`${k.name} | ${data[0].dataValues[k.name]}`));
+        let table = new ctx.utils.table(["Key", "Value"]);
+        for (let i = 0; i < keys.length; i++) {
+            let k = keys[i];
+            table.addRow([k.name, data[0].dataValues[k.name]]);
+        }
 
-        msg.channel.createMessage(`\`\`\`\n${out.join("\n")}\n\`\`\``);
+        msg.channel.createMessage(`\`\`\`\n${table.render()}\n\`\`\``);
     } else {
         msg.channel.createMessage(
             "__**Subcommands for config**__\n  set - Set value\n  get - Get value\n  keys - List all possible keys\n  list - Lists values of all "
