@@ -23,17 +23,21 @@
         "cheerio": "^1.0.0-rc.2",
         "colorcolor": "^1.1.1",
         "deep-extend": "^0.5.1",
+        "duck-duck-scrape": "^1.0.3",
         "eris": "github:abalabahaha/eris#dev",
         "expr-eval": "^1.0.1",
         "gifwrap": "^0.7.5",
+        "gm": "^1.23.1",
         "google-images": "^2.1.0",
         "html-entities": "^1.2.1",
         "inkjet": "^2.1.2",
-        "jimp": "^0.4.0",
+        "jimp": "^0.6.0",
         "jpeg-js": "^0.3.4",
         "lodash": "^4.17.10",
         "moment": "^2.22.1",
         "node-ffprobe": "^1.2.2",
+        "pngjs2": "^2.0.0",
+        "prominence": "^0.2.0",
         "require-reload": "^0.2.2",
         "sequelize": "^4.37.6",
         "sodium-native": "^2.1.5",
@@ -47,6 +51,6 @@
         "xmldom": "^0.1.27",
         "xpath": "0.0.24",
         "youtube-dl": "^1.12.2",
-        "ytdl-core": "^0.20.2"
+        "ytdl-core": "^0.20.4"
     }
 }
