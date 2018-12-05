@@ -1398,5 +1398,12 @@ If the bot has Manage Messages, it'll delete your regular command message.`,
         func: quote,
         group: "utils",
         aliases: ["q"]
+    },
+    {
+        name: "charinfo",
+        desc: "Get information on a character or string of characters.",
+        func: charinfo,
+        group: "utils",
+        aliases: ["char", "character"]
     }
 ];
