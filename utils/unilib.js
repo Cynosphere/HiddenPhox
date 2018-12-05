@@ -13,15 +13,17 @@ unilib.cacheList = async function() {
             if (x[0] != "" && x[1]) a[x[0].toLowerCase()] = x[1];
         });
 };
-unilib.cacheList();
+unilib.cacheList().then(x => {
+    unilib.getNamesFromString = function(string) {
+        let charcodes = Array.from(string).map(x =>
+            x.codePointAt().toString(16)
+        );
 
-unilib.getNamesFromString = function(string) {
-    let charcodes = Array.from(string).map(x => x.codePointAt().toString(16));
+        return charcodes.map(x => [
+            x.padStart(4, "0"),
+            unilib.data[x.padStart(4, "0")]
+        ]);
+    };
 
-    return charcodes.map(x => [
-        x.padStart(4, "0"),
-        unilib.data[x.padStart(4, "0")]
-    ]);
-};
-
-module.exports = unilib;
+    module.exports = unilib;
+});
