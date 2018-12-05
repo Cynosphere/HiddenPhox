@@ -2,14 +2,14 @@ const superagent = require("superagent");
 const unilib = { data: {} };
 
 unilib.cacheList = async function() {
-    unilib.raw = await superagent
+    let raw = await superagent
         .get("https://unicode.org/Public/UNIDATA/UnicodeData.txt")
         .then(x => x.text);
-    await unilib.raw
+    await raw
         .split("\n")
         .map(x => x.split(";").splice(0, 2))
         .map(x => {
-            if (x[0] != "") a[x[0].toLowerCase()] = x[1];
+            if (x[0] != "") unilib.data[x[0].toLowerCase()] = x[1];
         });
 };
 unilib.cacheList().then(x => {
