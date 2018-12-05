@@ -1237,6 +1237,45 @@ let quote = async function(ctx, msg, args) {
     }
 };
 
+let charinfo = async function(ctx, msg, args) {
+    if (!args) {
+        msg.channel.createMessage("Arguments required.");
+        return;
+    }
+
+    let out = ctx.utils.unilib
+        .getNamesFromString(args)
+        .map(
+            x =>
+                `\`\\u${x[0]}\`: ${x[1]} - ${String.fromCodePoint(
+                    `0x${x[0]}`
+                )} \u2014 <http://www.fileformat.info/info/unicode/char/${
+                    x[0]
+                }>`
+        )
+        .join("\n");
+
+    if (out.toString().length > 2000) {
+        let output = out.toString();
+        ctx.libs.superagent
+            .post("http://mystb.in/documents")
+            .send(output)
+            .then(res => {
+                let key = res.body.key;
+                msg.channel.createMessage(
+                    `\u2705 Output too long to send in a message: http://mystb.in/${key}.js`
+                );
+            })
+            .catch(e => {
+                msg.channel.createMessage(
+                    `Could not upload output to Mystbin.`
+                );
+            });
+    } else {
+        msg.channel.createMessage(out);
+    }
+};
+
 module.exports = [
     {
         name: "avatar",

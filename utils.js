@@ -510,5 +510,6 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
 //utils.google = require("./utils/google.js");
 
 utils.table = require("./utils/table.js");
+utils.unilib = require("./utils/unilib.js");
 
 module.exports = utils;
