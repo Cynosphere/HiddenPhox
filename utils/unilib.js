@@ -24,6 +24,6 @@ unilib.cacheList().then(x => {
             unilib.data[x.padStart(4, "0")]
         ]);
     };
-
-    module.exports = unilib;
 });
+
+module.exports = unilib;
