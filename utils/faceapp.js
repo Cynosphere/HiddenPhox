@@ -32,14 +32,14 @@ function createGarbageData() {
 
 const TEST_IMAGE_URL = "https://i.imgur.com/nVsxMNp.jpg";
 const API_BASE_URL = "https://phv3f.faceapp.io:443";
-const API_USER_AGENT = `FaceApp/3.2.1 (Linux; Android ${generateVersion()})`;
+const API_USER_AGENT = `FaceApp/3.2.2 (Linux; Android ${generateVersion()})`;
 const superagent = require("superagent");
 
 const getAvailableFilters = async file => {
     const deviceID = generateDeviceID();
 
     const payload = {
-        app_version: "3.2.1",
+        app_version: "3.2.2",
         device_id: deviceID,
         registration_id: deviceID,
         device_model: createGarbageData(),
