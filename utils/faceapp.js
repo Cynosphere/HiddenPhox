@@ -10,7 +10,7 @@ function generateDeviceID() {
 function createGarbageData() {
     let out = "";
     for (i = 0; i < 32; i++) {
-        out += String.fromCharCode(Math.floor(Math.random() * 255));
+        out += String.fromCharCode(Math.floor(32 + Math.random() * (126 - 32)));
     }
 
     return out;
