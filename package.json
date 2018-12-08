@@ -10,9 +10,7 @@
         "type": "git",
         "url": "git+https://github.com/Cynosphere/HiddenPhox.git"
     },
-    "keywords": [
-        "discord"
-    ],
+    "keywords": ["discord"],
     "author": "Cynthia Foxwell (Cynosphere)",
     "license": "MIT",
     "bugs": {
@@ -26,7 +24,6 @@
         "duck-duck-scrape": "^1.0.3",
         "eris": "github:abalabahaha/eris#dev",
         "expr-eval": "^1.0.1",
-        "faceapp": "^0.4.7",
         "gifwrap": "^0.7.5",
         "gm": "^1.23.1",
         "google-images": "^2.1.0",
