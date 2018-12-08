@@ -28,7 +28,7 @@ const getAvailableFilters = async file => {
         app_version: "3.2.1",
         device_id: deviceID,
         registration_id: deviceID,
-        device_model: createGarbageData(),
+        device_model: generateDeviceID(),
         lang_code: "en-US",
         sandbox: "False",
         system_version: "4.4.2",
