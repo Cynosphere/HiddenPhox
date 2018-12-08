@@ -2,6 +2,16 @@ const dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".sp
     ""
 );
 
+const vmaj = "45678".split("");
+const vmin = "01234".split("");
+const vrev = "0123456789".split("");
+
+function generateVersion() {
+    return `${vmaj[Math.floor(Math.random() * vmaj.length)]}.${
+        vmin[Math.floor(Math.random() * vmin.length)]
+    }.${vrev[Math.floor(Math.random() * vrev.length)]}`;
+}
+
 function generateDeviceID() {
     let out = "";
     for (i = 0; i < 16; i++) {
@@ -22,7 +32,7 @@ function createGarbageData() {
 
 const TEST_IMAGE_URL = "https://i.imgur.com/nVsxMNp.jpg";
 const API_BASE_URL = "https://phv3f.faceapp.io:443";
-const API_USER_AGENT = "FaceApp/3.2.1 (Linux; Android 4.4)";
+const API_USER_AGENT = `FaceApp/3.2.1 (Linux; Android ${generateVersion()})`;
 const superagent = require("superagent");
 
 const getAvailableFilters = async file => {
@@ -35,26 +45,20 @@ const getAvailableFilters = async file => {
         device_model: createGarbageData(),
         lang_code: "en-US",
         sandbox: "False",
-        system_version: "4.4.2",
+        system_version: generateVersion(),
         token_type: "fcm"
     };
 
     await superagent
         .post("https://api.faceapp.io/api/v3.0/devices/register")
         .set("Content-Type", "application/json")
-        .set(
-            "User-Agent",
-            API_USER_AGENT.replace(")", `, ${createGarbageData()})`)
-        )
+        .set("User-Agent", API_USER_AGENT)
         .set("X-FaceApp-DeviceID", deviceID)
         .send(JSON.stringify(payload));
 
     const { body } = await superagent
         .post(`${API_BASE_URL}/api/v3.1/photos`)
-        .set(
-            "User-Agent",
-            API_USER_AGENT.replace(")", `, ${createGarbageData()})`)
-        )
+        .set("User-Agent", API_USER_AGENT)
         .set("X-FaceApp-DeviceID", deviceID)
         .attach("file", file, "image.png");
 
@@ -111,10 +115,7 @@ const getFilterImage = async (args, filterID = "no-filter") => {
 
     const { body } = await superagent
         .get(url)
-        .set(
-            "User-Agent",
-            API_USER_AGENT.replace(")", `, ${createGarbageData()})`)
-        )
+        .set("User-Agent", API_USER_AGENT)
         .set("X-FaceApp-DeviceID", args.deviceID);
 
     return body;
