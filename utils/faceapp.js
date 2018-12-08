@@ -1,7 +1,11 @@
+const dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(
+    ""
+);
+
 function generateDeviceID() {
     let out = "";
     for (i = 0; i < 16; i++) {
-        out += String.fromCharCode(48 + Math.floor(Math.random() * (122 - 48)));
+        out += dict[Math.floor(Math.random() * dict.length)];
     }
 
     return out;
@@ -28,7 +32,7 @@ const getAvailableFilters = async file => {
         app_version: "3.2.1",
         device_id: deviceID,
         registration_id: deviceID,
-        device_model: generateDeviceID(),
+        device_model: createGarbageData(),
         lang_code: "en-US",
         sandbox: "False",
         system_version: "4.4.2",
