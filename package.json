@@ -10,7 +10,9 @@
         "type": "git",
         "url": "git+https://github.com/Cynosphere/HiddenPhox.git"
     },
-    "keywords": ["discord"],
+    "keywords": [
+        "discord"
+    ],
     "author": "Cynthia Foxwell (Cynosphere)",
     "license": "MIT",
     "bugs": {
@@ -49,6 +51,6 @@
         "xmldom": "^0.1.27",
         "xpath": "0.0.24",
         "youtube-dl": "^1.12.2",
-        "ytdl-core": "^0.20.4"
+        "ytdl-core": "^0.28.1"
     }
 }
