@@ -863,7 +863,7 @@ let presence = function(ctx, msg, args) {
                         value: u.game.state,
                         inline: true
                     });
-                if (u.game.party)
+                if (u.game.party && u.game.party.size)
                     embed.fields.push({
                         name: "Party Size",
                         value: `${u.game.party.size[0]} of ${
