@@ -210,11 +210,11 @@ let setav = async function(ctx, msg, args) {
             return;
         }
 
-        let req = await ctx.libs.request.get(url);
+        let req = await ctx.libs.superagent.get(url);
 
-        let data = `data:${res.headers["content-type"]};base64${new Buffer(
-            req.text
-        ).toString("base64")}`;
+        let data = `data:${req.type};base64${Buffer.from(req.body).toString(
+            "base64"
+        )}`;
         ctx.bot.editSelf({ avatar: data }).then(() => {
             msg.channel.createMessage(
                 emoji.get(":white_check_mark:") + " Avatar set."

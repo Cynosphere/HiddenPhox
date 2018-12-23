@@ -991,7 +991,7 @@ const emojiSets = {
     },
     mustd: {
         url:
-            "https://raw.githubusercontent.com/Mstrodl/mutant-standard-mirror/master/emoji/",
+            "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
         joiner: "-",
         ext: ".svg"
     },
@@ -1323,7 +1323,7 @@ Mods are defined as members which have any of those permissions:
         desc: "Displays info of a server",
         func: sinfo,
         group: "utils",
-        aliases: ["ginfo", "guildinfo", "serverinfo"]
+        aliases: ["ginfo", "guildinfo", "serverinfo", "guild"]
     },
     {
         name: "rinfo",
