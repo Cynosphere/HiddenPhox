@@ -110,7 +110,7 @@ let twimg = async function(msg, ctx) {
 };
 
 //fediimg
-const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(((@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))|(users\/([a-zA-Z0-9-_/]*)\/statuses\/([0-9]{17,21})))|(objects|notice)\/([a-zA-Z0-9-_/]*))/;
+const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(((@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))|(users\/([a-zA-Z0-9-_/]*)\/statuses\/([0-9]{17,21})))|(objects|notice|~\/notice)\/([a-zA-Z0-9-_/]*))/;
 
 async function getMastoImages(ctx, url, msg) {
     return new Promise(async (resolve, reject) => {
