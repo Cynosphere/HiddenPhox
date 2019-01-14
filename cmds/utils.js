@@ -1146,8 +1146,25 @@ let einfo = function(ctx, msg, args) {
     }
 };
 
+let turkey =
+    "trnsl.1.1.20150413T153034Z.d00fcc65d2f0083e.b8ed4e7ef8174912a00c422c951bf9674d64bafe"; // tr?
+
+let langCodes = `Azerbaijan - az, Malayalam - ml, Albanian - sq, Maltese - mt, Amharic - am, Macedonian - mk, English - en, Maori - mi, Arabic - ar, Marathi - mr, Armenian - hy, Mari - mhr, Afrikaans - af, Mongolian - mn, Basque - eu, German - de, Bashkir - ba, Nepali - ne, Belarusian - be, Norwegian - no, Bengali - bn, Punjabi - pa, Burmese - my, Papiamento - pap, Bulgarian - bg, Persian - fa, Bosnian - bs, Polish - pl, Welsh - cy, Portuguese - pt, Hungarian - hu, Romanian - ro, Vietnamese - vi, Russian - ru, Haitian/Creole - ht, Cebuano - ceb, Galician - gl, Serbian - sr, Dutch - nl, Sinhala - si, Hill - Mari - mrj, Slovakian - sk, Greek - el, Slovenian - sl, Georgian - ka, Swahili - sw, Gujarati - gu, Sundanese - su, Danish - da, Tajik - tg, Hebrew - he, Thai - th, Yiddish - yi, Tagalog - tl, Indonesian - id, Tamil - ta, Irish - ga, Tatar - tt, Italian - it, Telugu - te, Icelandic - is, Turkish - tr, Spanish - es, Udmurt - udm, Kazakh - kk, Uzbek - uz, Kannada - kn, Ukrainian - uk, Catalan - ca, Urdu - ur, Kyrgyz - ky, Finnish - fi, Chinese - zh, French - fr, Korean - ko, Hindi - hi, Xhosa - xh, Croatian - hr, Khmer - km, Czech - cs, Laotian - lo, Swedish - sv, Latin - la, Scottish - gd, Latvian - lv, Estonian - et, Lithuanian - lt, Esperanto - eo, Luxembourgish - lb, Javanese - jv, Malagasy - mg, Japanese - ja, Malay - ms`;
+
 let translate = async function(ctx, msg, args) {
     args = ctx.utils.formatArgs(args);
+
+    if (args[0] == "languages") {
+        msg.channel.createMessage({
+            embed: {
+                title: "Valid language codes",
+                color: ctx.utils.topColor(ctx, msg, ctx.bot.user.id, 0x8060c0),
+                description: `\`\`\`${langCodes}\`\`\``
+            }
+        });
+        return;
+    }
+
     if (args.length > 3) {
         msg.channel.createMessage(
             "Too many arguments, please wrap your to translate input in quotes."
@@ -1161,13 +1178,11 @@ let translate = async function(ctx, msg, args) {
 
     let out = await ctx.libs.superagent
         .get(
-            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(
-                lang1
-            )}&tl=${encodeURIComponent(lang2)}&dt=t&q=${encodeURIComponent(
-                inp
-            )}`
+            `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${turkey}&lang=${encodeURIComponent(
+                lang1 != "auto" ? lang1 + "-" + lang2 : lang2
+            )}&text=${encodeURIComponent(inp)}`
         )
-        .then(x => x.body[0][0][0]);
+        .then(x => x.body.text.join(" | "));
 
     msg.channel.createMessage(
         `[${lang1} -> ${lang2}] \`${inp}\` translates to \`${out}\``
