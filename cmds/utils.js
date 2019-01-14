@@ -1182,7 +1182,8 @@ let translate = async function(ctx, msg, args) {
                 lang1 != "auto" ? lang1 + "-" + lang2 : lang2
             )}&text=${encodeURIComponent(inp)}`
         )
-        .then(x => x.body.text.join(" | "));
+        .then(x => x.body.text.join(" | "))
+        .catch(e => e);
 
     msg.channel.createMessage(
         `[${lang1} -> ${lang2}] \`${inp}\` translates to \`${out}\``
