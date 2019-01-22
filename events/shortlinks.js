@@ -39,6 +39,19 @@ let onMessage = async function(msg, ctx) {
                 let url = res[m];
                 if (!url.startsWith(x)) return;
                 url = url.replace(x + "/", "");
+
+                if (x == "gh" || x == "gl" || x == "gd") {
+                    url = url.replace("#", "/issues/");
+                }
+
+                if (x == "gl") {
+                    url = url.replace("!", "/merge_requests/");
+                } else if (x == "gd") {
+                    url = url.replace("!", "/pulls/");
+                } else if (x == "gh") {
+                    url = url.replace("!", "/pull/");
+                }
+
                 url = reglinks[x].replace("$link$", url);
                 links.push(url);
             });
