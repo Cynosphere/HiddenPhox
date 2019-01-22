@@ -1,4 +1,4 @@
-const regex = /(?:\s|^)(gh|gl|gd|owo|sg|teknik|bb|yt|bc|bcu|sc|aur|bot|sw|tw|npm)\/([a-zA-Z0-9-_.#/]*)/g;
+const regex = /(?:\s|^)(gh|gl|gd|owo|sg|teknik|bb|yt|bc|bcu|sc|aur|bot|sw|tw|npm)\/([a-zA-Z0-9-_.#/!]*)/g;
 const reglinks = {
     gl: "https://gitlab.com/$link$",
     gh: "https://github.com/$link$",
