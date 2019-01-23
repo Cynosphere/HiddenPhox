@@ -22,7 +22,7 @@ let dehoist = function(ctx, msg, args) {
             }
             u
                 .edit({
-                    nick: `\uD82F\uDCA2${(u.nick && u.nick.slice(0, 30)) ||
+                    nick: `\uD834\uDD73${(u.nick && u.nick.slice(0, 30)) ||
                         u.username.slice(0, 30)}`
                 })
                 .then(() => {
