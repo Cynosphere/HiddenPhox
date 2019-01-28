@@ -71,7 +71,7 @@ let top = async function(ctx, msg, args) {
 
         let _list = new ctx.utils.table(["#", "User", "Currency"]);
         new Promise((resolve, reject)=>{
-            list.forEach(async x,i,a=>{
+            list.forEach((x,i,a)=>{
                 let u = ctx.bot.users.get(x.id);
                 if (u) {
                     _list.addRow([
