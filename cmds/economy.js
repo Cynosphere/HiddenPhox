@@ -70,8 +70,8 @@ let top = async function(ctx, msg, args) {
         list = list.splice(0, 10);
 
         let _list = new ctx.utils.table(["#", "User", "Currency"]);
-        for (let i = 0; i < list.length; i++) {
-            let u = ctx.bot.users.get(list[i].id);
+        list.forEach(async x=>{
+            let u = ctx.bot.users.get(x.id);
             if (u) {
                 _list.addRow([
                     i + 1,
@@ -85,7 +85,7 @@ let top = async function(ctx, msg, args) {
                     `${list[i].currency}FC`
                 ]);
             }
-        }
+        })
 
         msg.channel.createMessage(
             `__**Top 10 People with Most PhoxCoins [Global]**__\`\`\`\n${_list.render()}\`\`\``
