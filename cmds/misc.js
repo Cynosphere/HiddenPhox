@@ -7,9 +7,8 @@ let calc = function(ctx, msg, args) {
     let _x = a[1];
     _x = _x ? _x : 1;
     let parser = new ctx.libs.math();
-    msg.channel.createMessage(
-        "Result: " + parser.parse(exp).evaluate({ x: _x })
-    );
+    let result = parser.parse(exp).evaluate({ x: _x })
+    msg.channel.createMessage(`Result: ${result} ${result == 69 ? "(nice)" : ""}`);
 };
 
 let yt = async function(ctx, msg, args) {
