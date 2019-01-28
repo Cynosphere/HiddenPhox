@@ -1386,14 +1386,14 @@ generated, not any other info or what type it is.
         desc: "Get the raw image of an emoji.",
         func: jumbo,
         group: "utils",
-        aliases: ["e"]
+        aliases: ["e", "emote", "emoji"]
     },
     {
         name: "einfo",
         desc: "Get info of an emoji.",
         func: einfo,
         group: "utils",
-        aliases: ["emote", "emoji", "emoteinfo", "emojiinfo"]
+        aliases: ["emoteinfo", "emojiinfo"]
     },
     {
         name: "translate",
