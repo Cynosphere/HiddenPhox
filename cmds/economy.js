@@ -81,7 +81,7 @@ let top = async function(ctx, msg, args) {
             } else {
                 _list.addRow([
                     i + 1,
-                    `Uncached User (${u.id})`,
+                    `Uncached User (${u.id || "no id?????"})`,
                     `${list[i].currency}FC`
                 ]);
             }
