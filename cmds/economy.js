@@ -70,29 +70,26 @@ let top = async function(ctx, msg, args) {
         list = list.splice(0, 10);
 
         let _list = new ctx.utils.table(["#", "User", "Currency"]);
-        new Promise((resolve, reject)=>{
-            list.forEach((x,i,a)=>{
-                let u = ctx.bot.users.get(x.id);
-                if (u) {
-                    _list.addRow([
-                        i + 1,
-                        `${u.username}#${u.discriminator}`,
-                        `${list[i].currency}FC`
-                    ]);
-                } else {
-                    _list.addRow([
-                        i + 1,
-                        `Uncached User (${u.id || "no id?????"})`,
-                        `${list[i].currency}FC`
-                    ]);
-                }
-                if (i === a.length-1) resolve();
-            });
-        }).then(_=>{
-            msg.channel.createMessage(
-                `__**Top 10 People with Most PhoxCoins [Global]**__\`\`\`\n${_list.render()}\`\`\``
-            );
-        })
+        for (let i = 0; i < list.length; i++) {
+            let u = ctx.bot.users.get(list[i].id);
+            if (u) {
+                _list.addRow([
+                    i + 1,
+                    `${u.username}#${u.discriminator}`,
+                    `${list[i].currency}FC`
+                ]);
+            } else {
+                _list.addRow([
+                    i + 1,
+                    `Uncached User (${list[i].id})`,
+                    `${list[i].currency}FC`
+                ]);
+            }
+        }
+
+        msg.channel.createMessage(
+            `__**Top 10 People with Most PhoxCoins [Global]**__\`\`\`\n${_list.render()}\`\`\``
+        );
     } else if (args == "l" || args == "local") {
         if (!msg.channel.guild) {
             msg.channel.createMessage(`Not in a guild`);
