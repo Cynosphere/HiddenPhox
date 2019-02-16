@@ -419,6 +419,12 @@ let rave = async function(ctx, msg, args) {
 };
 
 let wolfram = async function(ctx, msg, args) {
+    let verbose = false;
+
+    if (args.includes("-v")) {
+        args = args.replace("-v ", "");
+        verbose = true;
+    }
     //not my key, not telling where i got it from tho
     let data = await ctx.libs.superagent
         .get(
@@ -440,31 +446,41 @@ let wolfram = async function(ctx, msg, args) {
         return;
     }
 
-    const embed = {
-        title: `Result for: \`${args}\``,
-        fields: [],
-        footer: {
-            icon_url: "http://www.wolframalpha.com/share.png",
-            text: "Powered by Wolfram Alpha"
-        },
-        image: {
-            url: data[1].subpods[0].img.src
-        }
-    };
+    if (verbose === true) {
+        const embed = {
+            title: `Result for: \`${args}\``,
+            fields: [],
+            footer: {
+                icon_url: "http://www.wolframalpha.com/share.png",
+                text: "Powered by Wolfram Alpha"
+            },
+            image: {
+                url: data[1].subpods[0].img.src
+            }
+        };
 
-    data.splice(1, 6).forEach(x => {
-        embed.fields.push({
-            name: x.title,
-            value: `[${
-                x.subpods[0].plaintext.length > 0
-                    ? x.subpods[0].plaintext
-                    : "<click for image>"
-            }](${x.subpods[0].img.src})`,
-            inline: true
+        data.splice(1, 6).forEach(x => {
+            embed.fields.push({
+                name: x.title,
+                value: `[${
+                    x.subpods[0].plaintext.length > 0
+                        ? x.subpods[0].plaintext
+                        : "<click for image>"
+                }](${x.subpods[0].img.src})`,
+                inline: true
+            });
         });
-    });
 
-    msg.channel.createMessage({ embed: embed });
+        msg.channel.createMessage({ embed: embed });
+    } else {
+        msg.channel.createMessage(
+            `\`${args}\` -> ${
+                data[1].subpods[0].plaintext.length > 0
+                    ? data[1].subpods[0].plaintext
+                    : data[1].subpods[0].img.src
+            }`
+        );
+    }
 };
 
 let no = function(ctx, msg, args) {
