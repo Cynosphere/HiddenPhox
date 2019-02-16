@@ -1009,13 +1009,23 @@ const emojiSets = {
         joiner: "_",
         ext: ".svg"
     },
-    noto: {
+    noto-old: {
         url:
-            "https://cdn.jsdelivr.net/gh/googlei18n/noto-emoji@43f47be9404018cd9d8f73a227363a8f20acdab5/svg/emoji_u",
+            "https://cdn.jsdelivr.net/gh/googlei18n/noto-emoji@e456654119cc3a5f9bebb7bbd00512456f983d2d/svg/emoji_u",
+        joiner: "_",
+        ext: ".svg"
+    },
+    noto: {
+        url: "https://gitcdn.xyz/repo/googlei18n/noto-emoji/master/svg/emoji_u",
         joiner: "_",
         ext: ".svg"
     },
     twemoji: {
+        url: "https://twitter.github.io/twemoji/2/svg/",
+        joiner: "-",
+        ext: ".svg"
+    },
+    twitter: {
         url: "https://twitter.github.io/twemoji/2/svg/",
         joiner: "-",
         ext: ".svg"
@@ -1032,7 +1042,13 @@ const emojiSets = {
         joiner: "-",
         ext: ".svg"
     },
-    mutant: {
+    mutstd: {
+        url:
+            "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
+        joiner: "-",
+        ext: ".svg"
+    },
+    ms: {
         url:
             "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
         joiner: "-",
@@ -1044,6 +1060,11 @@ const emojiSets = {
         ext: ".png"
     },
     facebook: {
+        url: "https://intrnl.github.io/assetsEmoji/facebook/emoji_u",
+        joiner: "_",
+        ext: ".png"
+    },
+    fb: {
         url: "https://intrnl.github.io/assetsEmoji/facebook/emoji_u",
         joiner: "_",
         ext: ".png"
