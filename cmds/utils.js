@@ -982,7 +982,21 @@ let presence = function(ctx, msg, args) {
                     u.status
                 ] +
                     " " +
-                    u.status}`
+                    u.status}\n\n__**Extended Status**__\n\uD83C\uDF10 **Web:** ${statusIcons[
+                    u.clientStatus.web
+                ] +
+                    " " +
+                    u.clientStatus
+                        .web}\n\uD83D\uDDA5 **Desktop:** ${statusIcons[
+                    u.clientStatus.desktop
+                ] +
+                    " " +
+                    u.clientStatus
+                        .desktop}\n\uD83D\uDCF1 **Mobile:** ${statusIcons[
+                    u.clientStatus.mobile
+                ] +
+                    " " +
+                    u.clientStatus.mobile}`
             );
         }
     });
