@@ -320,10 +320,10 @@ let uinfo = function(ctx, msg, args) {
                             name: "Status",
                             value: u.game
                                 ? u.game.url
-                                  ? "<:streaming:493173082308083722> [Streaming](" +
-                                    u.game.url +
-                                    ")"
-                                  : statusIcons[u.status] + " " + u.status
+                                    ? "<:streaming:493173082308083722> [Streaming](" +
+                                      u.game.url +
+                                      ")"
+                                    : statusIcons[u.status] + " " + u.status
                                 : statusIcons[u.status] + " " + u.status,
                             inline: true
                         },
@@ -336,8 +336,8 @@ let uinfo = function(ctx, msg, args) {
                             name: "Roles",
                             value: u.guild
                                 ? u.roles.length > 0
-                                  ? u.roles.map(r => `<@&${r}>`).join(", ")
-                                  : "No roles"
+                                    ? u.roles.map(r => `<@&${r}>`).join(", ")
+                                    : "No roles"
                                 : "No roles",
                             inline: true
                         },
@@ -528,14 +528,14 @@ let sinfo = async function(ctx, msg, args) {
                 {
                     name: "Humans",
                     value: `${g.memberCount - bots} (${Math.round(
-                        (g.memberCount - bots) / g.memberCount * 100
+                        ((g.memberCount - bots) / g.memberCount) * 100
                     )}% of members)`,
                     inline: true
                 },
                 {
                     name: "Bots",
                     value: `${bots} (${Math.round(
-                        bots / g.memberCount * 100
+                        (bots / g.memberCount) * 100
                     )}% of members)`,
                     inline: true
                 },
@@ -793,7 +793,7 @@ let slist = function(ctx, msg, args) {
         list.push({
             name: i + 1 + (index - 1) * 10 + ". " + s.name,
             value: `${s.memberCount} members, ${bots} bots (${Math.floor(
-                bots / s.memberCount * 100
+                (bots / s.memberCount) * 100
             )}%)\n${s.channels.size} channels, ${s.roles.size} roles`,
             inline: true
         });
@@ -831,16 +831,35 @@ let presence = function(ctx, msg, args) {
                         name: "Status",
                         value: u.game
                             ? u.game.url
-                              ? "<:streaming:313956277132853248> [Streaming](" +
-                                u.game.url +
-                                ")"
-                              : statusIcons[u.status] + " " + u.status
+                                ? "<:streaming:313956277132853248> [Streaming](" +
+                                  u.game.url +
+                                  ")"
+                                : statusIcons[u.status] + " " + u.status
                             : statusIcons[u.status] + " " + u.status,
                         inline: true
                     },
                     {
                         name: ptypes[(u.game && u.game.type) || 0],
                         value: u.game ? u.game.name : "Nothing",
+                        inline: true
+                    },
+                    {
+                        name: "Extended Statuses",
+                        value: `\uD83C\uDF10 Web: ${statusIcons[
+                            u.clientStatus.web
+                        ] +
+                            " " +
+                            u.clientStatus
+                                .web}\n\uD83D\uDDA5 Desktop: ${statusIcons[
+                            u.clientStatus.desktop
+                        ] +
+                            " " +
+                            u.clientStatus
+                                .desktop}\n\uD83D\uDCF1 Mobile: ${statusIcons[
+                            u.clientStatus.mobile
+                        ] +
+                            " " +
+                            u.clientStatus.mobile}`,
                         inline: true
                     }
                 ],
@@ -921,39 +940,37 @@ let presence = function(ctx, msg, args) {
             if (u.game.assets && u.game.assets.large_image) {
                 let jimp = require("jimp");
 
-                jimp
-                    .read(
-                        u.game.assets.large_image.startsWith("spotify:")
-                            ? u.game.assets.large_image.replace(
-                                  "spotify:",
-                                  "http://i.scdn.co/image/"
-                              )
-                            : `https://cdn.discordapp.com/app-assets/${
+                jimp.read(
+                    u.game.assets.large_image.startsWith("spotify:")
+                        ? u.game.assets.large_image.replace(
+                              "spotify:",
+                              "http://i.scdn.co/image/"
+                          )
+                        : `https://cdn.discordapp.com/app-assets/${
+                              u.game.application_id
+                          }/${u.game.assets.large_image}.png?size=128;`
+                ).then(async i => {
+                    let a = i.clone().resize(96, jimp.AUTO);
+                    let b =
+                        u.game.assets && u.game.assets.small_image
+                            ? `https://cdn.discordapp.com/app-assets/${
                                   u.game.application_id
-                              }/${u.game.assets.large_image}.png?size=128;`
-                    )
-                    .then(async i => {
-                        let a = i.clone().resize(96, jimp.AUTO);
-                        let b =
-                            u.game.assets && u.game.assets.small_image
-                                ? `https://cdn.discordapp.com/app-assets/${
-                                      u.game.application_id
-                                  }/${u.game.assets.small_image}.png?size=128;`
-                                : "";
+                              }/${u.game.assets.small_image}.png?size=128;`
+                            : "";
 
-                        if (b.length > 0) {
-                            b = await jimp.read(b);
-                            b = b.resize(32, jimp.AUTO);
-                            a.composite(b, 96 - 32, 96 - 32);
-                        }
+                    if (b.length > 0) {
+                        b = await jimp.read(b);
+                        b = b.resize(32, jimp.AUTO);
+                        a.composite(b, 96 - 32, 96 - 32);
+                    }
 
-                        a.getBuffer(jimp.MIME_PNG, (e, f) => {
-                            msg.channel.createMessage(
-                                { embed: embed },
-                                { name: "rpcicon.png", file: f }
-                            );
-                        });
+                    a.getBuffer(jimp.MIME_PNG, (e, f) => {
+                        msg.channel.createMessage(
+                            { embed: embed },
+                            { name: "rpcicon.png", file: f }
+                        );
                     });
+                });
             } else {
                 msg.channel.createMessage({ embed: embed });
             }
@@ -990,6 +1007,18 @@ const emojiSets = {
         ext: ".svg"
     },
     mustd: {
+        url:
+            "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
+        joiner: "-",
+        ext: ".svg"
+    },
+    mutant: {
+        url:
+            "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
+        joiner: "-",
+        ext: ".svg"
+    },
+    mutant: {
         url:
             "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
         joiner: "-",

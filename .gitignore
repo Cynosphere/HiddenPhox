@@ -61,5 +61,6 @@ typings/
 
 # im dumb ok
 config.json
+config.testing.json
 apikeys.json
 database.sqlite
