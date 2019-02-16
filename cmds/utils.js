@@ -845,17 +845,17 @@ let presence = function(ctx, msg, args) {
                     },
                     {
                         name: "Extended Statuses",
-                        value: `\uD83C\uDF10 Web: ${statusIcons[
+                        value: `\uD83C\uDF10 **Web:** ${statusIcons[
                             u.clientStatus.web
                         ] +
                             " " +
                             u.clientStatus
-                                .web}\n\uD83D\uDDA5 Desktop: ${statusIcons[
+                                .web}\n\uD83D\uDDA5 **Desktop:** ${statusIcons[
                             u.clientStatus.desktop
                         ] +
                             " " +
                             u.clientStatus
-                                .desktop}\n\uD83D\uDCF1 Mobile: ${statusIcons[
+                                .desktop}\n\uD83D\uDCF1 **Mobile:** ${statusIcons[
                             u.clientStatus.mobile
                         ] +
                             " " +
