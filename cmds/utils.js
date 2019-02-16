@@ -790,11 +790,14 @@ let slist = function(ctx, msg, args) {
 
     page.map((s, i) => {
         let bots = s.members.filter(u => u.bot).length;
+        let owner = ctx.bot.users.get(s.ownerID);
         list.push({
             name: i + 1 + (index - 1) * 10 + ". " + s.name,
             value: `${s.memberCount} members, ${bots} bots (${Math.floor(
                 (bots / s.memberCount) * 100
-            )}%)\n${s.channels.size} channels, ${s.roles.size} roles`,
+            )}%)\n${s.channels.size} channels, ${s.roles.size} roles\nOwner: ${
+                owner.username
+            }#${owner.discriminator} (${s.ownerID})`,
             inline: true
         });
     });
