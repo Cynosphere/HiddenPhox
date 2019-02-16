@@ -1009,7 +1009,7 @@ const emojiSets = {
         joiner: "_",
         ext: ".svg"
     },
-    noto-old: {
+    "noto-old": {
         url:
             "https://cdn.jsdelivr.net/gh/googlei18n/noto-emoji@e456654119cc3a5f9bebb7bbd00512456f983d2d/svg/emoji_u",
         joiner: "_",
