@@ -293,9 +293,9 @@ let vote = function(ctx, msg, args) {
                 }** has started a vote:\n**__${args}__**\n<:ms_tick:503341995348066313>: Yes\n<:ms_cross:503341994974773250>: No`
             )
             .then(m => {
-                m.addReaction(":GreenTick:349381062176145408");
+                m.addReaction(":ms_tick:503341995348066313");
                 setTimeout(
-                    () => m.addReaction(":RedTick:349381062054510604"),
+                    () => m.addReaction(":ms_cross:503341994974773250"),
                     750
                 );
             });
