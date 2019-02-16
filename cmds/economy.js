@@ -833,39 +833,39 @@ let sstate = async function(ctx, msg, args) {
 
             if (data.cd_jail > now) {
                 out.push(
-                    `<:RedTick:349381062054510604> **In Jail:** ${ctx.utils.remainingTime(
+                    `<:ms_cross:503341994974773250> **In Jail:** ${ctx.utils.remainingTime(
                         data.cd_jail - now
                     )} remaining.`
                 );
             } else {
-                out.push(`<:GreenTick:349381062176145408> **Not in jail.**`);
+                out.push(`<:ms_tick:503341995348066313> **Not in jail.**`);
             }
 
             if (data.cd_grace > now) {
                 out.push(
-                    `<:RedTick:349381062054510604> **Grace Period:** ${ctx.utils.remainingTime(
+                    `<:ms_cross:503341994974773250> **Grace Period:** ${ctx.utils.remainingTime(
                         data.cd_grace - now
                     )} remaining.`
                 );
             } else {
                 out.push(
-                    `<:GreenTick:349381062176145408> **Not in grace period.**`
+                    `<:ms_tick:503341995348066313> **Not in grace period.**`
                 );
             }
 
             if (data.cd_heist > now) {
                 out.push(
-                    `<:RedTick:349381062054510604> **Heist Cooldown:** ${ctx.utils.remainingTime(
+                    `<:ms_cross:503341994974773250> **Heist Cooldown:** ${ctx.utils.remainingTime(
                         data.cd_heist - now
                     )} remaining.`
                 );
             } else {
-                out.push(`<:GreenTick:349381062176145408> **Can heist.**`);
+                out.push(`<:ms_tick:503341995348066313> **Can heist.**`);
             }
 
             if (data.cd_regen > now) {
                 out.push(
-                    `<:RedTick:349381062054510604> **Point Regen:** ${ctx.utils.remainingTime(
+                    `<:ms_cross:503341994974773250> **Point Regen:** ${ctx.utils.remainingTime(
                         data.cd_regen - now
                     )} remaining.`
                 );

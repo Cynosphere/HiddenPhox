@@ -110,7 +110,7 @@ let mcserver = async function(ctx, msg, args) {
 
     let img = {
         file: await ctx.libs.superagent
-            .get("https://cdn.discordapp.com/emojis/402275812637933598.png")
+            .get("https://cdn.discordapp.com/emojis/543598700639813653.png")
             .buffer(1)
             .then(x => x.body),
         name: "icon.png"

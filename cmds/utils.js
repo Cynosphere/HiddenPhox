@@ -6,17 +6,38 @@ let statusIcons = {
 };
 
 let avatar = function(ctx, msg, args) {
-    ctx.utils.lookupUser(ctx, msg, args ? args : msg.author.mention).then(u => {
-        let av = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
-            u.avatar.startsWith("a_") ? "gif?size=1024&_=.gif" : "png?size=1024"
-        }`;
+    if (args && (args == "server" || args == "guild")) {
         msg.channel.createMessage({
             embed: {
-                title: `Avatar for **${u.username}#${u.discriminator}**:`,
-                image: { url: av }
+                title: `Server Icon:`,
+                image: {
+                    url: `https://cdn.discordapp.com/icons/${
+                        msg.channel.guild.id
+                    }/${msg.channel.guild.icon}.png?size=1024`
+                }
             }
         });
-    });
+    } else {
+        ctx.utils
+            .lookupUser(ctx, msg, args ? args : msg.author.mention)
+            .then(u => {
+                let av = `https://cdn.discordapp.com/avatars/${u.id}/${
+                    u.avatar
+                }.${
+                    u.avatar.startsWith("a_")
+                        ? "gif?size=1024&_=.gif"
+                        : "png?size=1024"
+                }`;
+                msg.channel.createMessage({
+                    embed: {
+                        title: `Avatar for **${u.username}#${
+                            u.discriminator
+                        }**:`,
+                        image: { url: av }
+                    }
+                });
+            });
+    }
 };
 
 let cflake = function(ctx, msg, args) {
@@ -35,11 +56,19 @@ let cflake = function(ctx, msg, args) {
 };
 
 let linvite = async function(ctx, msg, args) {
+    if (!args) {
+        msg.channel.createMessage("No invite code passed.");
+        return;
+    }
     let data = await ctx.libs.superagent
         .get(`https://discordapp.com/api/v7/invites/${args}?with_counts=1`)
         .set("User-Agent", "HiddenPhox (v9, Eris)")
         .set("Content-Type", "application/json")
-        .set("Authorization", ctx.bot.token);
+        .set("Authorization", ctx.bot.token)
+        .catch(x => {
+            msg.channel.createMessage("Invite provided is not valid.");
+            return;
+        });
     let inv = data.body;
 
     if (inv.message && inv.message == "Unknown Invite") {
@@ -73,12 +102,12 @@ let linvite = async function(ctx, msg, args) {
                         inv.guild.features.includes("VANITY_URL") ||
                         inv.guild.features.includes("INVITE_SPLASH") ||
                         inv.guild.features.includes("VIP_REGIONS")
-                            ? "<:GreenTick:349381062176145408>"
-                            : "<:RedTick:349381062054510604>"
-                    }\t\t<:verified:439149164560121865>: ${
+                            ? "<:ms_tick:503341995348066313>"
+                            : "<:ms_cross:503341994974773250>"
+                    }\t\t<:verified:543598700920832030>: ${
                         inv.guild.features.includes("VERIFIED")
-                            ? "<:GreenTick:349381062176145408>"
-                            : "<:RedTick:349381062054510604>"
+                            ? "<:ms_tick:503341995348066313>"
+                            : "<:ms_cross:503341994974773250>"
                     }`,
                     inline: false
                 }
@@ -308,7 +337,9 @@ let uinfo = function(ctx, msg, args) {
                 u = msg.channel.guild.members.get(u.id);
                 let e = {
                     color: ctx.utils.topColor(ctx, msg, u.id),
-                    title: `User Info: \`${u.username}#${u.discriminator}\``,
+                    title: `User Info: \`${u.username}#${u.discriminator}\` ${
+                        u.bot ? "<:boat:546212361472835584>" : ""
+                    }`,
                     fields: [
                         { name: "ID", value: u.id, inline: true },
                         {
@@ -400,7 +431,9 @@ let uinfo = function(ctx, msg, args) {
                 let e = {
                     color: 0x7289da,
 
-                    title: `User Info: \`${u.username}#${u.discriminator}\``,
+                    title: `User Info: \`${u.username}#${u.discriminator}\` ${
+                        u.bot ? "<:boat:546212361472835584>" : ""
+                    }`,
                     fields: [
                         { name: "ID", value: u.id, inline: true },
                         {
@@ -609,22 +642,16 @@ let sinfo = async function(ctx, msg, args) {
                 },
                 {
                     name: "Icon",
-                    value:
-                        "[Full Size](https://cdn.discordapp.com/icons/" +
-                        g.id +
-                        "/" +
-                        g.icon +
-                        ".png?size=1024)",
+                    value: `[Full Size](https://cdn.discordapp.com/icons/${
+                        g.id
+                    }/${g.icon}.png?size=1024)`,
                     inline: true
                 }
             ],
             thumbnail: {
-                url:
-                    "https://cdn.discordapp.com/icons/" +
-                    g.id +
-                    "/" +
-                    g.icon +
-                    ".png?size=256"
+                url: `https://cdn.discordapp.com/icons/${g.id}/${
+                    g.icon
+                }.png?size=256`
             }
         };
 
@@ -635,12 +662,12 @@ let sinfo = async function(ctx, msg, args) {
                 (g.features.includes("VANITY_URL") ||
                     g.features.includes("INVITE_SPLASH") ||
                     g.features.includes("VIP_REGIONS"))
-                    ? "<:GreenTick:349381062176145408>"
-                    : "<:RedTick:349381062054510604>"
-            }\t\t<:verified:439149164560121865>: ${
+                    ? "<:ms_tick:503341995348066313>"
+                    : "<:ms_cross:503341994974773250>"
+            }\t\t<:verified:543598700920832030>: ${
                 g.features && g.features.includes("VERIFIED")
-                    ? "<:GreenTick:349381062176145408>"
-                    : "<:RedTick:349381062054510604>"
+                    ? "<:ms_tick:503341995348066313>"
+                    : "<:ms_cross:503341994974773250>"
             }`,
             inline: true
         });
@@ -834,7 +861,7 @@ let presence = function(ctx, msg, args) {
                         name: "Status",
                         value: u.game
                             ? u.game.url
-                                ? "<:streaming:313956277132853248> [Streaming](" +
+                                ? "<:streaming:493173082308083722> [Streaming](" +
                                   u.game.url +
                                   ")"
                                 : statusIcons[u.status] + " " + u.status
@@ -910,7 +937,7 @@ let presence = function(ctx, msg, args) {
                     url:
                         u.game.assets && u.game.assets.large_image
                             ? "attachment://rpcicon.png"
-                            : "https://cdn.discordapp.com/emojis/402275812637933598.png"
+                            : "https://cdn.discordapp.com/emojis/543598700639813653.png"
                 };
             }
 
@@ -1399,21 +1426,21 @@ Mods are defined as members which have any of those permissions:
         desc: "Get info on a user.",
         func: uinfo,
         group: "utils",
-        aliases: ["userinfo"]
+        aliases: ["userinfo", "user"]
     },
     {
         name: "sinfo",
         desc: "Displays info of a server",
         func: sinfo,
         group: "utils",
-        aliases: ["ginfo", "guildinfo", "serverinfo", "guild"]
+        aliases: ["ginfo", "guildinfo", "serverinfo", "guild", "server"]
     },
     {
         name: "rinfo",
         desc: "Displays info of a role",
         func: rinfo,
         group: "utils",
-        aliases: ["roleinfo"]
+        aliases: ["roleinfo", "role"]
     },
     {
         name: "cflake",

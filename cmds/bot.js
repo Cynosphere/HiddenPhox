@@ -217,7 +217,7 @@ let setav = async function(ctx, msg, args) {
         )}`;
         ctx.bot.editSelf({ avatar: data }).then(() => {
             msg.channel.createMessage(
-                emoji.get(":white_check_mark:") + " Avatar set."
+                emoji.get("<:ms_tick:503341995348066313>") + " Avatar set."
             );
         });
     } else {

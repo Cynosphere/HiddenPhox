@@ -7,8 +7,10 @@ let calc = function(ctx, msg, args) {
     let _x = a[1];
     _x = _x ? _x : 1;
     let parser = new ctx.libs.math();
-    let result = parser.parse(exp).evaluate({ x: _x })
-    msg.channel.createMessage(`Result: ${result} ${result == 69 ? "(nice)" : ""}`);
+    let result = parser.parse(exp).evaluate({ x: _x });
+    msg.channel.createMessage(
+        `Result: ${result} ${result == 69 ? "(nice)" : ""}`
+    );
 };
 
 let yt = async function(ctx, msg, args) {
@@ -288,7 +290,7 @@ let vote = function(ctx, msg, args) {
             .createMessage(
                 `**${msg.author.username}#${
                     msg.author.discriminator
-                }** has started a vote:\n**__${args}__**\n<:GreenTick:349381062176145408>: Yes\n<:RedTick:349381062054510604>: No`
+                }** has started a vote:\n**__${args}__**\n<:ms_tick:503341995348066313>: Yes\n<:ms_cross:503341994974773250>: No`
             )
             .then(m => {
                 m.addReaction(":GreenTick:349381062176145408");
@@ -428,13 +430,13 @@ let wolfram = async function(ctx, msg, args) {
     data = data.queryresult.pods;
 
     if (!data) {
-        msg.channel.createMessage(":no_entry_sign: No answer.");
+        msg.channel.createMessage("<:ms_cross:503341994974773250> No answer.");
         return;
     }
 
     if (data[0].subpods[0].plaintext.includes("geoIP")) {
         //fake no answer
-        msg.channel.createMessage(":no_entry_sign: No answer.");
+        msg.channel.createMessage("<:ms_cross:503341994974773250> No answer.");
         return;
     }
 

@@ -11,6 +11,10 @@ const plregex2 = /^PL[a-zA-Z0-9-_]{1,32}$/;
 const mp3regex = /^(https?:\/\/)?.*\..*\/.+\.(mp3|ogg|flac|wav)$/;
 const scregex = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/.+$/;
 const scregex2 = /^sc:.+\/.+$/;
+const scplregex = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/sets\/.+$/;
+const scplregex2 = /^sc:.+\/sets\/.+$/;
+const scplregex3 = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/likes$/;
+const scplregex4 = /^sc:.+\/likes$/;
 
 let createEndFunction = function(id, url, type, msg, ctx) {
     if (ctx.vc.get(id).evntEnd) return;
@@ -112,19 +116,20 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
             );
 
             if (item >= data.length - 1) {
-                out
-                    .edit({
-                        embed: {
-                            title: ":white_check_mark: Processed playlist",
-                            description: `Done processing!`,
-                            color: 0xff80c0
-                        }
-                    })
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                out.edit({
+                    embed: {
+                        title:
+                            "<:ms_tick:503341995348066313> Processed playlist",
+                        description: `Done processing!`,
+                        color: 0xff80c0
+                    }
+                }).then(x => setTimeout(() => x.delete(), 10000));
             }
         }, 2500 * item);
     }
 };
+
+let doSCPlaylistThingsOk = async function(ctx, msg, url) {};
 
 let doMusicThingsOk = async function(
     id,
@@ -163,7 +168,7 @@ let doMusicThingsOk = async function(
                         msg.channel
                             .createMessage({
                                 embed: {
-                                    title: `:white_check_mark: Added to queue`,
+                                    title: `<:ms_tick:503341995348066313> Added to queue`,
                                     fields: [
                                         {
                                             name: "Title",
@@ -193,7 +198,7 @@ let doMusicThingsOk = async function(
                         msg.channel
                             .createMessage({
                                 embed: {
-                                    title: `:white_check_mark: Added to queue`,
+                                    title: `<:ms_tick:503341995348066313> Added to queue`,
                                     fields: [
                                         {
                                             name: "Title",
@@ -431,7 +436,7 @@ let doMusicThingsOk = async function(
                 msg.channel
                     .createMessage({
                         embed: {
-                            title: `:white_check_mark: Added to queue`,
+                            title: `<:ms_tick:503341995348066313> Added to queue`,
                             fields: [
                                 {
                                     name: "Title",
@@ -625,15 +630,15 @@ let doMusicThingsOk = async function(
                             len: stream
                                 ? 0
                                 : data && data.format
-                                  ? Math.floor(data.format.duration) * 1000
-                                  : 0,
+                                ? Math.floor(data.format.duration) * 1000
+                                : 0,
                             addedBy: addedBy,
                             stream: stream
                         });
                         msg.channel
                             .createMessage({
                                 embed: {
-                                    title: `:white_check_mark: Added to queue`,
+                                    title: `<:ms_tick:503341995348066313> Added to queue`,
                                     fields: [
                                         {
                                             name: "Title",
@@ -646,10 +651,10 @@ let doMusicThingsOk = async function(
                                                 stream
                                                     ? 0
                                                     : data && data.format
-                                                      ? Math.floor(
-                                                            data.format.duration
-                                                        ) * 1000
-                                                      : 0
+                                                    ? Math.floor(
+                                                          data.format.duration
+                                                      ) * 1000
+                                                    : 0
                                             ),
                                             inline: true
                                         },
@@ -727,10 +732,10 @@ let doMusicThingsOk = async function(
                                             stream
                                                 ? 0
                                                 : data && data.format
-                                                  ? Math.floor(
-                                                        data.format.duration
-                                                    ) * 1000
-                                                  : 0
+                                                ? Math.floor(
+                                                      data.format.duration
+                                                  ) * 1000
+                                                : 0
                                         ),
                                         inline: true
                                     },
@@ -752,8 +757,8 @@ let doMusicThingsOk = async function(
                         conn.len = stream
                             ? 0
                             : data && data.format
-                              ? Math.floor(data.format.duration) * 1000
-                              : 0;
+                            ? Math.floor(data.format.duration) * 1000
+                            : 0;
                         conn.start = Date.now();
                         conn.end = Date.now() + conn.len;
                     });
@@ -826,10 +831,10 @@ let doMusicThingsOk = async function(
                                                 stream
                                                     ? 0
                                                     : data && data.format
-                                                      ? Math.floor(
-                                                            data.format.duration
-                                                        ) * 1000
-                                                      : 0
+                                                    ? Math.floor(
+                                                          data.format.duration
+                                                      ) * 1000
+                                                    : 0
                                             ),
                                             inline: true
                                         },
@@ -851,8 +856,8 @@ let doMusicThingsOk = async function(
                             conn.len = stream
                                 ? 0
                                 : data && data.format
-                                  ? Math.floor(data.format.duration) * 1000
-                                  : 0;
+                                ? Math.floor(data.format.duration) * 1000
+                                : 0;
                             conn.start = Date.now();
                             conn.end = Date.now() + conn.len;
                         });
@@ -985,7 +990,11 @@ let doQueueRemovalThingsOk = async function(ctx, msg, data) {
                 );
 
                 msg.channel
-                    .createMessage(`:x: Removed \`${torem.title}\` from queue.`)
+                    .createMessage(
+                        `<:ms_cross:503341994974773250> Removed \`${
+                            torem.title
+                        }\` from queue.`
+                    )
                     .then(x => setTimeout(() => x.delete(), 10000));
                 ctx.vc.get(msg.member.voiceState.channelID).queue = ctx.vc
                     .get(msg.member.voiceState.channelID)
