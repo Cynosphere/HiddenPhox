@@ -123,13 +123,13 @@ client.on("guildCreate", function(guild) {
     ctx.utils.logInfo(
         ctx,
         `Joined Guild: '${guild.name}' (${guild.id}) | Percentage: ${Math.floor(
-            bots / guild.memberCount * 100
+            (bots / guild.memberCount) * 100
         )}%, Bots: ${bots}, Humans: ${guild.memberCount - bots}, Total: ${
             guild.memberCount
         } | Now in ${ctx.bot.guilds.size} guilds.`
     );
 
-    if (bots >= 50 && Math.floor(bots / guild.memberCount * 100) >= 70) {
+    if (bots >= 50 && Math.floor((bots / guild.memberCount) * 100) >= 70) {
         ctx.utils.logInfo(
             ctx,
             `'${guild.name}' (${
@@ -421,14 +421,14 @@ process.on("unhandledRejection", (e, p) => {
     //console.log("Uncaught rejection: "+e.message);
     if (e.length > 1900) {
         ctx.libs.request.post(
-            "http://mystb.in/documents",
+            "https://mystb.in/documents",
             { body: `${e} (${p})` },
             function(err, res, body) {
                 if (res.statusCode == 200) {
                     let key = JSON.parse(body).key;
                     ctx.utils.logWarn(
                         ctx,
-                        `Uncaught rejection: Output too long to send in a message: http://mystb.in/${key}.js`
+                        `Uncaught rejection: Output too long to send in a message: https://mystb.in/${key}.js`
                     );
                 } else {
                     ctx.bot
@@ -448,14 +448,14 @@ client.on("error", e => {
     //console.log("Bot error: "+e.message);
     if (e.message.length > 1900) {
         ctx.libs.request.post(
-            "http://mystb.in/documents",
+            "https://mystb.in/documents",
             { body: e.message },
             function(err, res, body) {
                 if (res.statusCode == 200) {
                     let key = JSON.parse(body).key;
                     ctx.utils.logWarn(
                         ctx,
-                        `Error: Output too long to send in a message: http://mystb.in/${key}.js`
+                        `Error: Output too long to send in a message: https://mystb.in/${key}.js`
                     );
                 } else {
                     ctx.bot

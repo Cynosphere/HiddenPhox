@@ -1368,12 +1368,12 @@ let charinfo = async function(ctx, msg, args) {
     if (out.toString().length > 2000) {
         let output = out.toString();
         ctx.libs.superagent
-            .post("http://mystb.in/documents")
+            .post("https://mystb.in/documents")
             .send(output)
             .then(res => {
                 let key = res.body.key;
                 msg.channel.createMessage(
-                    `\u2705 Output too long to send in a message: http://mystb.in/${key}.js`
+                    `\u2705 Output too long to send in a message: https://mystb.in/${key}.js`
                 );
             })
             .catch(e => {
