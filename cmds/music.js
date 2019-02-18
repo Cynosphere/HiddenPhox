@@ -1,5 +1,4 @@
 const ytdl = require("ytdl-core");
-const _ytdl = require("ytdl-core-discord");
 //const scdl = require("youtube-dl");
 const probe = require("node-ffprobe");
 
@@ -235,7 +234,7 @@ let doMusicThingsOk = async function(
                     }
                 });
             } else {
-                conn.play(await _ytdl(url, { quality: "highestaudio" }), {
+                conn.play(ytdl(url, { quality: "highestaudio" }), {
                     inlineVolume: true,
                     voiceDataTimeout: 60000
                 });
@@ -324,7 +323,7 @@ let doMusicThingsOk = async function(
                 .then(async conn => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    conn.play(await _ytdl(url, { quality: "highestaudio" }), {
+                    conn.play(ytdl(url, { quality: "highestaudio" }), {
                         inlineVolume: true,
                         voiceDataTimeout: 60000
                     });
