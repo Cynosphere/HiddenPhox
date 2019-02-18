@@ -50,6 +50,6 @@
         "xpath": "0.0.24",
         "youtube-dl": "^1.12.2",
         "ytdl-core": "^0.29.1",
-        "ytdl-core-discorrd": "^1.0.2"
+        "ytdl-core-discord": "^1.0.2"
     }
 }
