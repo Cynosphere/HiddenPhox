@@ -1,4 +1,4 @@
-const ytdl = require("ytdl-core");
+const ytdl = require("ytdl-core-discord");
 //const scdl = require("youtube-dl");
 const probe = require("node-ffprobe");
 
@@ -228,7 +228,7 @@ let doMusicThingsOk = async function(
                     }
                 });
             } else {
-                conn.play(ytdl(url, { quality: "highestaudio" }), {
+                conn.play(await ytdl(url, { quality: "highestaudio" }), {
                     inlineVolume: true
                 });
                 ytdl.getInfo(url, {}, function(err, info) {
@@ -313,10 +313,10 @@ let doMusicThingsOk = async function(
         } else {
             ctx.bot
                 .joinVoiceChannel(id)
-                .then(conn => {
+                .then(async conn => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    conn.play(ytdl(url, { quality: "highestaudio" }), {
+                    conn.play(await ytdl(url, { quality: "highestaudio" }), {
                         inlineVolume: true
                     });
                     ytdl.getInfo(url, {}, function(err, info) {

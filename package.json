@@ -40,8 +40,6 @@
         "prominence": "^0.2.0",
         "require-reload": "^0.2.2",
         "sequelize": "^4.37.6",
-        "sodium-native": "^2.1.5",
-        "sourcequery": "0.0.2",
         "sqlite3": "^4.0.2",
         "steam-web-api2": "^2.0.3",
         "superagent": "^3.8.3",
@@ -51,6 +49,7 @@
         "xmldom": "^0.1.27",
         "xpath": "0.0.24",
         "youtube-dl": "^1.12.2",
-        "ytdl-core": "^0.28.1"
+        "ytdl-core": "^0.29.1",
+        "ytdl-core-discorrd": "^1.0.2"
     }
 }
