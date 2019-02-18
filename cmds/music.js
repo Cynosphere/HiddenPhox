@@ -230,7 +230,8 @@ let doMusicThingsOk = async function(
                 });
             } else {
                 conn.play(await _ytdl(url, { quality: "highestaudio" }), {
-                    inlineVolume: true
+                    inlineVolume: true,
+                    voiceDataTimeout: 60000
                 });
                 ytdl.getInfo(url, {}, function(err, info) {
                     if (err) {
@@ -318,7 +319,8 @@ let doMusicThingsOk = async function(
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
                     conn.play(await _ytdl(url, { quality: "highestaudio" }), {
-                        inlineVolume: true
+                        inlineVolume: true,
+                        voiceDataTimeout: 60000
                     });
                     ytdl.getInfo(url, {}, function(err, info) {
                         if (err) {
@@ -512,7 +514,8 @@ let doMusicThingsOk = async function(
                 conn.end = Date.now() + conn.len;
 
                 conn.play(info.stream_url + "?client_id=" + scCID, {
-                    inlineVolume: true
+                    inlineVolume: true,
+                    voiceDataTimeout: 60000
                 });
             }
         } else {
@@ -570,7 +573,8 @@ let doMusicThingsOk = async function(
                     conn.end = Date.now() + conn.len;
 
                     conn.play(info.stream_url + "?client_id=" + scCID, {
-                        inlineVolume: true
+                        inlineVolume: true,
+                        voiceDataTimeout: 60000
                     });
                     createEndFunction(id, url, type, msg, ctx);
                 })
@@ -681,7 +685,10 @@ let doMusicThingsOk = async function(
                 }
             } else {
                 try {
-                    conn.play(url, { inlineVolume: true });
+                    conn.play(url, {
+                        inlineVolume: true,
+                        voiceDataTimeout: 60000
+                    });
                     probe(url, function(e, data) {
                         let title = url;
                         let stream = false;
@@ -780,7 +787,10 @@ let doMusicThingsOk = async function(
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
                     try {
-                        conn.play(url, { inlineVolume: true });
+                        conn.play(url, {
+                            inlineVolume: true,
+                            voiceDataTimeout: 60000
+                        });
                         probe(url, function(e, data) {
                             let title = url;
                             let stream = false;
