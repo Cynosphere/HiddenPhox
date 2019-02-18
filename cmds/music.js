@@ -47,6 +47,9 @@ let createEndFunction = function(id, url, type, msg, ctx) {
                 conn.removeListener("warn", e =>
                     ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`)
                 );
+                conn.removeListener("debug", e =>
+                    ctx.utils.logWarn(ctx, `[music] debug: ${e}`)
+                );
                 ctx.vc.delete(id);
             }, 1000);
         }
@@ -61,6 +64,9 @@ let createEndFunction = function(id, url, type, msg, ctx) {
     ctx.vc
         .get(id)
         .on("warn", e => ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`));
+    ctx.vc
+        .get(id)
+        .on("debug", e => ctx.utils.logWarn(ctx, `[music] debug: ${e}`));
 };
 
 let doPlaylistThingsOk = async function(ctx, msg, url) {
