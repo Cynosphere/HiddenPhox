@@ -16,7 +16,7 @@ const scplregex2 = /^sc:.+\/sets\/.+$/;
 const scplregex3 = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/likes$/;
 const scplregex4 = /^sc:.+\/likes$/;
 
-let createEndFunction = function(id, url, type, msg, ctx) {
+function createEndFunction(id, url, type, msg, ctx) {
     if (ctx.vc.get(id).evntEnd) return;
     ctx.vc.get(id).queue = ctx.vc.get(id).queue ? ctx.vc.get(id).queue : [];
 
@@ -46,9 +46,6 @@ let createEndFunction = function(id, url, type, msg, ctx) {
                 conn.removeListener("warn", e =>
                     ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`)
                 );
-                conn.removeListener("debug", e =>
-                    ctx.utils.logWarn(ctx, `[music] debug: ${e}`)
-                );
                 ctx.vc.delete(id);
             }, 1000);
         }
@@ -63,12 +60,9 @@ let createEndFunction = function(id, url, type, msg, ctx) {
     ctx.vc
         .get(id)
         .on("warn", e => ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`));
-    ctx.vc
-        .get(id)
-        .on("debug", e => ctx.utils.logWarn(ctx, `[music] debug: ${e}`));
-};
+}
 
-let doPlaylistThingsOk = async function(ctx, msg, url) {
+async function doPlaylistThingsOk(ctx, msg, url) {
     const plid =
         (url.match(plregex) && url.match(plregex)[4]) ||
         (url.match(plregex2) && url.match(plregex2)[0]);
@@ -133,19 +127,11 @@ let doPlaylistThingsOk = async function(ctx, msg, url) {
             }
         }, 2500 * item);
     }
-};
+}
 
-let doSCPlaylistThingsOk = async function(ctx, msg, url) {};
+async function doSCPlaylistThingsOk(ctx, msg, url) {}
 
-let doMusicThingsOk = async function(
-    id,
-    url,
-    type,
-    msg,
-    ctx,
-    addedBy,
-    playlist
-) {
+async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
     if (type == "yt") {
         if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
@@ -169,74 +155,44 @@ let doMusicThingsOk = async function(
                         len: info.length_seconds * 1000,
                         addedBy: addedBy
                     });
-                    if (info == null || info.title == null) {
-                        if (playlist) return;
-                        msg.channel
-                            .createMessage({
-                                embed: {
-                                    title: `<:ms_tick:503341995348066313> Added to queue`,
-                                    fields: [
-                                        {
-                                            name: "Title",
-                                            value: url,
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Length",
-                                            value: "Unknown",
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Added By",
-                                            value: `<@${addedBy}>`,
-                                            inline: true
-                                        }
-                                    ],
-                                    color: 0x80ffc0,
-                                    thumbnail: {
-                                        url: info.thumbnail_url
+                    if (playlist) return;
+                    msg.channel
+                        .createMessage({
+                            embed: {
+                                title: `<:ms_tick:503341995348066313> Added to queue`,
+                                fields: [
+                                    {
+                                        name: "Title",
+                                        value: info.title ? info.title : url,
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Length",
+                                        value: info.length_seconds
+                                            ? ctx.utils.remainingTime(
+                                                  info.length_seconds * 1000
+                                              )
+                                            : "Unknown",
+                                        inline: true
+                                    },
+                                    {
+                                        name: "Added By",
+                                        value: `<@${addedBy}>`,
+                                        inline: true
                                     }
+                                ],
+                                color: 0x80ffc0,
+                                thumbnail: {
+                                    url: info.thumbnail_url
                                 }
-                            })
-                            .then(x => setTimeout(() => x.delete(), 10000));
-                    } else {
-                        if (playlist) return;
-                        msg.channel
-                            .createMessage({
-                                embed: {
-                                    title: `<:ms_tick:503341995348066313> Added to queue`,
-                                    fields: [
-                                        {
-                                            name: "Title",
-                                            value: info.title,
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Length",
-                                            value: ctx.utils.remainingTime(
-                                                info.length_seconds * 1000
-                                            ),
-                                            inline: true
-                                        },
-                                        {
-                                            name: "Added By",
-                                            value: `<@${addedBy}>`,
-                                            inline: true
-                                        }
-                                    ],
-                                    color: 0x80ffc0,
-                                    thumbnail: {
-                                        url: info.thumbnail_url
-                                    }
-                                }
-                            })
-                            .then(x => setTimeout(() => x.delete(), 10000));
-                    }
+                            }
+                        })
+                        .then(x => setTimeout(() => x.delete(), 10000));
                 });
             } else {
                 conn.play(ytdl(url, { quality: "highestaudio" }), {
                     inlineVolume: true,
-                    voiceDataTimeout: 60000
+                    voiceDataTimeout: -1
                 });
                 ytdl.getInfo(url, {}, function(err, info) {
                     if (err) {
@@ -249,72 +205,46 @@ let doMusicThingsOk = async function(
                             .then(x => setTimeout(() => x.delete(), 10000));
                         return;
                     }
-                    if (info == null || info.title == null) {
-                        msg.channel.createMessage({
-                            embed: {
-                                title: `:musical_note: Now Playing`,
-                                fields: [
-                                    {
-                                        name: "Title",
-                                        value: url,
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Length",
-                                        value: "Unknown",
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Added By",
-                                        value: `<@${addedBy}>`,
-                                        inline: true
-                                    }
-                                ],
-                                color: 0x80c0ff
-                            }
-                        });
-                        conn.np = url;
-                        conn.len = 0;
-                        conn.start = Date.now();
-                        conn.end = Date.now();
-                    } else {
-                        msg.channel.createMessage({
-                            embed: {
-                                title: `:musical_note: Now Playing`,
-                                fields: [
-                                    {
-                                        name: "Title",
-                                        value: info.title,
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Length",
-                                        value: ctx.utils.remainingTime(
-                                            info.length_seconds * 1000
-                                        ),
-                                        inline: true
-                                    },
-                                    {
-                                        name: "Added By",
-                                        value: `<@${addedBy}>`,
-                                        inline: true
-                                    }
-                                ],
-                                color: 0x80c0ff,
-                                thumbnail: {
-                                    url: info.thumbnail_url
+                    msg.channel.createMessage({
+                        embed: {
+                            title: `:musical_note: Now Playing`,
+                            fields: [
+                                {
+                                    name: "Title",
+                                    value: info.title ? info.title : url,
+                                    inline: true
+                                },
+                                {
+                                    name: "Length",
+                                    value: info.length_seconds
+                                        ? ctx.utils.remainingTime(
+                                              info.length_seconds * 1000
+                                          )
+                                        : "Unknown",
+                                    inline: true
+                                },
+                                {
+                                    name: "Added By",
+                                    value: `<@${addedBy}>`,
+                                    inline: true
                                 }
+                            ],
+                            color: 0x80c0ff,
+                            thumbnail: {
+                                url: info.thumbnail_url
                             }
-                        });
-                        conn.np = {
-                            title: info.title,
-                            addedBy: addedBy,
-                            thumb: info.thumbnail_url
-                        };
-                        conn.len = info.length_seconds * 1000;
-                        conn.start = Date.now();
-                        conn.end = Date.now() + conn.len;
-                    }
+                        }
+                    });
+                    conn.np = {
+                        title: info.title,
+                        addedBy: addedBy,
+                        thumb: info.thumbnail_url
+                    };
+                    conn.len = info.length_seconds
+                        ? info.length_seconds * 1000
+                        : 0;
+                    conn.start = Date.now();
+                    conn.end = Date.now() + conn.len;
                 });
             }
         } else {
@@ -325,7 +255,7 @@ let doMusicThingsOk = async function(
                     ctx.vc.get(id).iwastoldtoleave = false;
                     conn.play(ytdl(url, { quality: "highestaudio" }), {
                         inlineVolume: true,
-                        voiceDataTimeout: 60000
+                        voiceDataTimeout: -1
                     });
                     ytdl.getInfo(url, {}, function(err, info) {
                         if (err) {
@@ -520,7 +450,7 @@ let doMusicThingsOk = async function(
 
                 conn.play(info.stream_url + "?client_id=" + scCID, {
                     inlineVolume: true,
-                    voiceDataTimeout: 60000
+                    voiceDataTimeout: -1
                 });
             }
         } else {
@@ -579,7 +509,7 @@ let doMusicThingsOk = async function(
 
                     conn.play(info.stream_url + "?client_id=" + scCID, {
                         inlineVolume: true,
-                        voiceDataTimeout: 60000
+                        voiceDataTimeout: -1
                     });
                     createEndFunction(id, url, type, msg, ctx);
                 })
@@ -692,7 +622,7 @@ let doMusicThingsOk = async function(
                 try {
                     conn.play(url, {
                         inlineVolume: true,
-                        voiceDataTimeout: 60000
+                        voiceDataTimeout: -1
                     });
                     probe(url, function(e, data) {
                         let title = url;
@@ -794,7 +724,7 @@ let doMusicThingsOk = async function(
                     try {
                         conn.play(url, {
                             inlineVolume: true,
-                            voiceDataTimeout: 60000
+                            voiceDataTimeout: -1
                         });
                         probe(url, function(e, data) {
                             let title = url;
@@ -901,7 +831,7 @@ let doMusicThingsOk = async function(
             "Unknown type passed, what. Report this kthx."
         );
     }
-};
+}
 
 let doSearchThingsOk = async function(id, str, msg, ctx) {
     let req = await ctx.libs.superagent.get(
