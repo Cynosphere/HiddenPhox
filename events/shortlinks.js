@@ -1,4 +1,4 @@
-const regex = /(?:\s|^)(gh|gl|gd|owo|sg|teknik|bb|yt|bc|bcu|sc|aur|bot|sw|tw|npm)\/([a-zA-Z0-9-_.#/!]*)/g;
+const regex = /(?:\s|^)(gh|gl|gd|owo|sg|teknik|bb|yt|bc|bcu|sc|aur|bot|sw|tw|npm|xkcd)\/([a-zA-Z0-9-_.#/!]*)/g;
 const reglinks = {
     gl: "https://gitlab.com/$link$",
     gh: "https://github.com/$link$",
@@ -15,7 +15,8 @@ const reglinks = {
     bot: "<https://discordapp.com/oauth2/authorize?client_id=$link$&scope=bot>",
     sw: "https://steamcommunity.com/sharedfiles/filedetails/?id=$link$",
     tw: "https://twitter.com/$link$",
-    npm: "https://npmjs.com/package/$link$"
+    npm: "https://npmjs.com/package/$link$",
+    xkcd: "https://xkcd.com/$link$"
 };
 
 let onMessage = async function(msg, ctx) {
