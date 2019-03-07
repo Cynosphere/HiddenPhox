@@ -3,7 +3,7 @@ const ytdl = require("ytdl-core");
 const probe = require("node-ffprobe");
 
 //As it's impossible to get a SC API key, stealing youtube-dl's :^)
-const scCID = "LvWovRaJZlWCHql0bISuum8Bd2KX79mb";
+const scCID = "NmW1FlPaiL94ueEu7oziOWjYEzZzQDcK";
 
 const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 const plregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
