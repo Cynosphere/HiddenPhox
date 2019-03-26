@@ -99,7 +99,7 @@ let linvite = async function(ctx, msg, args) {
                     inline: false
                 },
                 {
-                    name: "Flags",
+                    name: "Features/Flags",
                     value: `<:partner:493173082345832448>: ${
                         inv.guild.features.includes("VANITY_URL") ||
                         inv.guild.features.includes("INVITE_SPLASH") ||
@@ -110,6 +110,22 @@ let linvite = async function(ctx, msg, args) {
                         inv.guild.features.includes("VERIFIED")
                             ? "<:ms_tick:503341995348066313>"
                             : "<:ms_cross:503341994974773250>"
+                    }\t\t${
+                        inv.guild.features.includes("LURKABLE")
+                            ? "\uD83D\uDC40: <:ms_tick:503341995348066313>"
+                            : ""
+                    }\t\t${
+                        inv.guild.features.includes("COMMERSE")
+                            ? "\uD83D\uDECD: <:ms_tick:503341995348066313>"
+                            : ""
+                    }\t\t${
+                        inv.guild.features.includes("NEWS")
+                            ? "\uD83D\uDCF0: <:ms_tick:503341995348066313>"
+                            : ""
+                    }\t\t${
+                        inv.guild.features.includes("MORE_EMOJIS")
+                            ? "<:more_emoji:560205660227239957>: <:ms_tick:503341995348066313>"
+                            : ""
                     }`,
                     inline: false
                 }
@@ -718,7 +734,7 @@ let sinfo = async function(ctx, msg, args) {
         };
 
         info.fields.push({
-            name: "Flags",
+            name: "Features/Flags",
             value: `<:partner:493173082345832448>: ${
                 g.features &&
                 (g.features.includes("VANITY_URL") ||
@@ -730,6 +746,22 @@ let sinfo = async function(ctx, msg, args) {
                 g.features && g.features.includes("VERIFIED")
                     ? "<:ms_tick:503341995348066313>"
                     : "<:ms_cross:503341994974773250>"
+            }\t\t${
+                inv.guild.features.includes("LURKABLE")
+                    ? "\uD83D\uDC40: <:ms_tick:503341995348066313>"
+                    : ""
+            }\t\t${
+                inv.guild.features.includes("COMMERSE")
+                    ? "\uD83D\uDECD: <:ms_tick:503341995348066313>"
+                    : ""
+            }\t\t${
+                inv.guild.features.includes("NEWS")
+                    ? "\uD83D\uDCF0: <:ms_tick:503341995348066313>"
+                    : ""
+            }\t\t${
+                inv.guild.features.includes("MORE_EMOJIS")
+                    ? "<:more_emoji:560205660227239957>: <:ms_tick:503341995348066313>"
+                    : ""
             }`,
             inline: true
         });
