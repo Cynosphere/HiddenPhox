@@ -33,7 +33,9 @@ let avatar = function(ctx, msg, args) {
                         title: `Avatar for **${u.username}#${
                             u.discriminator
                         }**:`,
-                        image: { url: av }
+                        image: {
+                            url: av
+                        }
                     }
                 });
             });
@@ -149,7 +151,9 @@ let linvite = async function(ctx, msg, args) {
             };
         }
 
-        msg.channel.createMessage({ embed: edata });
+        msg.channel.createMessage({
+            embed: edata
+        });
     }
 };
 
@@ -255,10 +259,26 @@ let binfo = async function(ctx, msg, args) {
             title: `Bot Info: \`${u.username}#${u.discriminator}\``,
             description: data.description,
             fields: [
-                { name: "ID", value: u.id, inline: true },
-                { name: "Owner(s)", value: owners.join("\n"), inline: true },
-                { name: "Library", value: data.library, inline: true },
-                { name: "Prefix", value: "`" + data.prefix + "`", inline: true }
+                {
+                    name: "ID",
+                    value: u.id,
+                    inline: true
+                },
+                {
+                    name: "Owner(s)",
+                    value: owners.join("\n"),
+                    inline: true
+                },
+                {
+                    name: "Library",
+                    value: data.library,
+                    inline: true
+                },
+                {
+                    name: "Prefix",
+                    value: "`" + data.prefix + "`",
+                    inline: true
+                }
             ],
             footer: {
                 text: "Info provided by bots.discord.pw"
@@ -280,7 +300,9 @@ let binfo = async function(ctx, msg, args) {
             });
         }
 
-        msg.channel.createMessage({ embed: edata });
+        msg.channel.createMessage({
+            embed: edata
+        });
     } else {
         let req = await ctx.libs.superagent
             .get(`https://bots.discord.pw/api/users/${u.id}`)
@@ -323,7 +345,9 @@ let binfo = async function(ctx, msg, args) {
             }
         };
 
-        msg.channel.createMessage({ embed: edata });
+        msg.channel.createMessage({
+            embed: edata
+        });
     }
 };
 
@@ -341,7 +365,11 @@ let uinfo = function(ctx, msg, args) {
                         u.bot ? "<:boat:546212361472835584>" : ""
                     }`,
                     fields: [
-                        { name: "ID", value: u.id, inline: true },
+                        {
+                            name: "ID",
+                            value: u.id,
+                            inline: true
+                        },
                         {
                             name: "Nickname",
                             value: u.nick ? u.nick : "None",
@@ -421,7 +449,9 @@ let uinfo = function(ctx, msg, args) {
                     }
                 };
 
-                msg.channel.createMessage({ embed: e });
+                msg.channel.createMessage({
+                    embed: e
+                });
             } else {
                 let snowflake = parseInt(u.id).toString(2);
                 snowflake = "0".repeat(64 - snowflake.length) + snowflake;
@@ -435,7 +465,11 @@ let uinfo = function(ctx, msg, args) {
                         u.bot ? "<:boat:546212361472835584>" : ""
                     }`,
                     fields: [
-                        { name: "ID", value: u.id, inline: true },
+                        {
+                            name: "ID",
+                            value: u.id,
+                            inline: true
+                        },
                         {
                             name: "Shared Servers",
                             value: `${
@@ -480,7 +514,9 @@ let uinfo = function(ctx, msg, args) {
                     }
                 };
 
-                msg.channel.createMessage({ embed: e });
+                msg.channel.createMessage({
+                    embed: e
+                });
             }
         })
         .catch(m => {
@@ -551,13 +587,27 @@ let sinfo = async function(ctx, msg, args) {
         emojis = tmp;
         tmp = undefined;
 
+        let everyone = g.roles.filter(x => x.name == "@everyone")[0];
+
         let info = {
             color: 0x7289da,
             title: `Server Info for \`${g.name}\``,
             fields: [
-                { name: "ID", value: g.id, inline: true },
-                { name: "Owner", value: `<@${g.ownerID}>`, inline: true },
-                { name: "Total Members", value: g.memberCount, inline: true },
+                {
+                    name: "ID",
+                    value: g.id,
+                    inline: true
+                },
+                {
+                    name: "Owner",
+                    value: `<@${g.ownerID}>`,
+                    inline: true
+                },
+                {
+                    name: "Total Members",
+                    value: g.memberCount,
+                    inline: true
+                },
                 {
                     name: "Humans",
                     value: `${g.memberCount - bots} (${Math.round(
@@ -580,7 +630,14 @@ let sinfo = async function(ctx, msg, args) {
                         g.channels.filter(x => x.type == 2).length
                     } voice, ${
                         g.channels.filter(x => x.type == 4).length
-                    } categories)`,
+                    } categories, ${
+                        g.channels.filter(
+                            x =>
+                                x.permissionOverwrites.get(everyone.id) &&
+                                x.permissionOverwrites.get(everyone.id).json
+                                    .readMessages == false
+                        ).length
+                    } hidden, ${g.channels.filter(x => x.nsfw).length} NSFW)`,
                     inline: true
                 },
                 {
@@ -591,7 +648,11 @@ let sinfo = async function(ctx, msg, args) {
                         (g.region || "Unknown Region???"),
                     inline: true
                 },
-                { name: "Shard", value: g.shard.id, inline: true },
+                {
+                    name: "Shard",
+                    value: g.shard.id,
+                    inline: true
+                },
                 {
                     name: "Roles",
                     value: `${g.roles.size}/250 (${
@@ -720,7 +781,9 @@ let sinfo = async function(ctx, msg, args) {
             });
         }
 
-        msg.channel.createMessage({ embed: info });
+        msg.channel.createMessage({
+            embed: info
+        });
     } else {
         msg.channel.createMessage("This command can only be used in servers.");
     }
@@ -757,7 +820,11 @@ let rinfo = function(ctx, msg, args) {
 
                     title: `Role Info: \`${r.name}\``,
                     fields: [
-                        { name: "ID", value: r.id, inline: true },
+                        {
+                            name: "ID",
+                            value: r.id,
+                            inline: true
+                        },
                         {
                             name: "Color",
                             value: r.color
@@ -771,8 +838,16 @@ let rinfo = function(ctx, msg, args) {
                                 : "None",
                             inline: true
                         },
-                        { name: "Users in role", value: users, inline: true },
-                        { name: "Bots in role", value: bots, inline: true },
+                        {
+                            name: "Users in role",
+                            value: users,
+                            inline: true
+                        },
+                        {
+                            name: "Bots in role",
+                            value: bots,
+                            inline: true
+                        },
                         {
                             name: "Mentionable",
                             value: r.mentionable ? r.mentionable : "false",
@@ -783,8 +858,15 @@ let rinfo = function(ctx, msg, args) {
                             value: r.managed ? r.managed : "false",
                             inline: true
                         },
-                        { name: "Position", value: r.position, inline: true },
-                        { name: "Permissions", value: perms.join(", ") }
+                        {
+                            name: "Position",
+                            value: r.position,
+                            inline: true
+                        },
+                        {
+                            name: "Permissions",
+                            value: perms.join(", ")
+                        }
                     ]
                 }
             });
@@ -996,13 +1078,20 @@ let presence = function(ctx, msg, args) {
 
                     a.getBuffer(jimp.MIME_PNG, (e, f) => {
                         msg.channel.createMessage(
-                            { embed: embed },
-                            { name: "rpcicon.png", file: f }
+                            {
+                                embed: embed
+                            },
+                            {
+                                name: "rpcicon.png",
+                                file: f
+                            }
                         );
                     });
                 });
             } else {
-                msg.channel.createMessage({ embed: embed });
+                msg.channel.createMessage({
+                    embed: embed
+                });
             }
         } else {
             msg.channel.createMessage(
@@ -1211,13 +1300,21 @@ let einfo = function(ctx, msg, args) {
             embed: {
                 title: `Emoji Info: :${name}:`,
                 fields: [
-                    { name: "ID", value: id, inline: true },
+                    {
+                        name: "ID",
+                        value: id,
+                        inline: true
+                    },
                     {
                         name: "Full Code",
                         value: a[0].replace("<", "\\<").replace(">", "\\>"),
                         inline: true
                     },
-                    { name: "Animated?", value: animated, inline: true },
+                    {
+                        name: "Animated?",
+                        value: animated,
+                        inline: true
+                    },
                     {
                         name: "Guild",
                         value: guild
@@ -1322,7 +1419,9 @@ let quote = async function(ctx, msg, args) {
             ]
         };
         if (message.attachments.length > 0) {
-            embed.image = { url: message.attachments[0].url };
+            embed.image = {
+                url: message.attachments[0].url
+            };
         }
 
         msg.channel.createMessage({
