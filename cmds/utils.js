@@ -736,30 +736,29 @@ let sinfo = async function(ctx, msg, args) {
         info.fields.push({
             name: "Features/Flags",
             value: `<:partner:493173082345832448>: ${
-                g.features &&
-                (g.features.includes("VANITY_URL") ||
-                    g.features.includes("INVITE_SPLASH") ||
-                    g.features.includes("VIP_REGIONS"))
+                g.features.includes("VANITY_URL") ||
+                g.features.includes("INVITE_SPLASH") ||
+                g.features.includes("VIP_REGIONS")
                     ? "<:ms_tick:503341995348066313>"
                     : "<:ms_cross:503341994974773250>"
             }\t\t<:verified:543598700920832030>: ${
-                g.features && g.features.includes("VERIFIED")
+                g.features.includes("VERIFIED")
                     ? "<:ms_tick:503341995348066313>"
                     : "<:ms_cross:503341994974773250>"
             }\t\t${
-                inv.guild.features.includes("LURKABLE")
+                g.features.includes("LURKABLE")
                     ? "\uD83D\uDC40: <:ms_tick:503341995348066313>"
                     : ""
             }\t\t${
-                inv.guild.features.includes("COMMERSE")
+                g.features.includes("COMMERSE")
                     ? "\uD83D\uDECD: <:ms_tick:503341995348066313>"
                     : ""
             }\t\t${
-                inv.guild.features.includes("NEWS")
+                g.features.includes("NEWS")
                     ? "\uD83D\uDCF0: <:ms_tick:503341995348066313>"
                     : ""
             }\t\t${
-                inv.guild.features.includes("MORE_EMOJIS")
+                g.features.includes("MORE_EMOJIS")
                     ? "<:more_emoji:560205660227239957>: <:ms_tick:503341995348066313>"
                     : ""
             }`,
