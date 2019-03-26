@@ -633,6 +633,7 @@ let sinfo = async function(ctx, msg, args) {
                     } categories, ${
                         g.channels.filter(
                             x =>
+                                x.permissionOverwrites &&
                                 x.permissionOverwrites.get(everyone.id) &&
                                 x.permissionOverwrites.get(everyone.id).json
                                     .readMessages == false
