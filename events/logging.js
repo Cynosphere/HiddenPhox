@@ -355,8 +355,8 @@ let msgDelBulk = async function(msgs, ctx) {
             );
         }
 
-        let req = ctx.libs.superagent
-            .post("https://hastebin.com/documents")
+        let req = await ctx.libs.superagent
+            .post("https://mystb.in/documents")
             .send(messages.join("\n"));
 
         let log = await getLogChannel(ctx, { channel: { guild: guild } });
@@ -366,7 +366,7 @@ let msgDelBulk = async function(msgs, ctx) {
                 color: 0xaa0000,
                 description: `[${
                     msgs.length
-                } Deleted Messages](https://hastebin.com/${req.body.key})`
+                } Deleted Messages](https://mystb.in/${req.body.key})`
             }
         });
     }

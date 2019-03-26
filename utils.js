@@ -116,8 +116,8 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                             userpool[i].discriminator +
                             (msg.channel.guild
                                 ? userpool[i].nick
-                                  ? " (" + userpool[i].nick + ")"
-                                  : ""
+                                    ? " (" + userpool[i].nick + ")"
+                                    : ""
                                 : "")
                     );
                 }
@@ -505,6 +505,19 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
             resolve(img);
         }
     });
+};
+
+utils.makeHaste = async function(ctx, msg, content, txt) {
+    ctx.libs.superagent
+        .post("https://mystb.in/documents")
+        .send(content)
+        .then(res => {
+            let key = res.body.key;
+            msg.channel.createMessage(`${txt}https://mystb.in/${key}.js`);
+        })
+        .catch(e => {
+            msg.channel.createMessage(`Could not upload to Mystbin.`);
+        });
 };
 
 //utils.google = require("./utils/google.js");

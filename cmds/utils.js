@@ -1498,20 +1498,12 @@ let charinfo = async function(ctx, msg, args) {
 
     if (out.toString().length > 2000) {
         let output = out.toString();
-        ctx.libs.superagent
-            .post("https://mystb.in/documents")
-            .send(output)
-            .then(res => {
-                let key = res.body.key;
-                msg.channel.createMessage(
-                    `\u2705 Output too long to send in a message: https://mystb.in/${key}.js`
-                );
-            })
-            .catch(e => {
-                msg.channel.createMessage(
-                    `Could not upload output to Mystbin.`
-                );
-            });
+        ctx.utils.makeHaste(
+            ctx,
+            msg,
+            output,
+            "\u2705 Output too long to send in a message: "
+        );
     } else {
         msg.channel.createMessage(out);
     }

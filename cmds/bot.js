@@ -46,20 +46,12 @@ let _eval = async function(ctx, msg, args) {
         } else {
             if (out.toString().length > 1980) {
                 let output = out.toString();
-                ctx.libs.superagent
-                    .post("https://mystb.in/documents")
-                    .send(output)
-                    .then(res => {
-                        let key = res.body.key;
-                        msg.channel.createMessage(
-                            `\u2705 Output too long to send in a message: https://mystb.in/${key}.js`
-                        );
-                    })
-                    .catch(e => {
-                        msg.channel.createMessage(
-                            `Could not upload output to Mystbin.`
-                        );
-                    });
+                ctx.utils.makeHaste(
+                    ctx,
+                    msg,
+                    output,
+                    "\u2705 Output too long to send in a message: "
+                );
             } else {
                 msg.channel.createMessage(
                     "\u2705 Output:\n```js\n" + out + "\n```"
@@ -170,20 +162,12 @@ let exec = function(ctx, msg, args) {
             } else {
                 if (out.toString().length > 1980) {
                     let output = out.toString();
-                    ctx.libs.superagent
-                        .post("https://mystb.in/documents")
-                        .send(output)
-                        .then(res => {
-                            let key = res.body.key;
-                            msg.channel.createMessage(
-                                `\u2705 Output too long to send in a message: https://mystb.in/${key}.js`
-                            );
-                        })
-                        .catch(e => {
-                            msg.channel.createMessage(
-                                `Could not upload output to Mystbin.`
-                            );
-                        });
+                    ctx.utils.makeHaste(
+                        ctx,
+                        msg,
+                        output,
+                        "\u2705 Output too long to send in a message: "
+                    );
                 } else {
                     msg.channel.createMessage(
                         "\u2705 Output:\n```bash\n" + out + "\n```"

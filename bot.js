@@ -230,7 +230,7 @@ for (let f of files) {
     }
 }
 
-client.on("messageCreate", async msg => {
+async function commandHandler(msg) {
     if (msg.author && !msg.author.bot) {
         let prefix = ctx.prefix;
         let prefix2 = ctx.bot.user.mention + " ";
@@ -322,19 +322,8 @@ client.on("messageCreate", async msg => {
                     );
                 }
 
-                /*let analytics = await ctx.db.models.analytics.findOne({
-                    where: { id: 1 }
-                });
-                let usage = JSON.parse(analytics.dataValues.cmd_usage);
-
-                usage[c.name] = usage[c.name] ? usage[c.name] + 1 : 1;
-
-                await ctx.db.models.analytics.update(
-                    { cmd_usage: JSON.stringify(usage) },
-                    { where: { id: 1 } }
-                );*/
-
                 hasRan = true;
+                msg.hasRan = true;
             }
 
             if (
@@ -399,45 +388,30 @@ client.on("messageCreate", async msg => {
                     );
                 }
 
-                /*let analytics = await ctx.db.models.analytics.findOne({
-                    where: { id: 1 }
-                });
-                let usage = JSON.parse(analytics.dataValues.cmd_usage);
-
-                usage[c.name] = usage[c.name] ? usage[c.name] + 1 : 1;
-
-                await ctx.db.models.analytics.update(
-                    { cmd_usage: JSON.stringify(usage) },
-                    { where: { id: 1 } }
-                );*/
-
                 hasRan = true;
+                msg.hasRan = true;
             }
         });
+    }
+}
+
+client.on("messageCreate", commandHandler);
+
+client.on("messageUpdate", msg => {
+    let oneday = Date.now() - 86400000;
+    if (msg.timestamp > oneday && !msg.hasRan) {
+        commandHandler(msg);
     }
 });
 
 process.on("unhandledRejection", (e, p) => {
     //console.log("Uncaught rejection: "+e.message);
     if (e.length > 1900) {
-        ctx.libs.request.post(
-            "https://mystb.in/documents",
-            { body: `${e} (${p})` },
-            function(err, res, body) {
-                if (res.statusCode == 200) {
-                    let key = JSON.parse(body).key;
-                    ctx.utils.logWarn(
-                        ctx,
-                        `Uncaught rejection: Output too long to send in a message: https://mystb.in/${key}.js`
-                    );
-                } else {
-                    ctx.bot
-                        .getChannel(logid)
-                        .createMessage(
-                            ":warning: Cannot upload rejection to Mystbin."
-                        );
-                }
-            }
+        ctx.utils.makeHaste(
+            ctx,
+            msg,
+            `${e} (${p})`,
+            "Uncaught rejection: Output too long to send in a message: "
         );
     } else {
         ctx.utils.logWarn(ctx, `Uncaught rejection: '${e}'`);
@@ -447,24 +421,11 @@ process.on("unhandledRejection", (e, p) => {
 client.on("error", e => {
     //console.log("Bot error: "+e.message);
     if (e.message.length > 1900) {
-        ctx.libs.request.post(
-            "https://mystb.in/documents",
-            { body: e.message },
-            function(err, res, body) {
-                if (res.statusCode == 200) {
-                    let key = JSON.parse(body).key;
-                    ctx.utils.logWarn(
-                        ctx,
-                        `Error: Output too long to send in a message: https://mystb.in/${key}.js`
-                    );
-                } else {
-                    ctx.bot
-                        .getChannel(logid)
-                        .createMessage(
-                            ":warning: Cannot upload error to Mystbin."
-                        );
-                }
-            }
+        ctx.utils.makeHaste(
+            ctx,
+            msg,
+            e.message,
+            "Error: Output too long to send in a message: "
         );
     } else {
         ctx.utils.logWarn(ctx, `Error: '${e.message}'`);
