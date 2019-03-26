@@ -115,7 +115,7 @@ let linvite = async function(ctx, msg, args) {
                             ? "\uD83D\uDC40: <:ms_tick:503341995348066313>"
                             : ""
                     }\t\t${
-                        inv.guild.features.includes("COMMERSE")
+                        inv.guild.features.includes("COMMERCE")
                             ? "\uD83D\uDECD: <:ms_tick:503341995348066313>"
                             : ""
                     }\t\t${
@@ -750,7 +750,7 @@ let sinfo = async function(ctx, msg, args) {
                     ? "\uD83D\uDC40: <:ms_tick:503341995348066313>"
                     : ""
             }\t\t${
-                g.features.includes("COMMERSE")
+                g.features.includes("COMMERCE")
                     ? "\uD83D\uDECD: <:ms_tick:503341995348066313>"
                     : ""
             }\t\t${
