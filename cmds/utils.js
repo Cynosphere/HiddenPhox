@@ -123,7 +123,7 @@ let linvite = async function(ctx, msg, args) {
                             ? "\uD83D\uDCF0: <:ms_tick:503341995348066313>"
                             : ""
                     }\t\t${
-                        inv.guild.features.includes("MORE_EMOJIS")
+                        inv.guild.features.includes("MORE_EMOJI")
                             ? "<:more_emoji:560205660227239957>: <:ms_tick:503341995348066313>"
                             : ""
                     }`,
@@ -758,7 +758,7 @@ let sinfo = async function(ctx, msg, args) {
                     ? "\uD83D\uDCF0: <:ms_tick:503341995348066313>"
                     : ""
             }\t\t${
-                g.features.includes("MORE_EMOJIS")
+                g.features.includes("MORE_EMOJI")
                     ? "<:more_emoji:560205660227239957>: <:ms_tick:503341995348066313>"
                     : ""
             }`,
