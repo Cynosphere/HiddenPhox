@@ -176,6 +176,7 @@ let fediimg = async function(msg, ctx) {
         .then(x => x[0].dataValues.twimg);
 
     if (enabled) {
+        if (!msg.embeds[0]) return;
         let url = msg.content.match(fediurl);
         if (!url) return;
         url = url[0];
@@ -270,13 +271,13 @@ let plembed = async function(msg, ctx) {
                 url: post.sensitive
                     ? ""
                     : post.attachment && post.attachment.length > 0
-                      ? post.attachment[0].url
-                      : ""
+                    ? post.attachment[0].url
+                    : ""
             },
             color: 0x282c37
         }
     });
-    if (post.attachment && post.attachment.length > 1) {
+    if (post.attachment && post.attachment.length > 1 && !msg.embeds[0]) {
         msg.channel.createMessage(
             post.attachment
                 .splice(1)
