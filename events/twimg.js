@@ -182,14 +182,6 @@ let fediimg = async function(msg, ctx) {
         url = url[0];
         url = url.startsWith(" ") ? url.substring(1) : url;
 
-        if (url.match(/(users\/([a-zA-Z0-9-_/]*)\/statuses\/([0-9]{17,21}))/)) {
-            let post = await ctx.libs.superagent
-                .get(url)
-                .set("Accept", "application/activity+json")
-                .then(x => x.body);
-            url = post.url;
-        }
-
         let imgs = await getMastoImages(ctx, url, msg);
 
         if (imgs.length > 0) {
