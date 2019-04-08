@@ -31,7 +31,7 @@ async function grabYTVideoURL(ctx, url) {
     );
 
     return data.adaptiveFormats
-        .filter(x => x.mimeType.startsWith("audio/"))
+        .filter(x => x.mimeType.startsWith("audio/mp4"))
         .sort((a, b) => {
             return a.bitrate < b.bitrate ? 1 : a.bitrate > b.bitrate ? -1 : 0;
         })[0].url;
