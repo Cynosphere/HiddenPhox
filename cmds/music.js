@@ -16,6 +16,27 @@ const scplregex2 = /^sc:.+\/sets\/.+$/;
 const scplregex3 = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/likes$/;
 const scplregex4 = /^sc:.+\/likes$/;
 
+async function grabYTVideoURL(ctx, url) {
+    let vid = await ctx.libs.superagent.get(url).then(x => x.text);
+    let data = JSON.parse(
+        vid
+            .match(
+                /<script >var ytplayer = ytplayer \|\| \{\};ytplayer\.config = (.+)ytplayer\.load = function\(\) {yt\.player\.Application\.create\("player-api", ytplayer\.config\);ytplayer\.config\.loaded = true;};\(function\(\) {if \(!!window\.yt && yt\.player && yt\.player\.Application\) {ytplayer\.load\(\);}}\(\)\);<\/script>/
+            )[1]
+            .replace(/\\\\/g, ":fullwidth_backslash:")
+            .replace(/\\/g, "")
+            .replace(/:fullwidth_backslash:/g, "\\")
+            .replace(/\\u0026/g, "&")
+            .match(/"streamingData":(.+),"playbackTracking"/)[1]
+    );
+
+    return data.adaptiveFormats
+        .filter(x => x.mimeType.startsWith("audio/"))
+        .sort((a, b) => {
+            return a.bitrate < b.bitrate ? 1 : a.bitrate > b.bitrate ? -1 : 0;
+        })[0].url;
+}
+
 function createEndFunction(id, url, type, msg, ctx) {
     if (ctx.vc.get(id).evntEnd) return;
     ctx.vc.get(id).queue = ctx.vc.get(id).queue ? ctx.vc.get(id).queue : [];
@@ -190,7 +211,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .then(x => setTimeout(() => x.delete(), 10000));
                 });
             } else {
-                conn.play(ytdl(url, { quality: "highestaudio" }), {
+                conn.play(grabYTVideoURL(ctx, url), {
                     inlineVolume: true,
                     voiceDataTimeout: -1
                 });
@@ -253,7 +274,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 .then(async conn => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    conn.play(ytdl(url, { quality: "highestaudio" }), {
+                    conn.play(grabYTVideoURL(ctx, url), {
                         inlineVolume: true,
                         voiceDataTimeout: -1
                     });
