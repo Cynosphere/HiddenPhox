@@ -31,7 +31,7 @@ async function grabYTVideoURL(ctx, url) {
     );
 
     return data.adaptiveFormats
-        .filter(x => x.mimeType.startsWith("audio/mp4"))
+        .filter(x => x.mimeType.startsWith("audio/"))
         .sort((a, b) => {
             return a.bitrate < b.bitrate ? 1 : a.bitrate > b.bitrate ? -1 : 0;
         })[0].url;
@@ -211,7 +211,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .then(x => setTimeout(() => x.delete(), 10000));
                 });
             } else {
-                conn.play(grabYTVideoURL(ctx, url), {
+                conn.play(await grabYTVideoURL(ctx, url), {
                     inlineVolume: true,
                     voiceDataTimeout: -1
                 });
@@ -274,7 +274,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 .then(async conn => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    conn.play(grabYTVideoURL(ctx, url), {
+                    conn.play(await grabYTVideoURL(ctx, url), {
                         inlineVolume: true,
                         voiceDataTimeout: -1
                     });
