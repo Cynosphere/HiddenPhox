@@ -23,9 +23,9 @@ async function grabYTVideoURL(ctx, url) {
             .match(
                 /<script >var ytplayer = ytplayer \|\| \{\};ytplayer\.config = (.+)ytplayer\.load = function\(\) {yt\.player\.Application\.create\("player-api", ytplayer\.config\);ytplayer\.config\.loaded = true;};\(function\(\) {if \(!!window\.yt && yt\.player && yt\.player\.Application\) {ytplayer\.load\(\);}}\(\)\);<\/script>/
             )[1]
-            .replace(/\\\\/g, ":fullwidth_backslash:")
+            .replace(/\\\\/g, "＼")
             .replace(/\\/g, "")
-            .replace(/:fullwidth_backslash:/g, "\\")
+            .replace(/＼/g, "\\")
             .replace(/\\u0026/g, "&")
             .match(/"streamingData":(.+),"playbackTracking"/)[1]
     );
