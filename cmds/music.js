@@ -8,7 +8,7 @@ const scCID = "NmW1FlPaiL94ueEu7oziOWjYEzZzQDcK";
 const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 const plregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
 const plregex2 = /^PL[a-zA-Z0-9-_]{1,32}$/;
-const mp3regex = /^(https?:\/\/)?.*\..*\/.+\.(mp3|ogg|flac|wav)$/;
+const mp3regex = /^(https?:\/\/)?.*\..*\/.+\.(mp3|ogg|flac|wav|webm|mp4|mov|mkv)$/;
 const scregex = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/.+$/;
 const scregex2 = /^sc:.+\/.+$/;
 const scplregex = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/sets\/.+$/;
@@ -16,7 +16,7 @@ const scplregex2 = /^sc:.+\/sets\/.+$/;
 const scplregex3 = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/likes$/;
 const scplregex4 = /^sc:.+\/likes$/;
 
-async function grabYTVideoURL(ctx, url) {
+/*async function grabYTVideoURL(ctx, url) {
     let vid = await ctx.libs.superagent.get(url).then(x => x.text);
     let data = JSON.parse(
         vid
@@ -35,7 +35,7 @@ async function grabYTVideoURL(ctx, url) {
         .sort((a, b) => {
             return a.bitrate < b.bitrate ? 1 : a.bitrate > b.bitrate ? -1 : 0;
         })[0].url;
-}
+}*/
 
 function createEndFunction(id, url, type, msg, ctx) {
     if (ctx.vc.get(id).evntEnd) return;
@@ -211,10 +211,17 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .then(x => setTimeout(() => x.delete(), 10000));
                 });
             } else {
-                conn.play(await grabYTVideoURL(ctx, url), {
-                    inlineVolume: true,
-                    voiceDataTimeout: -1
-                });
+                conn.play(
+                    ytdl(url, {
+                        quality: "highestaudio",
+                        filter: "audioonly",
+                        highWaterMark: 1 << 25
+                    }),
+                    {
+                        inlineVolume: true,
+                        voiceDataTimeout: -1
+                    }
+                );
                 ytdl.getInfo(url, {}, function(err, info) {
                     if (err) {
                         msg.channel
@@ -274,10 +281,17 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 .then(async conn => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    conn.play(await grabYTVideoURL(ctx, url), {
-                        inlineVolume: true,
-                        voiceDataTimeout: -1
-                    });
+                    conn.play(
+                        ytdl(url, {
+                            quality: "highestaudio",
+                            filter: "audioonly",
+                            highWaterMark: 1 << 25
+                        }),
+                        {
+                            inlineVolume: true,
+                            voiceDataTimeout: -1
+                        }
+                    );
                     ytdl.getInfo(url, {}, function(err, info) {
                         if (err) {
                             msg.channel
