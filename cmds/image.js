@@ -552,7 +552,11 @@ let rolegrid = function(ctx, msg, args) {
 
     let im = new jimp(
         offset * 32,
-        32 * Math.floor(roles.length / offset + 1),
+        32 *
+            Math.floor(
+                roles.length / offset +
+                    (Math.sqrt(roles.length) > offset ? 1 : 0)
+            ),
         0
     );
 
