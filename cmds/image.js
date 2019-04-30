@@ -404,26 +404,22 @@ let orly = function(ctx, msg, args) {
                 'orly "title" "bottom text" "top text" (optional) "author" (optional)`'
         );
     } else {
-        jimp
-            .read(
-                `https://orly-appstore.herokuapp.com/generate?title=${encodeURIComponent(
-                    title
-                )}&top_text=${encodeURIComponent(
-                    top
-                )}&author=${encodeURIComponent(
-                    author
-                )}&image_code=${img}&theme=${theme}&guide_text=${encodeURIComponent(
-                    text
-                )}&guide_text_placement=bottom_right`
-            )
-            .then(im => {
-                im.getBuffer(jimp.MIME_PNG, (e, f) => {
-                    msg.channel.createMessage("", {
-                        name: "orly.png",
-                        file: f
-                    });
+        jimp.read(
+            `https://orly-appstore.herokuapp.com/generate?title=${encodeURIComponent(
+                title
+            )}&top_text=${encodeURIComponent(top)}&author=${encodeURIComponent(
+                author
+            )}&image_code=${img}&theme=${theme}&guide_text=${encodeURIComponent(
+                text
+            )}&guide_text_placement=bottom_right`
+        ).then(im => {
+            im.getBuffer(jimp.MIME_PNG, (e, f) => {
+                msg.channel.createMessage("", {
+                    name: "orly.png",
+                    file: f
                 });
             });
+        });
     }
 };
 
@@ -455,12 +451,13 @@ let colsquare = function(ctx, msg, args) {
 };
 
 let color = async function(ctx, msg, args) {
-    async function createColMsg(ctx, msg, col) {
+    async function createColMsg(ctx, msg, col, random = false) {
         let im = new jimp(128, 128, parseInt(`0x${col}FF`));
         let img = await im.getBufferAsync(jimp.MIME_PNG);
         msg.channel.createMessage(
             {
                 embed: {
+                    title: random ? "Random Color" : "",
                     color: parseInt("0x" + col),
                     fields: [
                         {
@@ -544,8 +541,36 @@ let color = async function(ctx, msg, args) {
             }
         }
 
-        createColMsg(ctx, msg, col);
+        createColMsg(ctx, msg, col, true);
     }
+};
+
+let rolegrid = function(ctx, msg, args) {
+    let roles = msg.channel.guild.roles.filter(x => x.color != 0);
+    roles.sort((a, b) => b.position - a.position);
+    let offset = Math.floor(Math.sqrt(roles.length));
+
+    let im = new jimp(
+        offset * 32,
+        32 * Math.floor(roles.length / offset + 1),
+        0
+    );
+
+    for (let i = 0; i < roles.length; i++) {
+        let col = roles[i].color.toString("16");
+        let colimg = new jimp(32, 32, parseInt(`0x${col}FF`));
+        im.composite(colimg, 32 * (i % offset), 32 * Math.floor(i / offset));
+    }
+
+    im.getBuffer(jimp.MIME_PNG, (e, f) => {
+        msg.channel.createMessage(
+            `Displaying ${roles.length}/${msg.channel.guild.roles.size} roles.`,
+            {
+                name: "rolegrid.png",
+                file: f
+            }
+        );
+    });
 };
 
 /*let _i2b = function(msg, url) {
@@ -1007,9 +1032,9 @@ module.exports = [
         name: "glitch",
         desc: "Glitch out an image",
         fulldesc: `
-Credit to [bootsy](https://soc.uwu.st/@bootsy) for the idea and code.
+Credit to [zoe](https://twitter.com/yourcompanionAI) for the idea and code.
 Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
-([twitter](https://twitter.com/imgfkr) | [masto version by bootsy](https://botsin.space/@img))
+([twitter](https://twitter.com/imgfkr) | [fediverse](https://botsin.space/@img))
         `,
         func: glitch,
         group: "image",
@@ -1040,6 +1065,13 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         group: "image",
         usage: "[url or attachment]",
         aliases: ["nmj", "needsmorejpeg"]
+    },
+    {
+        name: "rolegrid",
+        desc:
+            "Creates a grid of all the role colors. Highest position to lowest.",
+        func: rolegrid,
+        group: "image"
     }
 
     /*{
