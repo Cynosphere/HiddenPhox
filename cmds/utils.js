@@ -6,7 +6,7 @@ let statusIcons = {
 };
 
 let avatar = function(ctx, msg, args) {
-    if (args && (args == "server" || args == "guild")) {
+    if (args && (args == "--server" || args == "--guild")) {
         msg.channel.createMessage({
             embed: {
                 title: `Server Icon:`,
