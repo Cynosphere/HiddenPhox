@@ -1527,62 +1527,60 @@ let jump = async function(ctx, msg, args) {
         mid = args[0];
     }
 
-    if (channel == false) {
-        msg.channel
-            .getMessage(mid)
-            .then(_ => (success = true))
-            .catch(_ => {
-                msg.channel.createMessage(
-                    "Message not found. Be sure to append channel name or ID before the other ID, seperated with a space if its in another channel."
-                );
-                return;
-            });
-    } else {
-        if (/[0-9]{17,21}/.test(channel)) {
-            let test = msg.channel.guild.channels.get(channel);
-            if (!test) {
-                msg.channel.createMessage(
-                    "Channel lookup by ID failed. Be sure its in the same guild."
-                );
-                return;
-            }
-            test.getMessage(mid)
-                .then(_ => (success = true))
+    let success = new Promise((resolve, reject) => {
+        if (channel == false) {
+            msg.channel
+                .getMessage(mid)
+                .then(_ => resolve(true))
                 .catch(_ => {
-                    msg.channel.createMessage(
-                        "Message was not found in channel."
+                    reject(
+                        "Message not found. Be sure to append channel name or ID before the other ID, seperated with a space if its in another channel."
+                    );
+                });
+        } else {
+            if (/[0-9]{17,21}/.test(channel)) {
+                let test = msg.channel.guild.channels.get(channel);
+                if (!test) {
+                    reject(
+                        "Channel lookup by ID failed. Be sure its in the same guild."
                     );
                     return;
-                });
-        } else if (!/[0-9]{17,21}/.test(channel)) {
-            let test = msg.channel.guild.channels.filter(
-                c => c.name == channel
-            )[0];
-            if (!test) {
-                msg.channel.createMessage(
-                    "Channel lookup by name failed. Be sure its the full name."
-                );
-                return;
-            }
-            test.getMessage(mid)
-                .then(_ => (success = true))
-                .catch(_ => {
-                    msg.channel.createMessage(
-                        "Message was not found in channel."
+                }
+                test.getMessage(mid)
+                    .then(_ => resolve(true))
+                    .catch(_ => {
+                        reject("Message was not found in channel.");
+                    });
+            } else if (!/[0-9]{17,21}/.test(channel)) {
+                let test = msg.channel.guild.channels.filter(
+                    c => c.name == channel
+                )[0];
+                if (!test) {
+                    reject(
+                        "Channel lookup by name failed. Be sure its the full name."
                     );
                     return;
-                });
+                }
+                test.getMessage(mid)
+                    .then(_ => resolve(true))
+                    .catch(_ => {
+                        reject("Message was not found in channel.");
+                    });
 
-            channel = test.id;
+                channel = test.id;
+            }
         }
-    }
+    });
 
-    if (success)
-        msg.channel.createMessage(
-            `https://discordapp.com/channels/${msg.channel.guild.id}/${
-                channel == false ? msg.channel.id : channel
-            }/${mid}`
-        );
+    success
+        .then(_ =>
+            msg.channel.createMessage(
+                `https://discordapp.com/channels/${msg.channel.guild.id}/${
+                    channel == false ? msg.channel.id : channel
+                }/${mid}`
+            )
+        )
+        .catch(e => msg.channel.createMessage(e));
 };
 
 module.exports = [
