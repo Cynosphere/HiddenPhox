@@ -1565,6 +1565,8 @@ let jump = async function(ctx, msg, args) {
                 );
                 return;
             }
+
+            channel = test.id;
         }
     }
 
