@@ -862,5 +862,15 @@ Can be called with --url to get URL.`,
         func: twdl,
         group: "fun",
         aliases: ["twitterdl"]
+    },
+    {
+        name: "redditdl",
+        desc: "Reddit video downloader",
+        fulldesc: `
+**Obey's \`[no_nsfw]\` in NSFW marked channels**
+
+Can be called with --url to get URL.`,
+        func: redditdl,
+        group: "fun"
     }
 ];
