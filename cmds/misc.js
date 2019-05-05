@@ -521,7 +521,7 @@ async function getTweetVideo(ctx, snowflake) {
 
         let tweet = await ctx.libs.superagent
             .get(
-                `https://api.twitter.com/1.1/statuses/show.json?id=${snowflake}&trim_user=1&include_entities=1`
+                `https://api.twitter.com/1.1/statuses/show.json?id=${snowflake}&include_entities=1`
             )
             .set("Authorization", `Bearer ${token}`)
             .then(x => x.body)
@@ -542,7 +542,7 @@ async function getTweetVideo(ctx, snowflake) {
         }
 
         if (vid) {
-            resolve(vid);
+            resolve({video:vid,user:tweet.user.screen_name});
         } else {
             reject("no vid");
         }
@@ -593,13 +593,13 @@ let twdl = async function(ctx, msg, args) {
     });
     if (data) {
         if (giveURL) {
-            msg.channel.createMessage(data);
+            msg.channel.createMessage(data.video);
         } else {
-            let vid = await ctx.libs.superagent.get(data);
+            let vid = await ctx.libs.superagent.get(data.video);
             if (vid) {
                 msg.channel.createMessage("", {
                     file: vid.body,
-                    name: "twdl.mp4"
+                    name: `${data.user}-${id}.mp4`
                 });
             } else {
                 msg.channel.createMessage("An error occured uploading.");
@@ -608,11 +608,88 @@ let twdl = async function(ctx, msg, args) {
     }
 };
 
-const reddit1 = /(?:\s|^)https?:\/\/((old|m)\.)?reddit\.com\/r\/(.+)\/comments\/([a-z0-9]{1,6})(\/.+\/?)?/;
+const reddit1 = /(?:\s|^)https?:\/\/((old|m|www)\.)?reddit\.com\/(r\/.+\/)?comments\/([a-z0-9]{1,6})(\/.+\/?)?/;
 const reddit2 = /(?:\s|^)https?:\/\/redd\.it\/([a-z0-9]{1,6})/;
 const vreddit = /(?:\s|^)https?:\/\/v\.redd\.it\/([a-z0-9]{1,13})/;
 
-let redditdl = async function(ctx, msg, args) {};
+const getRedditVideo = async function(ctx,link){
+    return new Promise((resolve,reject)=>{
+        let url;
+        if (reddit1.test(link)) {
+            let match = link.match(reddit1);
+            url = `https://reddit.com/comments/${match[4]}.json`;
+        }else if(reddit2.test(link)){
+            let match = link.match(reddit2);
+            url = `https://reddit.com/comments/${match[1]}.json`;
+        }else if(vreddit.test(link)){
+            let redirs = await ctx.libs.superagent.get(link).then(x=>x.redirects);
+            if(redirs.length > 0 && redirs[1]){
+                let match = redirs[1].match(reddit1);
+                url = `https://reddit.com/comments/${match[4]}.json`;
+            }
+        }else{
+            reject("Link did not pass any checks. Make sure it's either a full reddit link to the comments, redd.it or v.redd.it.");
+            return;
+        }
+
+        if (url){
+            resolve(url);
+        }else{
+            reject("no vid");
+        }
+    });
+}
+
+let redditdl = async function(ctx, msg, args) {
+    if (!args) {
+        msg.channel.createMessage("Arguments required.");
+        return;
+    }
+
+    let giveURL = false;
+
+    if (args.startsWith("--url ")) {
+        giveURL = true;
+        args = args.replace("--url ", "");
+    }
+
+    let url = await getRedditVideo(ctx,args).catch(e => {
+        if (e == "no vid") {
+            msg.channel.createMessage("Post has no video.");
+        } else {
+            msg.channel.createMessage(
+                `:warning: An error occured:\n\`\`\`\n${e}\n\`\`\``
+            );
+        }
+    });
+    if(!url) return;
+    let data = await ctx.libs.superagent.get(url).then(x=>x.body && x.body[0] && x.body[0].data && x.body[0].data.children && x.body[0].data.children[0] && x.body[0].data.children[0].data);
+    if(data.is_video){
+        let code = await ctx.libs.superagent.post("https://lew.la/reddit/download")
+        .type("form")
+        .send({url:`https://www.reddit.com/${data.subreddit_name_prefixed}/comments/${data.id}/`})
+        .then(x=>x.text);
+
+        if(code=="<<ERROR>>"){
+            msg.channel.createMessage("An error occurred getting the video.");
+            return;
+        }else{
+            let vidurl = `https://lew.la/reddit/clips/${code}.mp4`
+            if (giveURL) {
+                msg.channel.createMessage(vidurl);
+            } else {
+                let vid = await ctx.libs.superagent.get(vidurl);
+                msg.channel.createMessage("",{
+                    file:vid.body,
+                    name:`${data.title}-${data.id}.mp4`
+                });
+            }
+        }
+    }else{
+        msg.channel.createMessage("Reddit post is not a video.");
+        return;
+    }
+};
 
 module.exports = [
     {
