@@ -491,6 +491,8 @@ let br = function(ctx, msg, args) {
     msg.channel.createMessage("br?");
 };
 
+const UPLOAD_LIMIT = 8388119;
+
 const twitterurl = /(?:\s|^)https?:\/\/(www\.)?twitter\.com\/(.+\/status\/|statuses\/)([0-9]{17,21})/g;
 
 // don't complain at me, do not PR for removal
@@ -598,6 +600,10 @@ let twdl = async function(ctx, msg, args) {
         } else {
             let vid = await ctx.libs.superagent.get(data.video);
             if (vid) {
+                if (vid.body.byteLength > UPLOAD_LIMIT) {
+                    msg.channel.createMessage(data.video);
+                    return;
+                }
                 msg.channel
                     .createMessage("", {
                         file: vid.body,
@@ -719,6 +725,10 @@ let redditdl = async function(ctx, msg, args) {
                 msg.channel.createMessage(vidurl);
             } else {
                 let vid = await ctx.libs.superagent.get(vidurl);
+                if (vid.body.byteLength > UPLOAD_LIMIT) {
+                    msg.channel.createMessage(vidurl);
+                    return;
+                }
                 msg.channel
                     .createMessage("", {
                         file: vid.body,
