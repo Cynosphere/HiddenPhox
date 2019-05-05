@@ -679,6 +679,19 @@ let redditdl = async function(ctx, msg, args) {
                 x.body[0].data.children[0].data
         );
     if (data.is_video) {
+        if (data.over_18) {
+            if (
+                !msg.channel.nsfw ||
+                (msg.channel.nsfw &&
+                    (msg.channel.topic &&
+                        msg.channel.topic.includes("[no_nsfw]")))
+            ) {
+                msg.channel.createMessage(
+                    "Post marked as NSFW whilst trying to use command in non-NSFW or NSFW blacklisted channel."
+                );
+                return;
+            }
+        }
         let code = await ctx.libs.superagent
             .post("https://lew.la/reddit/download")
             .type("form")
