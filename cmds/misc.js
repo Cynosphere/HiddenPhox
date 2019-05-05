@@ -593,7 +593,7 @@ let twdl = async function(ctx, msg, args) {
         if (giveURL) {
             msg.channel.createMessage(data);
         } else {
-            let vid = await ctx.superagent.get(data);
+            let vid = await ctx.libs.superagent.get(data);
             if (vid) {
                 msg.channel.createMessage("", {
                     file: vid.body,
