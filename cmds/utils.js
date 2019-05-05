@@ -1518,6 +1518,7 @@ let jump = async function(ctx, msg, args) {
     args = args.split(" ");
     let channel = false;
     let mid = "";
+    let success = false;
 
     if (args.length > 1) {
         channel = args[0];
@@ -1527,12 +1528,15 @@ let jump = async function(ctx, msg, args) {
     }
 
     if (channel == false) {
-        msg.channel.getMessage(mid).catch(_ => {
-            msg.channel.createMessage(
-                "Message not found. Be sure to append channel name or ID before the other ID, seperated with a space if its in another channel."
-            );
-            return;
-        });
+        msg.channel
+            .getMessage(mid)
+            .then(_ => (success = true))
+            .catch(_ => {
+                msg.channel.createMessage(
+                    "Message not found. Be sure to append channel name or ID before the other ID, seperated with a space if its in another channel."
+                );
+                return;
+            });
     } else {
         if (/[0-9]{17,21}/.test(channel)) {
             let test = msg.channel.guild.channels.get(channel);
@@ -1542,10 +1546,14 @@ let jump = async function(ctx, msg, args) {
                 );
                 return;
             }
-            test.getMessage(mid).catch(_ => {
-                msg.channel.createMessage("Message was not found in channel.");
-                return;
-            });
+            test.getMessage(mid)
+                .then(_ => (success = true))
+                .catch(_ => {
+                    msg.channel.createMessage(
+                        "Message was not found in channel."
+                    );
+                    return;
+                });
         } else if (!/[0-9]{17,21}/.test(channel)) {
             let test = msg.channel.guild.channels.filter(
                 c => c.name == channel
@@ -1556,20 +1564,25 @@ let jump = async function(ctx, msg, args) {
                 );
                 return;
             }
-            test.getMessage(mid).catch(_ => {
-                msg.channel.createMessage("Message was not found in channel.");
-                return;
-            });
+            test.getMessage(mid)
+                .then(_ => (success = true))
+                .catch(_ => {
+                    msg.channel.createMessage(
+                        "Message was not found in channel."
+                    );
+                    return;
+                });
 
             channel = test.id;
         }
     }
 
-    msg.channel.createMessage(
-        `https://discordapp.com/channels/${msg.channel.guild.id}/${
-            channel == false ? msg.channel.id : channel
-        }/${mid}`
-    );
+    if (success)
+        msg.channel.createMessage(
+            `https://discordapp.com/channels/${msg.channel.guild.id}/${
+                channel == false ? msg.channel.id : channel
+            }/${mid}`
+        );
 };
 
 module.exports = [
