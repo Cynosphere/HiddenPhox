@@ -562,12 +562,14 @@ let twdl = async function(ctx, msg, args) {
         args = args.replace("--url ", "");
     }
 
-    let twimg = await ctx.db.models.sdata
-        .findOrCreate({
-            where: { id: msg.channel.guild.id }
-        })
-        .then(x => x[0].dataValues.twimg);
-    if (twimg && msg.content.match(twitterurl)) return;
+    if (msg.channel.guild) {
+        let twimg = await ctx.db.models.sdata
+            .findOrCreate({
+                where: { id: msg.channel.guild.id }
+            })
+            .then(x => x[0].dataValues.twimg);
+        if (twimg && msg.content.match(twitterurl)) return;
+    }
 
     let id;
 
@@ -605,6 +607,12 @@ let twdl = async function(ctx, msg, args) {
         }
     }
 };
+
+const reddit1 = /(?:\s|^)https?:\/\/((old|m)\.)?reddit\.com\/r\/(.+)\/comments\/([a-z0-9]{1,6})(\/.+\/?)?/;
+const reddit2 = /(?:\s|^)https?:\/\/redd\.it\/([a-z0-9]{1,6})/;
+const vreddit = /(?:\s|^)https?:\/\/v\.redd\.it\/([a-z0-9]{1,13})/;
+
+let redditdl = async function(ctx, msg, args) {};
 
 module.exports = [
     {
