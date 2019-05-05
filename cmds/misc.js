@@ -542,7 +542,7 @@ async function getTweetVideo(ctx, snowflake) {
         }
 
         if (vid) {
-            resolve({video:vid,user:tweet.user.screen_name});
+            resolve({ video: vid, user: tweet.user.screen_name });
         } else {
             reject("no vid");
         }
@@ -612,33 +612,37 @@ const reddit1 = /(?:\s|^)https?:\/\/((old|m|www)\.)?reddit\.com\/(r\/.+\/)?comme
 const reddit2 = /(?:\s|^)https?:\/\/redd\.it\/([a-z0-9]{1,6})/;
 const vreddit = /(?:\s|^)https?:\/\/v\.redd\.it\/([a-z0-9]{1,13})/;
 
-const getRedditVideo = async function(ctx,link){
-    return new Promise((resolve,reject)=>{
+const getRedditVideo = async function(ctx, link) {
+    return new Promise(async (resolve, reject) => {
         let url;
         if (reddit1.test(link)) {
             let match = link.match(reddit1);
             url = `https://reddit.com/comments/${match[4]}.json`;
-        }else if(reddit2.test(link)){
+        } else if (reddit2.test(link)) {
             let match = link.match(reddit2);
             url = `https://reddit.com/comments/${match[1]}.json`;
-        }else if(vreddit.test(link)){
-            let redirs = await ctx.libs.superagent.get(link).then(x=>x.redirects);
-            if(redirs.length > 0 && redirs[1]){
+        } else if (vreddit.test(link)) {
+            let redirs = await ctx.libs.superagent
+                .get(link)
+                .then(x => x.redirects);
+            if (redirs.length > 0 && redirs[1]) {
                 let match = redirs[1].match(reddit1);
                 url = `https://reddit.com/comments/${match[4]}.json`;
             }
-        }else{
-            reject("Link did not pass any checks. Make sure it's either a full reddit link to the comments, redd.it or v.redd.it.");
+        } else {
+            reject(
+                "Link did not pass any checks. Make sure it's either a full reddit link to the comments, redd.it or v.redd.it."
+            );
             return;
         }
 
-        if (url){
+        if (url) {
             resolve(url);
-        }else{
+        } else {
             reject("no vid");
         }
     });
-}
+};
 
 let redditdl = async function(ctx, msg, args) {
     if (!args) {
@@ -653,7 +657,7 @@ let redditdl = async function(ctx, msg, args) {
         args = args.replace("--url ", "");
     }
 
-    let url = await getRedditVideo(ctx,args).catch(e => {
+    let url = await getRedditVideo(ctx, args).catch(e => {
         if (e == "no vid") {
             msg.channel.createMessage("Post has no video.");
         } else {
@@ -662,30 +666,45 @@ let redditdl = async function(ctx, msg, args) {
             );
         }
     });
-    if(!url) return;
-    let data = await ctx.libs.superagent.get(url).then(x=>x.body && x.body[0] && x.body[0].data && x.body[0].data.children && x.body[0].data.children[0] && x.body[0].data.children[0].data);
-    if(data.is_video){
-        let code = await ctx.libs.superagent.post("https://lew.la/reddit/download")
-        .type("form")
-        .send({url:`https://www.reddit.com/${data.subreddit_name_prefixed}/comments/${data.id}/`})
-        .then(x=>x.text);
+    if (!url) return;
+    let data = await ctx.libs.superagent
+        .get(url)
+        .then(
+            x =>
+                x.body &&
+                x.body[0] &&
+                x.body[0].data &&
+                x.body[0].data.children &&
+                x.body[0].data.children[0] &&
+                x.body[0].data.children[0].data
+        );
+    if (data.is_video) {
+        let code = await ctx.libs.superagent
+            .post("https://lew.la/reddit/download")
+            .type("form")
+            .send({
+                url: `https://www.reddit.com/${
+                    data.subreddit_name_prefixed
+                }/comments/${data.id}/`
+            })
+            .then(x => x.text);
 
-        if(code=="<<ERROR>>"){
+        if (code == "<<ERROR>>") {
             msg.channel.createMessage("An error occurred getting the video.");
             return;
-        }else{
-            let vidurl = `https://lew.la/reddit/clips/${code}.mp4`
+        } else {
+            let vidurl = `https://lew.la/reddit/clips/${code}.mp4`;
             if (giveURL) {
                 msg.channel.createMessage(vidurl);
             } else {
                 let vid = await ctx.libs.superagent.get(vidurl);
-                msg.channel.createMessage("",{
-                    file:vid.body,
-                    name:`${data.title}-${data.id}.mp4`
+                msg.channel.createMessage("", {
+                    file: vid.body,
+                    name: `${data.title}-${data.id}.mp4`
                 });
             }
         }
-    }else{
+    } else {
         msg.channel.createMessage("Reddit post is not a video.");
         return;
     }
