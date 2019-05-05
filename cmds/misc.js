@@ -598,10 +598,16 @@ let twdl = async function(ctx, msg, args) {
         } else {
             let vid = await ctx.libs.superagent.get(data.video);
             if (vid) {
-                msg.channel.createMessage("", {
-                    file: vid.body,
-                    name: `${data.user}-${id}.mp4`
-                });
+                msg.channel
+                    .createMessage("", {
+                        file: vid.body,
+                        name: `${data.user}-${id}.mp4`
+                    })
+                    .catch(e => {
+                        if (e.message.includes("Request entity too large")) {
+                            msg.channel.createMessage(data.video);
+                        }
+                    });
             } else {
                 msg.channel.createMessage("An error occured uploading.");
             }
@@ -719,7 +725,7 @@ let redditdl = async function(ctx, msg, args) {
                         name: `${data.title}-${data.id}.mp4`
                     })
                     .catch(e => {
-                        if (e.includes("Request entity too large")) {
+                        if (e.message.includes("Request entity too large")) {
                             msg.channel.createMessage(vidurl);
                         }
                     });
