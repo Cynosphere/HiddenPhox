@@ -491,6 +491,119 @@ let br = function(ctx, msg, args) {
     msg.channel.createMessage("br?");
 };
 
+const twitterurl = /(?:\s|^)https?:\/\/(www\.)?twitter\.com\/(.+\/status\/|statuses\/)([0-9]{17,21})/g;
+
+// don't complain at me, do not PR for removal
+// taken from https://gist.github.com/shobotch/5160017
+// exact key: Twitter for Android
+const twiKey = Buffer.from(
+    "3nVuSoBZnx6U4vzUxf5w:Bcs59EFbbsdF6Sl9Ng71smgStWEGwXXKSjYvPVt7qys"
+).toString("base64");
+
+async function getBearer(ctx) {
+    return new Promise(async (resolve, reject) => {
+        let token = await ctx.libs.superagent
+            .post(
+                "https://api.twitter.com/oauth2/token?grant_type=client_credentials"
+            )
+            .set("Authorization", `Basic ${twiKey}`)
+            .then(x => x.body.access_token);
+
+        resolve(token);
+    });
+}
+
+async function getTweetVideo(ctx, snowflake) {
+    return new Promise(async (resolve, reject) => {
+        let token = await getBearer(ctx);
+
+        let vid = false;
+
+        let tweet = await ctx.libs.superagent
+            .get(
+                `https://api.twitter.com/1.1/statuses/show.json?id=${snowflake}&trim_user=1&include_entities=1`
+            )
+            .set("Authorization", `Bearer ${token}`)
+            .then(x => x.body)
+            .catch(e=>reject(e));
+        if (tweet.extended_entities) {
+            if (
+                tweet.extended_entities.media[0].type == "video" ||
+                tweet.extended_entities.media[0].type == "animated_gif"
+            ) {
+                let _vid = tweet.extended_entities.media[0]
+                vid = _vid.video_info.variants.length > 1
+                                ? _vid.video_info.variants
+                                      .filter(x => x.bitrate)
+                                      .sort((a, b) => b.bitrate - a.bitrate)[0]
+                                      .url
+                                : _vid.video_info.variants[0].url
+            }
+        }
+
+        if (vid){
+            resolve(vid);
+        }else{
+            reject("no vid");
+        }
+    });
+}
+
+let twdl = function(ctx,msg,args){
+    if (!args) {
+        msg.channel.createMessage("Arguments required.");
+        return;
+    }
+
+    let giveURL = false;
+
+    if(args.startsWith("--url ")){
+        giveURL = true;
+        args=args.replace("--url ","");
+    }
+
+    let twimg = await ctx.db.models.sdata
+        .findOrCreate({
+            where: { id: msg.channel.guild.id }
+        })
+        .then(x => x[0].dataValues.twimg);
+    if (twimg && msg.content.match(twitterurl)) return;
+
+    let id;
+
+    let url = msg.content.match(twitterurl);
+    if (url){
+        url = url.map(x => (x.startsWith(" ") ? x.substring(1) : x))[0];
+
+        id = url.match(/[0-9]{17,21}$/)[0];
+    }else{
+        id = args.match(/[0-9]{17,21}$/)[0];
+    }
+    if(!id) return;
+    let data = await getTweetVideo(ctx,id).catch(e=>{
+        if (e == "no vid"){
+            msg.channel.createMessage("Tweet has no video.");
+        }else{
+            msg.channel.createMessage(`:warning: An error occured:\n\`\`\`\n${e}\n\`\`\``);
+        }
+    });
+    if(data){
+        if (giveURL) {
+            msg.channel.createMessage(data);
+        }else{
+            let vid = await ctx.superagent.get(data);
+            if(vid) {
+                msg.channel.createMessage("",{
+                    file:vid.body,
+                    name:"twdl.mp4"
+                });
+            }else{
+                msg.channel.createMessage("An error occured uploading.");
+            }
+        }
+    }
+}
+
 module.exports = [
     {
         name: "calc",
