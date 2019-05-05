@@ -550,6 +550,7 @@ async function getTweetVideo(ctx, snowflake) {
 }
 
 let twdl = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
     if (!args) {
         msg.channel.createMessage("Arguments required.");
         return;
@@ -645,6 +646,7 @@ const getRedditVideo = async function(ctx, link) {
 };
 
 let redditdl = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
     if (!args) {
         msg.channel.createMessage("Arguments required.");
         return;
@@ -711,10 +713,16 @@ let redditdl = async function(ctx, msg, args) {
                 msg.channel.createMessage(vidurl);
             } else {
                 let vid = await ctx.libs.superagent.get(vidurl);
-                msg.channel.createMessage("", {
-                    file: vid.body,
-                    name: `${data.title}-${data.id}.mp4`
-                });
+                msg.channel
+                    .createMessage("", {
+                        file: vid.body,
+                        name: `${data.title}-${data.id}.mp4`
+                    })
+                    .catch(e => {
+                        if (e.includes("Request entity too large")) {
+                            msg.channel.createMessage(vidurl);
+                        }
+                    });
             }
         }
     } else {
