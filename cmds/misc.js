@@ -734,5 +734,16 @@ For a list of available currencies (as CSV files):
         desc: "br?",
         func: br,
         group: "fun"
+    },
+    {
+        name: "twdl",
+        desc: "Twitter video downloader",
+        fulldesc: `
+**WILL NOT WORK WITH URLS IF TWIMG IS ENABLED** Use snowflake if you want file.
+
+Can be called with --url to get URL.`,
+        func: twdl,
+        group: "fun",
+        aliases: ["twitterdl"]
     }
 ];
