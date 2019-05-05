@@ -1527,7 +1527,7 @@ let jump = async function(ctx, msg, args) {
         mid = args[0];
     }
 
-    let success = new Promise((resolve, reject) => {
+    let doChecks = new Promise((resolve, reject) => {
         if (channel == false) {
             msg.channel
                 .getMessage(mid)
@@ -1562,17 +1562,18 @@ let jump = async function(ctx, msg, args) {
                     return;
                 }
                 test.getMessage(mid)
-                    .then(_ => resolve(true))
+                    .then(_ => {
+                        channel = test.id;
+                        resolve(true);
+                    })
                     .catch(_ => {
                         reject("Message was not found in channel.");
                     });
-
-                channel = test.id;
             }
         }
     });
 
-    success
+    doChecks
         .then(_ =>
             msg.channel.createMessage(
                 `https://discordapp.com/channels/${msg.channel.guild.id}/${
