@@ -525,31 +525,31 @@ async function getTweetVideo(ctx, snowflake) {
             )
             .set("Authorization", `Bearer ${token}`)
             .then(x => x.body)
-            .catch(e=>reject(e));
+            .catch(e => reject(e));
         if (tweet.extended_entities) {
             if (
                 tweet.extended_entities.media[0].type == "video" ||
                 tweet.extended_entities.media[0].type == "animated_gif"
             ) {
-                let _vid = tweet.extended_entities.media[0]
-                vid = _vid.video_info.variants.length > 1
-                                ? _vid.video_info.variants
-                                      .filter(x => x.bitrate)
-                                      .sort((a, b) => b.bitrate - a.bitrate)[0]
-                                      .url
-                                : _vid.video_info.variants[0].url
+                let _vid = tweet.extended_entities.media[0];
+                vid =
+                    _vid.video_info.variants.length > 1
+                        ? _vid.video_info.variants
+                              .filter(x => x.bitrate)
+                              .sort((a, b) => b.bitrate - a.bitrate)[0].url
+                        : _vid.video_info.variants[0].url;
             }
         }
 
-        if (vid){
+        if (vid) {
             resolve(vid);
-        }else{
+        } else {
             reject("no vid");
         }
     });
 }
 
-let twdl = function(ctx,msg,args){
+let twdl = async function(ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage("Arguments required.");
         return;
@@ -557,9 +557,9 @@ let twdl = function(ctx,msg,args){
 
     let giveURL = false;
 
-    if(args.startsWith("--url ")){
+    if (args.startsWith("--url ")) {
         giveURL = true;
-        args=args.replace("--url ","");
+        args = args.replace("--url ", "");
     }
 
     let twimg = await ctx.db.models.sdata
@@ -572,37 +572,39 @@ let twdl = function(ctx,msg,args){
     let id;
 
     let url = msg.content.match(twitterurl);
-    if (url){
+    if (url) {
         url = url.map(x => (x.startsWith(" ") ? x.substring(1) : x))[0];
 
         id = url.match(/[0-9]{17,21}$/)[0];
-    }else{
+    } else {
         id = args.match(/[0-9]{17,21}$/)[0];
     }
-    if(!id) return;
-    let data = await getTweetVideo(ctx,id).catch(e=>{
-        if (e == "no vid"){
+    if (!id) return;
+    let data = await getTweetVideo(ctx, id).catch(e => {
+        if (e == "no vid") {
             msg.channel.createMessage("Tweet has no video.");
-        }else{
-            msg.channel.createMessage(`:warning: An error occured:\n\`\`\`\n${e}\n\`\`\``);
+        } else {
+            msg.channel.createMessage(
+                `:warning: An error occured:\n\`\`\`\n${e}\n\`\`\``
+            );
         }
     });
-    if(data){
+    if (data) {
         if (giveURL) {
             msg.channel.createMessage(data);
-        }else{
+        } else {
             let vid = await ctx.superagent.get(data);
-            if(vid) {
-                msg.channel.createMessage("",{
-                    file:vid.body,
-                    name:"twdl.mp4"
+            if (vid) {
+                msg.channel.createMessage("", {
+                    file: vid.body,
+                    name: "twdl.mp4"
                 });
-            }else{
+            } else {
                 msg.channel.createMessage("An error occured uploading.");
             }
         }
     }
-}
+};
 
 module.exports = [
     {
