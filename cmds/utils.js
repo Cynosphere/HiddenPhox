@@ -1536,7 +1536,7 @@ let jump = async function(ctx, msg, args) {
         }
     } else {
         if (/[0-9]{17,21}/.test(channel)) {
-            let test = msg.channel.guild.get(channel);
+            let test = msg.channel.guild.channels.get(channel);
             if (!test) {
                 msg.channel.createMessage(
                     "Channel lookup by ID failed. Be sure its in the same guild."
@@ -1549,7 +1549,9 @@ let jump = async function(ctx, msg, args) {
                 return;
             }
         } else if (!/[0-9]{17,21}/.test(channel)) {
-            let test = msg.channel.guild.filter(c => c.name == channel)[0];
+            let test = msg.channel.guild.channels.filter(
+                c => c.name == channel
+            )[0];
             if (!test) {
                 msg.channel.createMessage(
                     "Channel lookup by name failed. Be sure its the full name."
