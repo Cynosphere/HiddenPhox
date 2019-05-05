@@ -1527,13 +1527,12 @@ let jump = async function(ctx, msg, args) {
     }
 
     if (channel == false) {
-        let test = await msg.channel.getMessage(mid);
-        if (!test) {
+        msg.channel.getMessage(mid).catch(_ => {
             msg.channel.createMessage(
                 "Message not found. Be sure to append channel name or ID before the other ID, seperated with a space if its in another channel."
             );
             return;
-        }
+        });
     } else {
         if (/[0-9]{17,21}/.test(channel)) {
             let test = msg.channel.guild.channels.get(channel);
@@ -1543,11 +1542,10 @@ let jump = async function(ctx, msg, args) {
                 );
                 return;
             }
-            let test2 = await test.getMessage(mid);
-            if (!test2) {
+            test.getMessage(mid).catch(_ => {
                 msg.channel.createMessage("Message was not found in channel.");
                 return;
-            }
+            });
         } else if (!/[0-9]{17,21}/.test(channel)) {
             let test = msg.channel.guild.channels.filter(
                 c => c.name == channel
@@ -1558,13 +1556,10 @@ let jump = async function(ctx, msg, args) {
                 );
                 return;
             }
-            let test2 = await test.getMessage(mid);
-            if (!test2) {
-                msg.channel.createMessage(
-                    "Message was not found in channel.\n\nIf multiple channels with same name, use ID instead."
-                );
+            test.getMessage(mid).catch(_ => {
+                msg.channel.createMessage("Message was not found in channel.");
                 return;
-            }
+            });
 
             channel = test.id;
         }
