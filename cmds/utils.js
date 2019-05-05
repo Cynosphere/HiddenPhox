@@ -1509,6 +1509,70 @@ let charinfo = async function(ctx, msg, args) {
     }
 };
 
+let jump = async function(ctx, msg, args) {
+    if (!args) {
+        msg.channel.createMessage("Arguments required.");
+        return;
+    }
+
+    args = args.split(" ");
+    let channel = false;
+    let mid = "";
+
+    if (args.length > 1) {
+        channel = args[0];
+        mid = args[1];
+    } else {
+        mid = args[0];
+    }
+
+    if (channel == false) {
+        let test = await msg.channel.getMessage(mid);
+        if (!test) {
+            msg.channel.createMessage(
+                "Message not found. Be sure to append channel name or ID before the other ID, seperated with a space if its in another channel."
+            );
+            return;
+        }
+    } else {
+        if (/[0-9]{17,21}/.test(channel)) {
+            let test = msg.channel.guild.get(channel);
+            if (!test) {
+                msg.channel.createMessage(
+                    "Channel lookup by ID failed. Be sure its in the same guild."
+                );
+                return;
+            }
+            let test2 = await test.getMessage(mid);
+            if (!test2) {
+                msg.channel.createMessage("Message was not found in channel.");
+                return;
+            }
+        } else if (!/[0-9]{17,21}/.test(channel)) {
+            let test = msg.channel.guild.filter(c => c.name == channel)[0];
+            if (!test) {
+                msg.channel.createMessage(
+                    "Channel lookup by name failed. Be sure its the full name."
+                );
+                return;
+            }
+            let test2 = await test.getMessage(mid);
+            if (!test2) {
+                msg.channel.createMessage(
+                    "Message was not found in channel.\n\nIf multiple channels with same name, use ID instead."
+                );
+                return;
+            }
+        }
+    }
+
+    msg.channel.createMessage(
+        `https://discordapp.com/channels/${msg.channel.guild.id}/${
+            channel == false ? msg.channel.id : channel
+        }/${mid}`
+    );
+};
+
 module.exports = [
     {
         name: "avatar",
@@ -1638,5 +1702,12 @@ If the bot has Manage Messages, it'll delete your regular command message.`,
         func: charinfo,
         group: "utils",
         aliases: ["char", "character"]
+    },
+    {
+        name: "jump",
+        desc: "Get jump URL based on ID.",
+        func: jump,
+        group: "utils",
+        aliases: ["jumpto"]
     }
 ];
