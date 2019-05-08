@@ -1497,7 +1497,12 @@ let charinfo = async function(ctx, msg, args) {
         .join("\n");
 
     if (out.toString().length > 2000) {
-        let output = out.toString();
+        let output = out
+            .toString()
+            .replace(/_/g, "\\_")
+            .replace(/\*/g, "\\*")
+            .replace(/~/g, "\\~")
+            .replace(/`/g, "\\`");
         ctx.utils.makeHaste(
             ctx,
             msg,
