@@ -811,26 +811,26 @@ add "[no_nsfw]" (without quotemarks) to the channel topic.
         name: "me_irl",
         desc: "selfies of the soul. Pulls a post from r/me_irl",
         func: me_irl,
-        group: "fun"
+        group: "misc"
     },
     {
         name: "poll",
         desc: "Start a poll with multiple options.",
         func: poll,
-        group: "fun"
+        group: "misc"
     },
     {
         name: "vote",
         desc: "Start a yes/no vote",
         func: vote,
-        group: "fun"
+        group: "misc"
     },
     /*{
         name: "recipe",
         desc:
             "Hm, it looks like that file might've been a virus. Instead of cooking up trouble, try cooking up...",
         func: recipe,
-        group: "fun"
+        group: "misc"
     },*/
     {
         name: "currency",
@@ -845,7 +845,7 @@ For a list of available currencies (as CSV files):
         `,
         func: currency,
         usage: "[amount] [from] [to]",
-        group: "fun",
+        group: "misc",
         aliases: ["money"]
     },
     {
@@ -853,7 +853,7 @@ For a list of available currencies (as CSV files):
         desc: "Create a rave.dj from two YouTube videos.",
         func: rave,
         usage: "[youtube video] [youtube video]",
-        group: "fun",
+        group: "misc",
         aliases: ["ravedj", "rdj"]
     },
     {
@@ -861,20 +861,20 @@ For a list of available currencies (as CSV files):
         desc: "Wolfram Alpha Query.",
         func: wolfram,
         usage: "[query]",
-        group: "fun",
+        group: "misc",
         aliases: ["wa"]
     },
     {
         name: "no",
         desc: "No",
         func: no,
-        group: "fun"
+        group: "misc"
     },
     {
         name: "br",
         desc: "br?",
         func: br,
-        group: "fun"
+        group: "misc"
     },
     {
         name: "twdl",
@@ -884,7 +884,7 @@ For a list of available currencies (as CSV files):
 
 Can be called with --url to get URL.`,
         func: twdl,
-        group: "fun",
+        group: "misc",
         aliases: ["twitterdl"]
     },
     {
@@ -895,6 +895,6 @@ Can be called with --url to get URL.`,
 
 Can be called with --url to get URL.`,
         func: redditdl,
-        group: "fun"
+        group: "misc"
     }
 ];
