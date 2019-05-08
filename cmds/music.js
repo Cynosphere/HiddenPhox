@@ -1503,6 +1503,6 @@ module.exports = {
 \u2022 **unlock/:unlock:** - Unlock skipping and queue.
     `,
     func: func,
-    group: "fun",
+    group: "music",
     aliases: ["m"]
 };
