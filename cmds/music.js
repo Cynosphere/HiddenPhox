@@ -49,8 +49,8 @@ async function grabInstaudio(ctx, url) {
     let duration = data.match(iaduration[1]);
 
     let iaurl = data.match(url)[1];
-
-    return { title, iaurl, duration };
+    let info = { title: title, url: iaurl, duration: duration };
+    return info;
 }
 
 function createEndFunction(id, url, type, msg, ctx) {
@@ -885,20 +885,18 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
         if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
             if (conn.playing) {
-                let title,
-                    iaurl,
-                    duration = await grabInstaudio(ctx, url).catch(e =>
-                        msg.channel
-                            .createMessage(
-                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                            )
-                            .then(x => setTimeout(() => x.delete(), 10000))
-                    );
+                let info = await grabInstaudio(ctx, url).catch(e =>
+                    msg.channel
+                        .createMessage(
+                            `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                        )
+                        .then(x => setTimeout(() => x.delete(), 10000))
+                );
                 ctx.vc.get(msg.member.voiceState.channelID).queue.push({
-                    url: iaurl,
+                    url: info.url,
                     type: "ia",
-                    title: title,
-                    len: duration,
+                    title: info.title,
+                    len: info.duration,
                     addedBy: addedBy
                 });
                 msg.channel
@@ -908,12 +906,14 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             fields: [
                                 {
                                     name: "Title",
-                                    value: `[${title}](${url})`,
+                                    value: `[${info.title}](${url})`,
                                     inline: true
                                 },
                                 {
                                     name: "Length",
-                                    value: ctx.utils.remainingTime(duration),
+                                    value: ctx.utils.remainingTime(
+                                        info.duration
+                                    ),
                                     inline: true
                                 },
                                 {
@@ -930,27 +930,25 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     })
                     .then(x => setTimeout(() => x.delete(), 10000));
             } else {
-                let title,
-                    iaurl,
-                    duration = await grabInstaudio(ctx, url).catch(e =>
-                        msg.channel
-                            .createMessage(
-                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                            )
-                            .then(x => setTimeout(() => x.delete(), 10000))
-                    );
+                let info = await grabInstaudio(ctx, url).catch(e =>
+                    msg.channel
+                        .createMessage(
+                            `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                        )
+                        .then(x => setTimeout(() => x.delete(), 10000))
+                );
                 msg.channel.createMessage({
                     embed: {
                         title: `:musical_note: Now Playing`,
                         fields: [
                             {
                                 name: "Title",
-                                value: `[${title}](${url})`,
+                                value: `[${info.title}](${url})`,
                                 inline: true
                             },
                             {
                                 name: "Length",
-                                value: ctx.utils.remainingTime(duration),
+                                value: ctx.utils.remainingTime(info.duration),
                                 inline: true
                             },
                             {
@@ -966,14 +964,14 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     }
                 });
                 conn.np = {
-                    title: title,
+                    title: info.title,
                     addedBy: addedBy
                 };
-                conn.len = duration;
+                conn.len = info.duration;
                 conn.start = Date.now();
                 conn.end = Date.now() + conn.len;
 
-                conn.play(iaurl, {
+                conn.play(info.url, {
                     inlineVolume: true,
                     voiceDataTimeout: -1
                 });
@@ -984,27 +982,27 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 .then(async conn => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    let title,
-                        iaurl,
-                        duration = await grabInstaudio(ctx, url).catch(e =>
-                            msg.channel
-                                .createMessage(
-                                    `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                                )
-                                .then(x => setTimeout(() => x.delete(), 10000))
-                        );
+                    let info = await grabInstaudio(ctx, url).catch(e =>
+                        msg.channel
+                            .createMessage(
+                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                            )
+                            .then(x => setTimeout(() => x.delete(), 10000))
+                    );
                     msg.channel.createMessage({
                         embed: {
                             title: `:musical_note: Now Playing`,
                             fields: [
                                 {
                                     name: "Title",
-                                    value: `[${title}](${url})`,
+                                    value: `[${info.title}](${url})`,
                                     inline: true
                                 },
                                 {
                                     name: "Length",
-                                    value: ctx.utils.remainingTime(duration),
+                                    value: ctx.utils.remainingTime(
+                                        info.duration
+                                    ),
                                     inline: true
                                 },
                                 {
@@ -1020,14 +1018,14 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         }
                     });
                     conn.np = {
-                        title: title,
+                        title: info.title,
                         addedBy: addedBy
                     };
-                    conn.len = duration;
+                    conn.len = info.duration;
                     conn.start = Date.now();
                     conn.end = Date.now() + conn.len;
 
-                    conn.play(iaurl, {
+                    conn.play(info.url, {
                         inlineVolume: true,
                         voiceDataTimeout: -1
                     });
