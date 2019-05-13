@@ -45,14 +45,15 @@ const iaurl = /data-instaudio-player-file="(.+)"$/m;
 async function grabInstaudio(ctx, url) {
     let data = await ctx.libs.superagent.get(url);
     if (url.endsWith("/random") && data.redirects && data.redirects.length > 0)
-        data = await ctx.libs.superagent.get(data.redirects[0]);
+        url = data.redirects[0];
+    data = await ctx.libs.superagent.get(data.redirects[0]);
     data = data.text;
     let title = data.match(iatitle1)[1];
     title = title.match(iatitle2)[1];
     let duration = data.match(iaduration)[1];
 
     let _url = data.match(iaurl)[1];
-    let info = { title: title, url: _url, duration: duration };
+    let info = { title: title, url: url, fileurl: _url, duration: duration };
     return info;
 }
 
@@ -896,7 +897,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .then(x => setTimeout(() => x.delete(), 10000))
                 );
                 ctx.vc.get(msg.member.voiceState.channelID).queue.push({
-                    url: url,
+                    url: info.url,
                     type: "ia",
                     title: info.title,
                     len: info.duration,
@@ -909,7 +910,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             fields: [
                                 {
                                     name: "Title",
-                                    value: `[${info.title}](${url})`,
+                                    value: `[${info.title}](${info.url})`,
                                     inline: true
                                 },
                                 {
@@ -946,7 +947,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         fields: [
                             {
                                 name: "Title",
-                                value: `[${info.title}](${url})`,
+                                value: `[${info.title}](${info.url})`,
                                 inline: true
                             },
                             {
@@ -974,7 +975,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 conn.start = Date.now();
                 conn.end = Date.now() + conn.len;
 
-                conn.play(info.url, {
+                conn.play(info.fileurl, {
                     inlineVolume: true,
                     voiceDataTimeout: -1
                 });
@@ -998,7 +999,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             fields: [
                                 {
                                     name: "Title",
-                                    value: `[${info.title}](${url})`,
+                                    value: `[${info.title}](${info.url})`,
                                     inline: true
                                 },
                                 {
@@ -1028,7 +1029,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     conn.start = Date.now();
                     conn.end = Date.now() + conn.len;
 
-                    conn.play(info.url, {
+                    conn.play(info.fileurl, {
                         inlineVolume: true,
                         voiceDataTimeout: -1
                     });
