@@ -893,7 +893,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .then(x => setTimeout(() => x.delete(), 10000))
                 );
                 ctx.vc.get(msg.member.voiceState.channelID).queue.push({
-                    url: info.url,
+                    url: url,
                     type: "ia",
                     title: info.title,
                     len: info.duration,
