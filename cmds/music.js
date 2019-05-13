@@ -50,7 +50,7 @@ async function grabInstaudio(ctx, url) {
 
     let iaurl = data.match(url)[1];
 
-    return title, iaurl, duration;
+    return { title, iaurl, duration };
 }
 
 function createEndFunction(id, url, type, msg, ctx) {
