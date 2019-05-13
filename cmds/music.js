@@ -44,6 +44,10 @@ const iaduration = /data-instaudio-player-duration="(.+)"$/m;
 const iaurl = /data-instaudio-player-file="(.+)"$/m;
 async function grabInstaudio(ctx, url) {
     let data = await ctx.libs.superagent.get(url).then(x => x.text);
+    if (url.endsWith("/random") && data.redirects.length > 0)
+        data = await ctx.libs.superagent
+            .get(data.redirects[0])
+            .then(x => x.text);
     let title = data.match(iatitle1)[1];
     title = title.match(iatitle2)[1];
     let duration = data.match(iaduration)[1];
