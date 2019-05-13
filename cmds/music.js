@@ -15,6 +15,7 @@ const scplregex = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/sets\/.+$/;
 const scplregex2 = /^sc:.+\/sets\/.+$/;
 const scplregex3 = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/likes$/;
 const scplregex4 = /^sc:.+\/likes$/;
+const instaudio = /^(https?:\/\/)?(www\.)?instaud\.io\/([a-zA-Z0-9]{1,4}|random)/;
 
 /*async function grabYTVideoURL(ctx, url) {
     let vid = await ctx.libs.superagent.get(url).then(x => x.text);
@@ -36,6 +37,21 @@ const scplregex4 = /^sc:.+\/likes$/;
             return a.bitrate < b.bitrate ? 1 : a.bitrate > b.bitrate ? -1 : 0;
         })[0].url;
 }*/
+
+const iatitle1 = /<header id="title-header">([\s\S]+)<\/header>/;
+const iatitle2 = /<h1>(.+)<\/h1>/;
+const iaduration = /data-instaudio-player-duration="(.+)"$/m;
+const iaurl = /data-instaudio-player-file="(.+)"$/m;
+async function grabInstaudio(ctx, url) {
+    let data = await ctx.libs.superagent.get(url).then(x => x.text);
+    let title = data.match(iatitle1)[1];
+    title = title.match(iatitle2)[1];
+    let duration = data.match(iaduration[1]);
+
+    let url = data.match(iaurl)[1];
+
+    return title, url, duration;
+}
 
 function createEndFunction(id, url, type, msg, ctx) {
     if (ctx.vc.get(id).evntEnd) return;
@@ -184,7 +200,9 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 fields: [
                                     {
                                         name: "Title",
-                                        value: info.title ? info.title : url,
+                                        value: info.title
+                                            ? `[${info.title}](${url})`
+                                            : url,
                                         inline: true
                                     },
                                     {
@@ -239,7 +257,9 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             fields: [
                                 {
                                     name: "Title",
-                                    value: info.title ? info.title : url,
+                                    value: info.title
+                                        ? `[${info.title}](${url})`
+                                        : url,
                                     inline: true
                                 },
                                 {
@@ -310,7 +330,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                     fields: [
                                         {
                                             name: "Title",
-                                            value: info.title,
+                                            value: url,
                                             inline: true
                                         },
                                         {
@@ -340,7 +360,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                     fields: [
                                         {
                                             name: "Title",
-                                            value: info.title,
+                                            value: `[${info.title}](${url})`,
                                             inline: true
                                         },
                                         {
@@ -413,7 +433,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             fields: [
                                 {
                                     name: "Title",
-                                    value: info.title,
+                                    value: `[${info.title}](${url})`,
                                     inline: true
                                 },
                                 {
@@ -455,7 +475,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         fields: [
                             {
                                 name: "Title",
-                                value: info.title,
+                                value: `[${info.title}](${url})`,
                                 inline: true
                             },
                             {
@@ -512,7 +532,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             fields: [
                                 {
                                     name: "Title",
-                                    value: info.title,
+                                    value: `[${info.title}](${url})`,
                                     inline: true
                                 },
                                 {
@@ -701,7 +721,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 fields: [
                                     {
                                         name: "Title",
-                                        value: title,
+                                        value: `[${title}](${url})`,
                                         inline: true
                                     },
                                     {
@@ -803,7 +823,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                     fields: [
                                         {
                                             name: "Title",
-                                            value: title,
+                                            value: `[${title}](${url})`,
                                             inline: true
                                         },
                                         {
@@ -854,6 +874,164 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             "[ffprobe] ffprobe machine :b:roke: " + e
                         );
                     }
+                })
+                .catch(e =>
+                    msg.channel.createMessage(
+                        `An error occured when joining: \`\`\`\n${e}\n\`\`\``
+                    )
+                );
+        }
+    } else if (type == "ia") {
+        if (ctx.vc.get(id)) {
+            let conn = ctx.vc.get(id);
+            if (conn.playing) {
+                let title,
+                    url,
+                    duration = await grabInstaudio(ctx, url).catch(e =>
+                        msg.channel
+                            .createMessage(
+                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                            )
+                            .then(x => setTimeout(() => x.delete(), 10000))
+                    );
+                ctx.vc.get(msg.member.voiceState.channelID).queue.push({
+                    url: url,
+                    type: "ia",
+                    title: title,
+                    len: duration,
+                    addedBy: addedBy
+                });
+                msg.channel
+                    .createMessage({
+                        embed: {
+                            title: `<:ms_tick:503341995348066313> Added to queue`,
+                            fields: [
+                                {
+                                    name: "Title",
+                                    value: `[${title}](${url})`,
+                                    inline: true
+                                },
+                                {
+                                    name: "Length",
+                                    value: ctx.utils.remainingTime(duration),
+                                    inline: true
+                                },
+                                {
+                                    name: "Added By",
+                                    value: `<@${addedBy}>`,
+                                    inline: true
+                                }
+                            ],
+                            color: 0x80ffc0,
+                            thumbnail: {
+                                url: "https://instaud.io/logo.png"
+                            }
+                        }
+                    })
+                    .then(x => setTimeout(() => x.delete(), 10000));
+            } else {
+                let title,
+                    url,
+                    duration = await grabInstaudio(ctx, url).catch(e =>
+                        msg.channel
+                            .createMessage(
+                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                            )
+                            .then(x => setTimeout(() => x.delete(), 10000))
+                    );
+                msg.channel.createMessage({
+                    embed: {
+                        title: `:musical_note: Now Playing`,
+                        fields: [
+                            {
+                                name: "Title",
+                                value: `[${title}](${url})`,
+                                inline: true
+                            },
+                            {
+                                name: "Length",
+                                value: ctx.utils.remainingTime(duration),
+                                inline: true
+                            },
+                            {
+                                name: "Added By",
+                                value: `<@${addedBy}>`,
+                                inline: true
+                            }
+                        ],
+                        color: 0x80c0ff,
+                        thumbnail: {
+                            url: "https://instaud.io/logo.png"
+                        }
+                    }
+                });
+                conn.np = {
+                    title: title,
+                    addedBy: addedBy
+                };
+                conn.len = duration;
+                conn.start = Date.now();
+                conn.end = Date.now() + conn.len;
+
+                conn.play(url, {
+                    inlineVolume: true,
+                    voiceDataTimeout: -1
+                });
+            }
+        } else {
+            ctx.bot
+                .joinVoiceChannel(id)
+                .then(async conn => {
+                    ctx.vc.set(id, conn);
+                    ctx.vc.get(id).iwastoldtoleave = false;
+                    let title,
+                        url,
+                        duration = await grabInstaudio(ctx, url).catch(e =>
+                            msg.channel
+                                .createMessage(
+                                    `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                                )
+                                .then(x => setTimeout(() => x.delete(), 10000))
+                        );
+                    msg.channel.createMessage({
+                        embed: {
+                            title: `:musical_note: Now Playing`,
+                            fields: [
+                                {
+                                    name: "Title",
+                                    value: `[${title}](${url})`,
+                                    inline: true
+                                },
+                                {
+                                    name: "Length",
+                                    value: ctx.utils.remainingTime(duration),
+                                    inline: true
+                                },
+                                {
+                                    name: "Added By",
+                                    value: `<@${addedBy}>`,
+                                    inline: true
+                                }
+                            ],
+                            color: 0x80c0ff,
+                            thumbnail: {
+                                url: "https://instaud.io/logo.png"
+                            }
+                        }
+                    });
+                    conn.np = {
+                        title: title,
+                        addedBy: addedBy
+                    };
+                    conn.len = duration;
+                    conn.start = Date.now();
+                    conn.end = Date.now() + conn.len;
+
+                    conn.play(url, {
+                        inlineVolume: true,
+                        voiceDataTimeout: -1
+                    });
+                    createEndFunction(id, url, type, msg, ctx);
                 })
                 .catch(e =>
                     msg.channel.createMessage(
@@ -1028,6 +1206,15 @@ let func = function(ctx, msg, args) {
                     msg.member.voiceState.channelID,
                     cargs,
                     "mp3",
+                    msg,
+                    ctx,
+                    msg.author.id
+                );
+            } else if (instaudio.test(cargs)) {
+                doMusicThingsOk(
+                    msg.member.voiceState.channelID,
+                    cargs,
+                    "ia",
                     msg,
                     ctx,
                     msg.author.id
