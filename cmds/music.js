@@ -48,9 +48,9 @@ async function grabInstaudio(ctx, url) {
     title = title.match(iatitle2)[1];
     let duration = data.match(iaduration[1]);
 
-    let url = data.match(iaurl)[1];
+    let iaurl = data.match(iaurl)[1];
 
-    return title, url, duration;
+    return title, iaurl, duration;
 }
 
 function createEndFunction(id, url, type, msg, ctx) {
