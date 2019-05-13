@@ -886,7 +886,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             let conn = ctx.vc.get(id);
             if (conn.playing) {
                 let title,
-                    url,
+                    iaurl,
                     duration = await grabInstaudio(ctx, url).catch(e =>
                         msg.channel
                             .createMessage(
@@ -895,7 +895,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             .then(x => setTimeout(() => x.delete(), 10000))
                     );
                 ctx.vc.get(msg.member.voiceState.channelID).queue.push({
-                    url: url,
+                    url: iaurl,
                     type: "ia",
                     title: title,
                     len: duration,
@@ -931,7 +931,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     .then(x => setTimeout(() => x.delete(), 10000));
             } else {
                 let title,
-                    url,
+                    iaurl,
                     duration = await grabInstaudio(ctx, url).catch(e =>
                         msg.channel
                             .createMessage(
@@ -973,7 +973,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 conn.start = Date.now();
                 conn.end = Date.now() + conn.len;
 
-                conn.play(url, {
+                conn.play(iaurl, {
                     inlineVolume: true,
                     voiceDataTimeout: -1
                 });
@@ -985,7 +985,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
                     let title,
-                        url,
+                        iaurl,
                         duration = await grabInstaudio(ctx, url).catch(e =>
                             msg.channel
                                 .createMessage(
@@ -1027,7 +1027,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     conn.start = Date.now();
                     conn.end = Date.now() + conn.len;
 
-                    conn.play(url, {
+                    conn.play(iaurl, {
                         inlineVolume: true,
                         voiceDataTimeout: -1
                     });
