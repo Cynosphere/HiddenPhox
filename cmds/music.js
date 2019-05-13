@@ -46,10 +46,10 @@ async function grabInstaudio(ctx, url) {
     let data = await ctx.libs.superagent.get(url).then(x => x.text);
     let title = data.match(iatitle1)[1];
     title = title.match(iatitle2)[1];
-    let duration = data.match(iaduration[1]);
+    let duration = data.match(iaduration)[1];
 
-    let iaurl = data.match(url)[1];
-    let info = { title: title, url: iaurl, duration: duration };
+    let _url = data.match(iaurl)[1];
+    let info = { title: title, url: _url, duration: duration };
     return info;
 }
 
