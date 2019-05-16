@@ -474,9 +474,9 @@ let wolfram = async function(ctx, msg, args) {
         msg.channel.createMessage({ embed: embed });
     } else {
         msg.channel.createMessage(
-            `\`${args}\` -> ${
+            `\`${ctx.utils.safeString(args)}\` -> ${
                 data[1].subpods[0].plaintext.length > 0
-                    ? data[1].subpods[0].plaintext
+                    ? ctx.utils.safeString(data[1].subpods[0].plaintext)
                     : data[1].subpods[0].img.src
             }`
         );
