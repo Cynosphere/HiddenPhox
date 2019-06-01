@@ -738,11 +738,11 @@ let sinfo = async function(ctx, msg, args) {
         info.fields.push({
             name: "Features/Flags",
             value: `<:partner:493173082345832448>: ${
-                inv.guild.features.includes("PARTNERED")
+                g.features.includes("PARTNERED")
                     ? "<:ms_tick:503341995348066313>"
-                    : inv.guild.features.includes("VANITY_URL") ||
-                      inv.guild.features.includes("INVITE_SPLASH") ||
-                      inv.guild.features.includes("VIP_REGIONS")
+                    : g.features.includes("VANITY_URL") ||
+                      g.features.includes("INVITE_SPLASH") ||
+                      g.features.includes("VIP_REGIONS")
                     ? "<:ms_tilda:581268710925271095>"
                     : "<:ms_cross:503341994974773250>"
             }\t\t<:verified:543598700920832030>: ${
