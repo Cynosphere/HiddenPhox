@@ -83,7 +83,14 @@ let reactionAdd = async function(msg, emoji, uid, ctx) {
                         inline: true
                     },
                     { name: "User", value: `<@${uid}>`, inline: true }
-                ]
+                ],
+                thumbnail: {
+                    url: emoji.id
+                        ? `https://cdn.discordapp.com/emojis/${
+                              emoji.id
+                          }.png?v=1`
+                        : ""
+                }
             }
         });
     }
@@ -109,7 +116,14 @@ let reactionDelete = async function(msg, emoji, uid, ctx) {
                         inline: true
                     },
                     { name: "User", value: `<@${uid}>`, inline: true }
-                ]
+                ],
+                thumbnail: {
+                    url: emoji.id
+                        ? `https://cdn.discordapp.com/emojis/${
+                              emoji.id
+                          }.png?v=1`
+                        : ""
+                }
             }
         });
     }
@@ -236,7 +250,7 @@ let banAdd = async function(guild, user, ctx) {
                         name: "User",
                         value: `<@${user.id}> (${user.username}#${
                             user.discriminator
-                        })`,
+                        } - \`${user.id}\`)`,
                         inline: true
                     }
                 ],
@@ -263,7 +277,7 @@ let banRem = async function(guild, user, ctx) {
                         name: "User",
                         value: `<@${user.id}> (${user.username}#${
                             user.discriminator
-                        })`,
+                        } - \`${user.id}\`)`,
                         inline: true
                     }
                 ],
@@ -285,7 +299,13 @@ let userJoin = async function(guild, user, ctx) {
                 title: ":inbox_tray: User Joined",
                 color: 0x00aa00,
                 fields: [
-                    { name: "User", value: `<@${user.id}>`, inline: true },
+                    {
+                        name: "User",
+                        value: `<@${user.id}> (${user.username}#${
+                            user.discriminator
+                        } - \`${user.id}\`)`,
+                        inline: true
+                    },
                     {
                         name: "Created At",
                         value: new Date(user.createdAt).toUTCString(),
@@ -314,7 +334,7 @@ let userLeft = async function(guild, user, ctx) {
                         name: "User",
                         value: `<@${user.id}> (${user.user.username}#${
                             user.user.discriminator
-                        })`,
+                        } - \`${user.user.id}\`))`,
                         inline: true
                     },
                     {
@@ -422,7 +442,7 @@ let userUpdate = function(user, oldUser, ctx) {
             if (user.avatar != oldUser.avatar) {
                 e.fields.push({
                     name: "Avatar Updated",
-                    value: `${user.avatar} (was #${oldUser.avatar})`,
+                    value: `${user.avatar} (was ${oldUser.avatar})`,
                     inline: true
                 });
             }
