@@ -13,7 +13,11 @@ let avatar = function(ctx, msg, args) {
                 image: {
                     url: `https://cdn.discordapp.com/icons/${
                         msg.channel.guild.id
-                    }/${msg.channel.guild.icon}.png?size=1024`
+                    }/${msg.channel.guild.icon}.${
+                        msg.channel.guild.icon.startsWith("a_")
+                            ? "gif?size=1024&_=.gif"
+                            : "png?size=1024"
+                    }`
                 }
             }
         });
@@ -126,7 +130,11 @@ let linvite = async function(ctx, msg, args) {
             thumbnail: {
                 url: `https://cdn.discordapp.com/icons/${inv.guild.id}/${
                     inv.guild.icon
-                }.png`
+                }.${
+                    inv.guild.icon.startsWith("a_")
+                        ? "gif?size=1024&_=.gif"
+                        : "png?size=1024"
+                }`
             }
         };
 
@@ -144,7 +152,11 @@ let linvite = async function(ctx, msg, args) {
             name: "\u200b",
             value: `[Icon](https://cdn.discordapp.com/icons/${inv.guild.id}/${
                 inv.guild.icon
-            }.png?size=1024)${
+            }.${
+                inv.guild.icon.startsWith("a_")
+                    ? "gif?size=1024&_=.gif"
+                    : "png?size=1024"
+            })${
                 inv.guild.splash !== null
                     ? ` | [Splash](https://cdn.discordapp.com/splashes/${
                           inv.guild.id
@@ -718,7 +730,11 @@ let sinfo = async function(ctx, msg, args) {
                     value:
                         `[Full Size](https://cdn.discordapp.com/icons/${g.id}/${
                             g.icon
-                        }.png?size=1024)` +
+                        }.${
+                            g.icon.startsWith("a_")
+                                ? "gif?size=1024&_=.gif"
+                                : "png?size=1024"
+                        })` +
                         (g.splash
                             ? ` | [Invite Splash](https://cdn.discordapp.com/splashes/${
                                   g.id
