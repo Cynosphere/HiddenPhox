@@ -155,7 +155,9 @@ let linvite = async function(ctx, msg, args) {
                 inv.guild.icon
             }.png?size=1024)${
                 inv.guild.splash !== null
-                    ? " | [Splash](https://cdn.discordapp.com/splashes/${inv.guild.id}/${inv.guild.splash}.png?size=2048)"
+                    ? ` | [Splash](https://cdn.discordapp.com/splashes/${
+                          inv.guild.id
+                      }/${inv.guild.splash}.png?size=2048)`
                     : ""
             }`,
             inline: false
