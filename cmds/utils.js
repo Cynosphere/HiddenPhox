@@ -99,36 +99,27 @@ let linvite = async function(ctx, msg, args) {
                     inline: false
                 },
                 {
-                    name: "Features/Flags",
-                    value: `<:partner:493173082345832448>: ${
-                        inv.guild.features.includes("PARTNERED")
-                            ? "<:ms_tick:503341995348066313>"
-                            : inv.guild.features.includes("VANITY_URL") ||
-                              inv.guild.features.includes("INVITE_SPLASH") ||
-                              inv.guild.features.includes("VIP_REGIONS")
-                            ? "<:ms_tilda:581268710925271095>"
-                            : "<:ms_cross:503341994974773250>"
-                    }\t\t<:verified:543598700920832030>: ${
-                        inv.guild.features.includes("VERIFIED")
-                            ? "<:ms_tick:503341995348066313>"
-                            : "<:ms_cross:503341994974773250>"
-                    }\t\t${
-                        inv.guild.features.includes("LURKABLE")
-                            ? "\uD83D\uDC40: <:ms_tick:503341995348066313>"
-                            : ""
-                    }\t\t${
-                        inv.guild.features.includes("COMMERCE")
-                            ? "\uD83D\uDECD: <:ms_tick:503341995348066313>"
-                            : ""
-                    }\t\t${
-                        inv.guild.features.includes("NEWS")
-                            ? "\uD83D\uDCF0: <:ms_tick:503341995348066313>"
-                            : ""
-                    }\t\t${
-                        inv.guild.features.includes("MORE_EMOJI")
-                            ? "<:more_emoji:560205660227239957>: <:ms_tick:503341995348066313>"
-                            : ""
-                    }`,
+                    name: "Features",
+                    value:
+                        inv.guild.features && inv.guild.features.length > 0
+                            ? `${inv.guild.features
+                                  .map(x => x.replace(/_/g, " "))
+                                  .map(x =>
+                                      x
+                                          .split(" ")
+                                          .map(
+                                              y =>
+                                                  y
+                                                      .substring(0, 1)
+                                                      .toUpperCase() +
+                                                  y
+                                                      .substring(1, y.length)
+                                                      .toLowerCase()
+                                          )
+                                          .join(" ")
+                                  )
+                                  .join(", ")}`
+                            : "None",
                     inline: false
                 }
             ],
@@ -723,10 +714,16 @@ let sinfo = async function(ctx, msg, args) {
                     inline: true
                 },
                 {
-                    name: "Icon",
-                    value: `[Full Size](https://cdn.discordapp.com/icons/${
-                        g.id
-                    }/${g.icon}.png?size=1024)`,
+                    name: "Icon" + (g.splash ? "/Splash" : ""),
+                    value:
+                        `[Full Size](https://cdn.discordapp.com/icons/${g.id}/${
+                            g.icon
+                        }.png?size=1024)` +
+                        (g.splash
+                            ? ` | [Invite Splash](https://cdn.discordapp.com/splashes/${
+                                  g.id
+                              }/${g.splash}.png?size=2048)`
+                            : ""),
                     inline: true
                 }
             ],
@@ -737,39 +734,25 @@ let sinfo = async function(ctx, msg, args) {
             }
         };
 
-        info.fields.push({
-            name: "Features/Flags",
-            value: `<:partner:493173082345832448>: ${
-                g.features.includes("PARTNERED")
-                    ? "<:ms_tick:503341995348066313>"
-                    : g.features.includes("VANITY_URL") ||
-                      g.features.includes("INVITE_SPLASH") ||
-                      g.features.includes("VIP_REGIONS")
-                    ? "<:ms_tilda:581268710925271095>"
-                    : "<:ms_cross:503341994974773250>"
-            }\t\t<:verified:543598700920832030>: ${
-                g.features.includes("VERIFIED")
-                    ? "<:ms_tick:503341995348066313>"
-                    : "<:ms_cross:503341994974773250>"
-            }\t\t${
-                g.features.includes("LURKABLE")
-                    ? "\uD83D\uDC40: <:ms_tick:503341995348066313>"
-                    : ""
-            }\t\t${
-                g.features.includes("COMMERCE")
-                    ? "\uD83D\uDECD: <:ms_tick:503341995348066313>"
-                    : ""
-            }\t\t${
-                g.features.includes("NEWS")
-                    ? "\uD83D\uDCF0: <:ms_tick:503341995348066313>"
-                    : ""
-            }\t\t${
-                g.features.includes("MORE_EMOJI")
-                    ? "<:more_emoji:560205660227239957>: <:ms_tick:503341995348066313>"
-                    : ""
-            }`,
-            inline: true
-        });
+        if (g.features && g.features.length > 0) {
+            info.fields.push({
+                name: "Features",
+                value: `${g.features
+                    .map(x => x.replace(/_/g, " "))
+                    .map(x =>
+                        x
+                            .split(" ")
+                            .map(
+                                y =>
+                                    y.substring(0, 1).toUpperCase() +
+                                    y.substring(1, y.length).toLowerCase()
+                            )
+                            .join(" ")
+                    )
+                    .join(", ")}`,
+                inline: true
+            });
+        }
 
         if (emojis.length > 0) {
             info.fields.push({
