@@ -107,18 +107,13 @@ let linvite = async function(ctx, msg, args) {
                     value:
                         inv.guild.features && inv.guild.features.length > 0
                             ? `${inv.guild.features
-                                  .map(x => x.replace(/_/g, " "))
-                                  .map(x =>
-                                      x
-                                          .split(" ")
+                                  .map(feature =>
+                                      feature
+                                          .split("_")
                                           .map(
-                                              y =>
-                                                  y
-                                                      .substring(0, 1)
-                                                      .toUpperCase() +
-                                                  y
-                                                      .substring(1, y.length)
-                                                      .toLowerCase()
+                                              x =>
+                                                  x[0] +
+                                                  x.substring(1).toLowerCase()
                                           )
                                           .join(" ")
                                   )
@@ -754,15 +749,10 @@ let sinfo = async function(ctx, msg, args) {
             info.fields.push({
                 name: "Features",
                 value: `${g.features
-                    .map(x => x.replace(/_/g, " "))
-                    .map(x =>
-                        x
-                            .split(" ")
-                            .map(
-                                y =>
-                                    y.substring(0, 1).toUpperCase() +
-                                    y.substring(1, y.length).toLowerCase()
-                            )
+                    .map(feature =>
+                        feature
+                            .split("_")
+                            .map(x => x[0] + x.substring(1).toLowerCase())
                             .join(" ")
                     )
                     .join(", ")}`,
