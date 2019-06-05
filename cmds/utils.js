@@ -1577,8 +1577,8 @@ let translate = async function(ctx, msg, args) {
             "Language",
             "Code"
         ]);
-        let set1 = langCodes.splice(0, Math.ceil(langCodes.length / 2));
-        let set2 = langCodes.splice(
+        let set1 = langCodes.slice(0, Math.ceil(langCodes.length / 2));
+        let set2 = langCodes.slice(
             Math.ceil(langCodes.length / 2),
             langCodes.length
         );
