@@ -1226,22 +1226,60 @@ let jumbo = async function(ctx, msg, args) {
     let temp = [];
     Object.keys(emojiNames).map(x => (temp[emojiNames[x]] = x));
     emojiNames = temp;
-    if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
-        let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
-        let animated = a[1] ? true : false;
-        let name = a[2];
-        let id = a[3];
+    if (/[0-9]{17,21}/.test(args)) {
+        let id = args.match(/[0-9]{17,21}/)[1];
 
-        msg.channel.createMessage({
-            embed: {
-                title: `:${name}: - \`${id}\``,
-                image: {
-                    url: `https://cdn.discordapp.com/emojis/${id}.${
-                        animated ? "gif" : "png"
-                    }?v=1`
+        if (ctx.emotes.get(id)) {
+            e = ctx.emotes.get(id);
+            msg.channel.createMessage({
+                embed: {
+                    title: `:${e.name}: - \`${id}\``,
+                    image: {
+                        url: `https://cdn.discordapp.com/emojis/${id}.${
+                            e.animated ? "gif" : "png"
+                        }?v=1`
+                    }
                 }
+            });
+        } else {
+            let succ = false;
+            let animated = false;
+            ctx.libs.superagent
+                .get(`https://cdn.discordapp.com/emojis/${id}.gif?v=1`)
+                .then(x => {
+                    succ = true;
+                    animated = true;
+                })
+                .catch(e => {
+                    if (e == "Unsupported Media Type") {
+                        ctx.libs.superagent
+                            .get(
+                                `https://cdn.discordapp.com/emojis/${id}.png?v=1`
+                            )
+                            .then(x => {
+                                succ = true;
+                            })
+                            .catch(_ => {});
+                    }
+                });
+
+            if (succ == false) {
+                msg.channel.createMessage("Custom emote not found.");
+
+                return;
             }
-        });
+
+            msg.channel.createMessage({
+                embed: {
+                    title: `\`${id}\``,
+                    image: {
+                        url: `https://cdn.discordapp.com/emojis/${id}.${
+                            animated ? "gif" : "png"
+                        }?v=1`
+                    }
+                }
+            });
+        }
     } else {
         let pack = "twemoji";
         Object.keys(emojiSets).forEach(x => {
@@ -1264,7 +1302,9 @@ let jumbo = async function(ctx, msg, args) {
                             title: `${
                                 emojiNames[args]
                                     ? `\\:${emojiNames[args]}\\:`
-                                    : "<no shorthand>"
+                                    : ctx.utils.unilib.getNamesFromString(
+                                          args
+                                      )[0][1]
                             } (${emoji.toUpperCase().replace(/[-_]/g, ", ")})`,
                             url: emojiurl,
                             image: {
@@ -1283,7 +1323,9 @@ let jumbo = async function(ctx, msg, args) {
                                     title: `${
                                         emojiNames[args]
                                             ? `\\:${emojiNames[args]}\\:`
-                                            : "<no shorthand>"
+                                            : ctx.utils.unilib.getNamesFromString(
+                                                  args
+                                              )[0][1]
                                     } (${emoji
                                         .toUpperCase()
                                         .replace(/[-_]/g, ", ")})`,
@@ -1310,76 +1352,285 @@ let jumbo = async function(ctx, msg, args) {
 };
 
 let einfo = function(ctx, msg, args) {
-    if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
-        let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
-        let animated = a[1] ? true : false;
-        let name = a[2];
-        let id = a[3];
+    if (/[0-9]{17,21}/.test(args)) {
+        let id = args.match(/[0-9]{17,21}/)[1];
         let guild;
         let emote;
 
         if (ctx.emotes.get(id)) {
             emote = ctx.emotes.get(id);
             guild = ctx.bot.guilds.get(emote.guild_id);
-        }
 
-        msg.channel.createMessage({
-            embed: {
-                title: `Emoji Info: :${name}:`,
-                fields: [
-                    {
-                        name: "ID",
-                        value: id,
-                        inline: true
-                    },
-                    {
-                        name: "Full Code",
-                        value: a[0].replace("<", "\\<").replace(">", "\\>"),
-                        inline: true
-                    },
-                    {
-                        name: "Animated?",
-                        value: animated,
-                        inline: true
-                    },
-                    {
-                        name: "Guild",
-                        value: guild
-                            ? `${guild.name} \`(${guild.id})\``
-                            : "Not found",
-                        inline: true
+            msg.channel.createMessage({
+                embed: {
+                    title: `Emoji Info: :${e.name}:`,
+                    fields: [
+                        {
+                            name: "ID",
+                            value: emote.id,
+                            inline: true
+                        },
+                        {
+                            name: "Full Code",
+                            value: `\\<${e.animated ? "a" : ""}:${e.name}:${
+                                e.id
+                            }\\>`,
+                            inline: true
+                        },
+                        {
+                            name: "Animated?",
+                            value: e.animated,
+                            inline: true
+                        },
+                        {
+                            name: "Guild",
+                            value: guild
+                                ? `${guild.name} \`(${guild.id})\``
+                                : "Not found",
+                            inline: true
+                        }
+                    ],
+                    thumbnail: {
+                        url: `https://cdn.discordapp.com/emojis/${id}.${
+                            e.animated ? "gif?v=1&_=.gif" : "png?v=1"
+                        }`
                     }
-                ],
-                thumbnail: {
-                    url: `https://cdn.discordapp.com/emojis/${id}.${
-                        animated ? "gif" : "png"
-                    }?v=1`
                 }
+            });
+        } else {
+            let succ = false;
+            let animated = false;
+            ctx.libs.superagent
+                .get(`https://cdn.discordapp.com/emojis/${id}.gif?v=1`)
+                .then(x => {
+                    succ = true;
+                    animated = true;
+                })
+                .catch(e => {
+                    if (e == "Unsupported Media Type") {
+                        ctx.libs.superagent
+                            .get(
+                                `https://cdn.discordapp.com/emojis/${id}.png?v=1`
+                            )
+                            .then(x => {
+                                succ = true;
+                            })
+                            .catch(_ => {});
+                    }
+                });
+
+            if (succ == false) {
+                msg.channel.createMessage(
+                    "Emote not found. This currently only works for custom ones."
+                );
+
+                return;
             }
-        });
-    } else {
-        msg.channel.createMessage(
-            "Emote not found. This currently only works for custom ones."
-        );
+
+            msg.channel.createMessage({
+                embed: {
+                    title: `Emoji Info: ${id}`,
+                    fields: [
+                        {
+                            name: "ID",
+                            value: id,
+                            inline: true
+                        },
+                        {
+                            name: "Full Code",
+                            value: `Unknown`,
+                            inline: true
+                        },
+                        {
+                            name: "Animated?",
+                            value: animated,
+                            inline: true
+                        },
+                        {
+                            name: "Guild",
+                            value: "Unknown",
+                            inline: true
+                        }
+                    ],
+                    thumbnail: {
+                        url: `https://cdn.discordapp.com/emojis/${id}.${
+                            animated ? "gif?v=1&_=.gif" : "png?v=1"
+                        }`
+                    }
+                }
+            });
+        }
     }
 };
 
-let turkey =
+const turkey =
     "trnsl.1.1.20150413T153034Z.d00fcc65d2f0083e.b8ed4e7ef8174912a00c422c951bf9674d64bafe"; // tr?
 
-let langCodes = `Azerbaijan - az, Malayalam - ml, Albanian - sq, Maltese - mt, Amharic - am, Macedonian - mk, English - en, Maori - mi, Arabic - ar, Marathi - mr, Armenian - hy, Mari - mhr, Afrikaans - af, Mongolian - mn, Basque - eu, German - de, Bashkir - ba, Nepali - ne, Belarusian - be, Norwegian - no, Bengali - bn, Punjabi - pa, Burmese - my, Papiamento - pap, Bulgarian - bg, Persian - fa, Bosnian - bs, Polish - pl, Welsh - cy, Portuguese - pt, Hungarian - hu, Romanian - ro, Vietnamese - vi, Russian - ru, Haitian/Creole - ht, Cebuano - ceb, Galician - gl, Serbian - sr, Dutch - nl, Sinhala - si, Hill - Mari - mrj, Slovakian - sk, Greek - el, Slovenian - sl, Georgian - ka, Swahili - sw, Gujarati - gu, Sundanese - su, Danish - da, Tajik - tg, Hebrew - he, Thai - th, Yiddish - yi, Tagalog - tl, Indonesian - id, Tamil - ta, Irish - ga, Tatar - tt, Italian - it, Telugu - te, Icelandic - is, Turkish - tr, Spanish - es, Udmurt - udm, Kazakh - kk, Uzbek - uz, Kannada - kn, Ukrainian - uk, Catalan - ca, Urdu - ur, Kyrgyz - ky, Finnish - fi, Chinese - zh, French - fr, Korean - ko, Hindi - hi, Xhosa - xh, Croatian - hr, Khmer - km, Czech - cs, Laotian - lo, Swedish - sv, Latin - la, Scottish - gd, Latvian - lv, Estonian - et, Lithuanian - lt, Esperanto - eo, Luxembourgish - lb, Javanese - jv, Malagasy - mg, Japanese - ja, Malay - ms`;
-
+const langCodes = [
+    "Afrikaans - af",
+    "Albanian - sq",
+    "Amharic - am",
+    "Arabic - ar",
+    "Armenian - hy",
+    "Azerbaijan - az",
+    "Bashkir - ba",
+    "Basque - eu",
+    "Belarusian - be",
+    "Bengali - bn",
+    "Bosnian - bs",
+    "Bulgarian - bg",
+    "Burmese - my",
+    "Catalan - ca",
+    "Cebuano - ceb",
+    "Chinese - zh",
+    "Croatian - hr",
+    "Czech - cs",
+    "Danish - da",
+    "Dutch - nl",
+    "English - en",
+    "Esperanto - eo",
+    "Estonian - et",
+    "Finnish - fi",
+    "French - fr",
+    "Galician - gl",
+    "Georgian - ka",
+    "German - de",
+    "Greek - el",
+    "Gujarati - gu",
+    "Haitian/Creole - ht",
+    "Hebrew - he",
+    "Hill - Mari - mrj",
+    "Hindi - hi",
+    "Hungarian - hu",
+    "Icelandic - is",
+    "Indonesian - id",
+    "Irish - ga",
+    "Italian - it",
+    "Japanese - ja",
+    "Javanese - jv",
+    "Kannada - kn",
+    "Kazakh - kk",
+    "Khmer - km",
+    "Korean - ko",
+    "Kyrgyz - ky",
+    "Laotian - lo",
+    "Latin - la",
+    "Latvian - lv",
+    "Lithuanian - lt",
+    "Luxembourgish - lb",
+    "Macedonian - mk",
+    "Malagasy - mg",
+    "Malay - ms",
+    "Malayalam - ml",
+    "Maltese - mt",
+    "Maori - mi",
+    "Marathi - mr",
+    "Mari - mhr",
+    "Mongolian - mn",
+    "Nepali - ne",
+    "Norwegian - no",
+    "Papiamento - pap",
+    "Persian - fa",
+    "Polish - pl",
+    "Portuguese - pt",
+    "Punjabi - pa",
+    "Romanian - ro",
+    "Russian - ru",
+    "Scottish - gd",
+    "Serbian - sr",
+    "Sinhala - si",
+    "Slovakian - sk",
+    "Slovenian - sl",
+    "Spanish - es",
+    "Sundanese - su",
+    "Swahili - sw",
+    "Swedish - sv",
+    "Tagalog - tl",
+    "Tajik - tg",
+    "Tamil - ta",
+    "Tatar - tt",
+    "Telugu - te",
+    "Thai - th",
+    "Turkish - tr",
+    "Udmurt - udm",
+    "Ukrainian - uk",
+    "Urdu - ur",
+    "Uzbek - uz",
+    "Vietnamese - vi",
+    "Welsh - cy",
+    "Xhosa - xh",
+    "Yiddish - yi"
+];
 let translate = async function(ctx, msg, args) {
     args = ctx.utils.formatArgs(args);
 
     if (args[0] == "languages") {
-        msg.channel.createMessage({
-            embed: {
-                title: "Valid language codes",
-                color: ctx.utils.topColor(ctx, msg, ctx.bot.user.id, 0x8060c0),
-                description: `\`\`\`${langCodes}\`\`\``
-            }
-        });
+        let tbl1 = new ctx.utils.table([
+            "Language",
+            "Code",
+            "Language",
+            "Code"
+        ]);
+        let tbl2 = new ctx.utils.table([
+            "Language",
+            "Code",
+            "Language",
+            "Code"
+        ]);
+        let set1 = langCodes.splice(0, Math.ceil(langCodes.length / 2));
+        let set2 = langCodes.splice(
+            Math.ceil(langCodes.length / 2),
+            langCodes.length
+        );
+
+        for (let i = 0; i < set1.length; i = i + 2) {
+            let val1 = (set1[i] ? set1[i] : " - ").split(" - ");
+            let val2 = (set1[i + 1] ? set1[i + 1] : " - ").split(" - ");
+            tbl1.addRow([
+                val1[0] ? " " + val1[0] : "",
+                val1[1] ? " " + val1[1] : "",
+                val2[0] ? " " + val2[0] : "",
+                val2[1] ? " " + val2[1] : ""
+            ]);
+        }
+        for (let i = 0; i < set2.length; i = i + 2) {
+            let val1 = (set2[i] ? set2[i] : " - ").split(" - ");
+            let val2 = (set2[i + 1] ? set2[i + 1] : " - ").split(" - ");
+            tbl2.addRow([
+                val1[0] ? " " + val1[0] : "",
+                val1[1] ? " " + val1[1] : "",
+                val2[0] ? " " + val2[0] : "",
+                val2[1] ? " " + val2[1] : ""
+            ]);
+        }
+
+        msg.channel
+            .createMessage({
+                embed: {
+                    title: "Valid language codes (1/2)",
+                    color: ctx.utils.topColor(
+                        ctx,
+                        msg,
+                        ctx.bot.user.id,
+                        0x8060c0
+                    ),
+                    description: `\`\`\`${tbl1.render()}\`\`\``
+                }
+            })
+            .then(_ => {
+                msg.channel.createMessage({
+                    embed: {
+                        title: "Valid language codes (2/2)",
+                        color: ctx.utils.topColor(
+                            ctx,
+                            msg,
+                            ctx.bot.user.id,
+                            0x8060c0
+                        ),
+                        description: `\`\`\`${tbl2.render()}\`\`\``
+                    }
+                });
+            });
         return;
     }
 
