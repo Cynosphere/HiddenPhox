@@ -220,7 +220,7 @@ let info = function(ctx, msg, args) {
             contribs: "Contributor"
         },
         {
-            id: "137584770145058817",
+            id: "426425345420296192",
             name: "Ave",
             contribs: "Ex-host, Contributor"
         },
@@ -260,11 +260,11 @@ let info = function(ctx, msg, args) {
                 {
                     name: "Contributors",
                     value: `${contributorPrettyText}
-**Memework\u2122** - Ideas, general help, bugfixes.`
+**elixi.re** (formerly Memework\u2122) - Ideas, general help, bugfixes.`
                 },
                 {
                     name: "Honorable Mentions",
-                    value: `**oplexz** - Running support for FlexBot
+                    value: `**oplexz** - Running support in the past
 **Discord Bots** - A once great community that had great people who helped once in a while and gave ideas`
                 },
                 {
