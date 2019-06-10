@@ -57,7 +57,8 @@ let messageUpdate = async function(msg, oldMsg, ctx) {
                         value: `<#${msg.channel.id}>`,
                         inline: true
                     }
-                ]
+                ],
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -90,7 +91,8 @@ let reactionAdd = async function(msg, emoji, uid, ctx) {
                               emoji.id
                           }.png?v=1`
                         : ""
-                }
+                },
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -123,7 +125,8 @@ let reactionDelete = async function(msg, emoji, uid, ctx) {
                               emoji.id
                           }.png?v=1`
                         : ""
-                }
+                },
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -141,25 +144,29 @@ let messageDelete = async function(msg, ctx) {
             {
                 name: "Message",
                 value:
-                    msg.content.substring(0, 128) +
-                    (msg.content.length > 128 ? "..." : ""),
+                    msg.content.legnth > 0
+                        ? msg.content.substring(0, 128) +
+                          (msg.content.length > 128 ? "..." : "")
+                        : "<no content>",
                 inline: true
+            },
+            {
+                name: "Attachments/Embeds",
+                value: `${msg.attachment.length} attachments, ${
+                    msg.embeds.length
+                } embeds.`
             },
             { name: "Sender", value: `<@${msg.author.id}>`, inline: true },
             { name: "Channel", value: `<#${msg.channel.id}>`, inline: true }
         ];
-
-        /*let audit = await msg.channel.guild.getAuditLogs(10).catch(e=>{return;});
-		if(audit.entries){
-			audit.entries.filter(d=>d.targetID == msg.author.id)[0];
-		}*/
 
         let log = await getLogChannel(ctx, msg);
         log.createMessage({
             embed: {
                 title: ":x: Message Delete",
                 color: 0xaa0000,
-                fields: fields
+                fields: fields,
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -168,7 +175,9 @@ let messageDelete = async function(msg, ctx) {
 let types = {
     0: "Text",
     2: "Voice",
-    4: "Category"
+    4: "Category",
+    5: "News",
+    6: "Commerce"
 };
 
 let channelUpdate = async function(channel, oldChannel, ctx) {
@@ -231,7 +240,8 @@ let channelUpdate = async function(channel, oldChannel, ctx) {
             embed: {
                 title: ":pencil2: Channel Update",
                 color: 0xffaa00,
-                fields: fields
+                fields: fields,
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -258,7 +268,8 @@ let banAdd = async function(guild, user, ctx) {
                     url: `https://cdn.discordapp.com/avatars/${user.id}/${
                         user.avatar
                     }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
-                }
+                },
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -285,7 +296,8 @@ let banRem = async function(guild, user, ctx) {
                     url: `https://cdn.discordapp.com/avatars/${user.id}/${
                         user.avatar
                     }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
-                }
+                },
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -316,7 +328,8 @@ let userJoin = async function(guild, user, ctx) {
                     url: `https://cdn.discordapp.com/avatars/${user.id}/${
                         user.avatar
                     }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
-                }
+                },
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -334,7 +347,7 @@ let userLeft = async function(guild, user, ctx) {
                         name: "User",
                         value: `<@${user.id}> (${user.user.username}#${
                             user.user.discriminator
-                        } - \`${user.user.id}\`))`,
+                        } - \`${user.user.id}\`)`,
                         inline: true
                     },
                     {
@@ -354,7 +367,8 @@ let userLeft = async function(guild, user, ctx) {
                     url: `https://cdn.discordapp.com/avatars/${user.id}/${
                         user.user.avatar
                     }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
-                }
+                },
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -386,7 +400,8 @@ let msgDelBulk = async function(msgs, ctx) {
                 color: 0xaa0000,
                 description: `[${
                     msgs.length
-                } Deleted Messages](https://mystb.in/${req.body.key})`
+                } Deleted Messages](https://mystb.in/${req.body.key})`,
+                timestamp: new Date().toISOString()
             }
         });
     }
@@ -420,7 +435,8 @@ let userUpdate = function(user, oldUser, ctx) {
                     url: `https://cdn.discordapp.com/avatars/${user.id}/${
                         user.avatar
                     }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
-                }
+                },
+                timestamp: new Date().toISOString()
             };
 
             if (user.username != oldUser.username) {
