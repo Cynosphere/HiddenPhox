@@ -36,15 +36,19 @@ let messageUpdate = async function(msg, oldMsg, ctx) {
                     {
                         name: "Old Message",
                         value:
-                            oldMsg.content.substring(0, 128) +
-                            (oldMsg.content.length > 128 ? "..." : ""),
+                            oldMsg.content.length > 0
+                                ? oldMsg.content.substring(0, 128) +
+                                  (oldMsg.content.length > 128 ? "..." : "")
+                                : "<no content>",
                         inline: true
                     },
                     {
                         name: "New Message",
                         value:
-                            msg.content.substring(0, 128) +
-                            (msg.content.length > 128 ? "..." : ""),
+                            msg.content.length > 0
+                                ? msg.content.substring(0, 128) +
+                                  (msg.content.length > 128 ? "..." : "")
+                                : "<no content???>",
                         inline: true
                     },
                     {
@@ -152,7 +156,7 @@ let messageDelete = async function(msg, ctx) {
             },
             {
                 name: "Attachments/Embeds",
-                value: `${msg.attachment.length} attachments, ${
+                value: `${msg.attachments.length} attachments, ${
                     msg.embeds.length
                 } embeds.`
             },
