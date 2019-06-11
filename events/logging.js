@@ -148,7 +148,7 @@ let messageDelete = async function(msg, ctx) {
             {
                 name: "Message",
                 value:
-                    msg.content.legnth > 0
+                    msg.content.length > 0
                         ? msg.content.substring(0, 128) +
                           (msg.content.length > 128 ? "..." : "")
                         : "<no content>",
