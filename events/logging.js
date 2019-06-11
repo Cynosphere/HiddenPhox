@@ -269,9 +269,17 @@ let banAdd = async function(guild, user, ctx) {
                     }
                 ],
                 thumbnail: {
-                    url: `https://cdn.discordapp.com/avatars/${user.id}/${
-                        user.avatar
-                    }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
+                    url:
+                        u.avatar !== null
+                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
+                                  u.avatar
+                              }.${
+                                  u.avatar.startsWith("a_")
+                                      ? "gif"
+                                      : "png?size=256"
+                              }`
+                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                  5}.png`
                 },
                 timestamp: new Date().toISOString()
             }
@@ -297,9 +305,17 @@ let banRem = async function(guild, user, ctx) {
                     }
                 ],
                 thumbnail: {
-                    url: `https://cdn.discordapp.com/avatars/${user.id}/${
-                        user.avatar
-                    }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
+                    url:
+                        u.avatar !== null
+                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
+                                  u.avatar
+                              }.${
+                                  u.avatar.startsWith("a_")
+                                      ? "gif"
+                                      : "png?size=256"
+                              }`
+                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                  5}.png`
                 },
                 timestamp: new Date().toISOString()
             }
@@ -329,9 +345,17 @@ let userJoin = async function(guild, user, ctx) {
                     }
                 ],
                 thumbnail: {
-                    url: `https://cdn.discordapp.com/avatars/${user.id}/${
-                        user.avatar
-                    }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
+                    url:
+                        u.avatar !== null
+                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
+                                  u.avatar
+                              }.${
+                                  u.avatar.startsWith("a_")
+                                      ? "gif"
+                                      : "png?size=256"
+                              }`
+                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                  5}.png`
                 },
                 timestamp: new Date().toISOString()
             }
@@ -436,9 +460,17 @@ let userUpdate = function(user, oldUser, ctx) {
                     }
                 ],
                 thumbnail: {
-                    url: `https://cdn.discordapp.com/avatars/${user.id}/${
-                        user.avatar
-                    }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
+                    url:
+                        u.avatar !== null
+                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
+                                  u.avatar
+                              }.${
+                                  u.avatar.startsWith("a_")
+                                      ? "gif"
+                                      : "png?size=256"
+                              }`
+                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                                  5}.png`
                 },
                 timestamp: new Date().toISOString()
             };
