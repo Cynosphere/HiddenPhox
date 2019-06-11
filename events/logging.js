@@ -270,15 +270,15 @@ let banAdd = async function(guild, user, ctx) {
                 ],
                 thumbnail: {
                     url:
-                        u.avatar !== null
-                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
-                                  u.avatar
+                        user.avatar !== null
+                            ? `https://cdn.discordapp.com/avatars/${user.id}/${
+                                  user.avatar
                               }.${
-                                  u.avatar.startsWith("a_")
+                                  user.avatar.startsWith("a_")
                                       ? "gif"
                                       : "png?size=256"
                               }`
-                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
                                   5}.png`
                 },
                 timestamp: new Date().toISOString()
@@ -306,15 +306,15 @@ let banRem = async function(guild, user, ctx) {
                 ],
                 thumbnail: {
                     url:
-                        u.avatar !== null
-                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
-                                  u.avatar
+                        user.avatar !== null
+                            ? `https://cdn.discordapp.com/avatars/${user.id}/${
+                                  user.avatar
                               }.${
-                                  u.avatar.startsWith("a_")
+                                  user.avatar.startsWith("a_")
                                       ? "gif"
                                       : "png?size=256"
                               }`
-                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
                                   5}.png`
                 },
                 timestamp: new Date().toISOString()
@@ -346,15 +346,15 @@ let userJoin = async function(guild, user, ctx) {
                 ],
                 thumbnail: {
                     url:
-                        u.avatar !== null
-                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
-                                  u.avatar
+                        user.avatar !== null
+                            ? `https://cdn.discordapp.com/avatars/${user.id}/${
+                                  user.avatar
                               }.${
-                                  u.avatar.startsWith("a_")
+                                  user.avatar.startsWith("a_")
                                       ? "gif"
                                       : "png?size=256"
                               }`
-                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
                                   5}.png`
                 },
                 timestamp: new Date().toISOString()
@@ -461,15 +461,15 @@ let userUpdate = function(user, oldUser, ctx) {
                 ],
                 thumbnail: {
                     url:
-                        u.avatar !== null
-                            ? `https://cdn.discordapp.com/avatars/${u.id}/${
-                                  u.avatar
+                        user.avatar !== null
+                            ? `https://cdn.discordapp.com/avatars/${user.id}/${
+                                  user.avatar
                               }.${
-                                  u.avatar.startsWith("a_")
+                                  user.avatar.startsWith("a_")
                                       ? "gif"
                                       : "png?size=256"
                               }`
-                            : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
                                   5}.png`
                 },
                 timestamp: new Date().toISOString()
