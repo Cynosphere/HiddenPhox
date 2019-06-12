@@ -67,7 +67,7 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                         m.username.toLowerCase() == match[1].toLowerCase() &&
                         m.discriminator == match[2]
                     ) {
-                        userpool.push(m);
+                        resolve(m);
                     }
                 });
             } else if (msg.channel.guild && !filter) {
@@ -76,7 +76,7 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                         m.username.toLowerCase() == match[1].toLowerCase() &&
                         m.discriminator == match[2]
                     ) {
-                        userpool.push(m);
+                        resolve(m);
                     }
                 });
             } else {
@@ -85,7 +85,7 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                         m.username.toLowerCase() == match[1].toLowerCase() &&
                         m.discriminator == match[2]
                     ) {
-                        userpool.push(m);
+                        resolve(m);
                     }
                 });
             }
