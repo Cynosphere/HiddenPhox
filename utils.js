@@ -58,8 +58,8 @@ utils.lookupUser = function(ctx, msg, str, filter) {
             return;
         }
 
-        if (/(.+)#([0-9]){4}/.test(str)) {
-            let match = str.match(/(.+)#([0-9]){4}/);
+        if (/(.+)#([0-9]{4})/.test(str)) {
+            let match = str.match(/(.+)#([0-9]{4})/);
             if (filter) {
                 let f = ctx.bot.users.filter(filter);
                 f.forEach(m => {
@@ -89,8 +89,6 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                     }
                 });
             }
-
-            return;
         }
 
         let userpool = [];
