@@ -51,10 +51,46 @@ utils.lookupUser = function(ctx, msg, str, filter) {
             resolve(
                 ctx.bot.requestHandler.request(
                     "GET",
-                    "/users/" + str.match(/[0-9]{17,21}/)[0],
+                    "/users/" + str.match(/([0-9]{17,21})/)[1],
                     true
                 )
             );
+            return;
+        }
+
+        if (/(.+)#([0-9]){4}/.test(str)) {
+            let match = str.match(/(.+)#([0-9]){4}/);
+            if (filter) {
+                let f = ctx.bot.users.filter(filter);
+                f.forEach(m => {
+                    if (
+                        m.username.toLowerCase() == match[1].toLowerCase() &&
+                        m.discriminator == match[2]
+                    ) {
+                        userpool.push(m);
+                    }
+                });
+            } else if (msg.channel.guild && !filter) {
+                msg.channel.guild.members.forEach(m => {
+                    if (
+                        m.username.toLowerCase() == match[1].toLowerCase() &&
+                        m.discriminator == match[2]
+                    ) {
+                        userpool.push(m);
+                    }
+                });
+            } else {
+                ctx.bot.users.forEach(m => {
+                    if (
+                        m.username.toLowerCase() == match[1].toLowerCase() &&
+                        m.discriminator == match[2]
+                    ) {
+                        userpool.push(m);
+                    }
+                });
+            }
+
+            return;
         }
 
         let userpool = [];
@@ -62,11 +98,7 @@ utils.lookupUser = function(ctx, msg, str, filter) {
             let f = ctx.bot.users.filter(filter);
             f.forEach(m => {
                 if (m.username.toLowerCase().indexOf(str.toLowerCase()) > -1) {
-                    if (m.username.toLowerCase() == str.toLowerCase()) {
-                        userpool = [m];
-                    } else {
-                        userpool.push(m);
-                    }
+                    userpool.push(m);
                 }
             });
         } else if (msg.channel.guild && !filter) {
@@ -76,24 +108,13 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                     (m.nick &&
                         m.nick.toLowerCase().indexOf(str.toLowerCase()) > -1)
                 ) {
-                    if (
-                        m.username.toLowerCase() == str.toLowerCase() ||
-                        (m.nick && m.nick.toLowerCase() == str.toLowerCase())
-                    ) {
-                        userpool = [m];
-                    } else {
-                        userpool.push(m);
-                    }
+                    userpool.push(m);
                 }
             });
         } else {
             ctx.bot.users.forEach(m => {
                 if (m.username.toLowerCase().indexOf(str.toLowerCase()) > -1) {
-                    if (m.username.toLowerCase() == str.toLowerCase()) {
-                        userpool = [m];
-                    } else {
-                        userpool.push(m);
-                    }
+                    userpool.push(m);
                 }
             });
         }
@@ -180,7 +201,8 @@ utils.lookupUser = function(ctx, msg, str, filter) {
 utils.lookupGuild = function(ctx, msg, str, filter) {
     return new Promise((resolve, reject) => {
         if (/[0-9]{17,21}/.test(str)) {
-            resolve(ctx.bot.guilds.get(str));
+            resolve(ctx.bot.guilds.get(str.match(/([0-9]{17,21})/)[1]));
+            return;
         }
 
         let userpool = [];
@@ -188,21 +210,13 @@ utils.lookupGuild = function(ctx, msg, str, filter) {
             let f = ctx.bot.guilds.filter(filter);
             f.forEach(m => {
                 if (m.name.toLowerCase().indexOf(str.toLowerCase()) > -1) {
-                    if (m.name.toLowerCase() == str.toLowerCase()) {
-                        userpool = [m];
-                    } else {
-                        userpool.push(m);
-                    }
+                    userpool.push(m);
                 }
             });
         } else {
             ctx.bot.users.forEach(m => {
                 if (m.name.toLowerCase().indexOf(str.toLowerCase()) > -1) {
-                    if (m.name.toLowerCase() == str.toLowerCase()) {
-                        userpool = [m];
-                    } else {
-                        userpool.push(m);
-                    }
+                    userpool.push(m);
                 }
             });
         }
