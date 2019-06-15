@@ -962,7 +962,7 @@ let presence = function(ctx, msg, args) {
     ctx.utils.lookupUser(ctx, msg, args || msg.member.mention).then(u => {
         u = msg.channel.guild.members.get(u.id);
 
-        if (u.game) {
+        if (u.game && u.game.type != 4) {
             let embed = {
                 title: `Presence for \`${u.username}#${u.discriminator}\``,
                 fields: [
@@ -1120,6 +1120,32 @@ let presence = function(ctx, msg, args) {
                     embed: embed
                 });
             }
+        } else if (
+            u.game &&
+            u.game.type == 4 &&
+            u.game.name == "Custom Status"
+        ) {
+            msg.channel.createMessage(
+                `**${u.username}#${u.discriminator}**: ${
+                    u.game.state
+                }\n**Status:** ${statusIcons[u.status] +
+                    " " +
+                    u.status}\n\n__**Extended Status**__\n\uD83C\uDF10 **Web:** ${statusIcons[
+                    u.clientStatus.web
+                ] +
+                    " " +
+                    u.clientStatus
+                        .web}\n\uD83D\uDDA5 **Desktop:** ${statusIcons[
+                    u.clientStatus.desktop
+                ] +
+                    " " +
+                    u.clientStatus
+                        .desktop}\n\uD83D\uDCF1 **Mobile:** ${statusIcons[
+                    u.clientStatus.mobile
+                ] +
+                    " " +
+                    u.clientStatus.mobile}`
+            );
         } else {
             msg.channel.createMessage(
                 `**${u.username}#${
