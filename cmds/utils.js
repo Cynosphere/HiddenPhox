@@ -1,4 +1,7 @@
-let statusIcons = {
+const jimp = require("jimp");
+const path = require("path");
+
+const statusIcons = {
     online: "<:online:493173082421461002>",
     idle: "<:idle:493173082006093836>",
     dnd: "<:dnd:493173082261815307>",
@@ -1077,24 +1080,26 @@ let presence = function(ctx, msg, args) {
             }
 
             if (u.game.assets && u.game.assets.large_image) {
-                let jimp = require("jimp");
-
                 jimp.read(
                     u.game.assets.large_image.startsWith("spotify:")
                         ? u.game.assets.large_image.replace(
                               "spotify:",
                               "http://i.scdn.co/image/"
                           )
-                        : `https://cdn.discordapp.com/app-assets/${
-                              u.game.application_id
-                          }/${u.game.assets.large_image}.png?size=128`
+                        : `https://cdn.discordapp.com/${path.normalize(
+                              `app-assets/${u.game.application_id}/${
+                                  u.game.assets.large_image
+                              }.png?size=128`
+                          )}`
                 ).then(async i => {
                     let a = i.clone().resize(96, jimp.AUTO);
                     let b =
                         u.game.assets && u.game.assets.small_image
-                            ? `https://cdn.discordapp.com/app-assets/${
-                                  u.game.application_id
-                              }/${u.game.assets.small_image}.png?size=128`
+                            ? `https://cdn.discordapp.com/${path.normalize(
+                                  `app-assets/${u.game.application_id}/${
+                                      u.game.assets.small_image
+                                  }.png?size=128`
+                              )}`
                             : "";
 
                     if (b.length > 0) {
