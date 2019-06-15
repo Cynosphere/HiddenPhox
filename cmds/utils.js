@@ -1087,14 +1087,14 @@ let presence = function(ctx, msg, args) {
                           )
                         : `https://cdn.discordapp.com/app-assets/${
                               u.game.application_id
-                          }/${u.game.assets.large_image}.png?size=128;`
+                          }/${u.game.assets.large_image}.png?size=128`
                 ).then(async i => {
                     let a = i.clone().resize(96, jimp.AUTO);
                     let b =
                         u.game.assets && u.game.assets.small_image
                             ? `https://cdn.discordapp.com/app-assets/${
                                   u.game.application_id
-                              }/${u.game.assets.small_image}.png?size=128;`
+                              }/${u.game.assets.small_image}.png?size=128`
                             : "";
 
                     if (b.length > 0) {
