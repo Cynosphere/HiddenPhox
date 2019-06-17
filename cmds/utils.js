@@ -1257,60 +1257,22 @@ let jumbo = async function(ctx, msg, args) {
     let temp = [];
     Object.keys(emojiNames).map(x => (temp[emojiNames[x]] = x));
     emojiNames = temp;
-    if (/[0-9]{17,21}/.test(args)) {
-        let id = args.match(/[0-9]{17,21}/)[1];
+    if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
+        let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
+        let animated = a[1] ? true : false;
+        let name = a[2];
+        let id = a[3];
 
-        if (ctx.emotes.get(id)) {
-            e = ctx.emotes.get(id);
-            msg.channel.createMessage({
-                embed: {
-                    title: `:${e.name}: - \`${id}\``,
-                    image: {
-                        url: `https://cdn.discordapp.com/emojis/${id}.${
-                            e.animated ? "gif" : "png"
-                        }?v=1`
-                    }
+        msg.channel.createMessage({
+            embed: {
+                title: `:${name}: - \`${id}\``,
+                image: {
+                    url: `https://cdn.discordapp.com/emojis/${id}.${
+                        animated ? "gif" : "png"
+                    }?v=1`
                 }
-            });
-        } else {
-            let succ = false;
-            let animated = false;
-            ctx.libs.superagent
-                .get(`https://cdn.discordapp.com/emojis/${id}.gif?v=1`)
-                .then(x => {
-                    succ = true;
-                    animated = true;
-                })
-                .catch(e => {
-                    if (e == "Unsupported Media Type") {
-                        ctx.libs.superagent
-                            .get(
-                                `https://cdn.discordapp.com/emojis/${id}.png?v=1`
-                            )
-                            .then(x => {
-                                succ = true;
-                            })
-                            .catch(_ => {});
-                    }
-                });
-
-            if (succ == false) {
-                msg.channel.createMessage("Custom emote not found.");
-
-                return;
             }
-
-            msg.channel.createMessage({
-                embed: {
-                    title: `\`${id}\``,
-                    image: {
-                        url: `https://cdn.discordapp.com/emojis/${id}.${
-                            animated ? "gif" : "png"
-                        }?v=1`
-                    }
-                }
-            });
-        }
+        });
     } else {
         let pack = "twemoji";
         Object.keys(emojiSets).forEach(x => {
@@ -1383,114 +1345,56 @@ let jumbo = async function(ctx, msg, args) {
 };
 
 let einfo = function(ctx, msg, args) {
-    if (/[0-9]{17,21}/.test(args)) {
-        let id = args.match(/[0-9]{17,21}/)[1];
+    if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
+        let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
+        let animated = a[1] ? true : false;
+        let name = a[2];
+        let id = a[3];
         let guild;
         let emote;
 
         if (ctx.emotes.get(id)) {
             emote = ctx.emotes.get(id);
             guild = ctx.bot.guilds.get(emote.guild_id);
-
-            msg.channel.createMessage({
-                embed: {
-                    title: `Emoji Info: :${e.name}:`,
-                    fields: [
-                        {
-                            name: "ID",
-                            value: emote.id,
-                            inline: true
-                        },
-                        {
-                            name: "Full Code",
-                            value: `\\<${e.animated ? "a" : ""}:${e.name}:${
-                                e.id
-                            }\\>`,
-                            inline: true
-                        },
-                        {
-                            name: "Animated?",
-                            value: e.animated,
-                            inline: true
-                        },
-                        {
-                            name: "Guild",
-                            value: guild
-                                ? `${guild.name} \`(${guild.id})\``
-                                : "Not found",
-                            inline: true
-                        }
-                    ],
-                    thumbnail: {
-                        url: `https://cdn.discordapp.com/emojis/${id}.${
-                            e.animated ? "gif?v=1&_=.gif" : "png?v=1"
-                        }`
-                    }
-                }
-            });
-        } else {
-            let succ = false;
-            let animated = false;
-            ctx.libs.superagent
-                .get(`https://cdn.discordapp.com/emojis/${id}.gif?v=1`)
-                .then(x => {
-                    succ = true;
-                    animated = true;
-                })
-                .catch(e => {
-                    if (e == "Unsupported Media Type") {
-                        ctx.libs.superagent
-                            .get(
-                                `https://cdn.discordapp.com/emojis/${id}.png?v=1`
-                            )
-                            .then(x => {
-                                succ = true;
-                            })
-                            .catch(_ => {});
-                    }
-                });
-
-            if (succ == false) {
-                msg.channel.createMessage(
-                    "Emote not found. This currently only works for custom ones."
-                );
-
-                return;
-            }
-
-            msg.channel.createMessage({
-                embed: {
-                    title: `Emoji Info: ${id}`,
-                    fields: [
-                        {
-                            name: "ID",
-                            value: id,
-                            inline: true
-                        },
-                        {
-                            name: "Full Code",
-                            value: `Unknown`,
-                            inline: true
-                        },
-                        {
-                            name: "Animated?",
-                            value: animated,
-                            inline: true
-                        },
-                        {
-                            name: "Guild",
-                            value: "Unknown",
-                            inline: true
-                        }
-                    ],
-                    thumbnail: {
-                        url: `https://cdn.discordapp.com/emojis/${id}.${
-                            animated ? "gif?v=1&_=.gif" : "png?v=1"
-                        }`
-                    }
-                }
-            });
         }
+        msg.channel.createMessage({
+            embed: {
+                title: `Emoji Info: :${name}:`,
+                fields: [
+                    {
+                        name: "ID",
+                        value: id,
+                        inline: true
+                    },
+                    {
+                        name: "Full Code",
+                        value: a[0].replace("<", "\\<").replace(">", "\\>"),
+                        inline: true
+                    },
+                    {
+                        name: "Animated?",
+                        value: animated,
+                        inline: true
+                    },
+                    {
+                        name: "Guild",
+                        value: guild
+                            ? `${guild.name} \`(${guild.id})\``
+                            : "Not found",
+                        inline: true
+                    }
+                ],
+                thumbnail: {
+                    url: `https://cdn.discordapp.com/emojis/${id}.${
+                        animated ? "gif" : "png"
+                    }?v=1`
+                }
+            }
+        });
+    } else {
+        msg.channel.createMessage(
+            "Emote not found. This currently only works for custom ones."
+        );
     }
 };
 
