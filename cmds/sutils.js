@@ -16,15 +16,14 @@ let dehoist = function(ctx, msg, args) {
     } else {
         ctx.utils.lookupUser(ctx, msg, args || "").then(u => {
             u = msg.channel.guild.members.get(u.id);
-            if (u.nick && u.nick.startsWith("\uDB40\uDCAA")) {
+            if (u.nick && u.nick.startsWith("\uDBBF\uDFFF")) {
                 msg.channel.createMessage("User already dehoisted.");
                 return;
             }
-            u
-                .edit({
-                    nick: `\uDB40\uDCAA${(u.nick && u.nick.slice(0, 30)) ||
-                        u.username.slice(0, 30)}`
-                })
+            u.edit({
+                nick: `\uDBBF\uDFFF${(u.nick && u.nick.slice(0, 30)) ||
+                    u.username.slice(0, 30)}`
+            })
                 .then(() => {
                     msg.addReaction("\uD83D\uDC4C");
                 })
