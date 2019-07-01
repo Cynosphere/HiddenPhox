@@ -199,6 +199,19 @@ let plembed = async function(msg, ctx) {
     if (!msg.channel.guild) return;
     if (msg.author.bot) return;
 
+    if (msg.channel.permissionsOf(ctx.bot.user.id).has("manageMessages")) {
+        ctx.bot.requestHandler
+            .request(
+                "POST",
+                `/channels/${msg.channel.id}/messages/${
+                    msg.id
+                }/suppress-embeds`,
+                true,
+                { suppress: true }
+            )
+            .catch(_ => {}); //just in case
+    }
+
     const enabled = await ctx.db.models.sdata
         .findOrCreate({
             where: { id: msg.channel.guild.id }
