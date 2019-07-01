@@ -110,7 +110,7 @@ let twimg = async function(msg, ctx) {
 };
 
 //fediimg
-const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(((@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))|(users\/([a-zA-Z0-9-_/]*)\/statuses\/([0-9]{17,21})))|(objects|notice|~\/notice)\/([a-zA-Z0-9-_/]*))/;
+const fediurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(((@([a-zA-Z0-9-_/]*)\/([0-9]{17,21}))|(users\/([a-zA-Z0-9-_/]*)\/statuses\/([0-9]{17,21})))|(notes|objects|notice|~\/notice)\/([a-zA-Z0-9-_/]*))/;
 
 async function getMastoImages(ctx, url, msg) {
     return new Promise(async (resolve, reject) => {
@@ -191,7 +191,7 @@ let fediimg = async function(msg, ctx) {
 };
 
 //pleroma embeds
-const plurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(notes|objects|notice)\/([a-zA-Z0-9-_/]*)/;
+const plurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(objects|notice)\/([a-zA-Z0-9-_/]*)/;
 const pluser = /^https?:\/\/([^:\/\s]+)\/users\/([a-zA-Z0-9-_/]*)$/;
 
 let plembed = async function(msg, ctx) {
