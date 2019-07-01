@@ -263,6 +263,8 @@ let plembed = async function(msg, ctx) {
                               .replace(/<br>/g, "\n")
                               .replace(/<(?:.|\n)*?>/gm, "")
                       )}`
+                    : post._misskey_content
+                    ? post._misskey_content //favor misskey content cause it usues markdown
                     : entities.decode(
                           post.content
                               .replace(/<br>/g, "\n")
@@ -282,7 +284,7 @@ let plembed = async function(msg, ctx) {
             color: 0x282c37
         }
     });
-    if (post.attachment && post.attachment.length > 1 && !msg.embeds[0]) {
+    if (post.attachment && post.attachment.length > 1) {
         msg.channel.createMessage(
             post.attachment
                 .splice(1)
