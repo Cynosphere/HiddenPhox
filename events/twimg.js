@@ -248,9 +248,11 @@ let plembed = async function(msg, ctx) {
         embed: {
             author: {
                 name: authorData.name,
-                url: post.attributedTo
+                url: authorData.url
             },
-            title: `${authorData.name} (@${uninst[2]}@${uninst[1]})`,
+            title: `${authorData.name} (@${authorData.preferredUsername}@${
+                uninst[1]
+            })`,
             url: url,
             description: `${
                 post.attachment && post.attachment.length > 0
