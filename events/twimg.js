@@ -191,7 +191,7 @@ let fediimg = async function(msg, ctx) {
 };
 
 //pleroma embeds
-const plurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(objects|notice)\/([a-zA-Z0-9-_/]*)/;
+const plurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(notes|objects|notice)\/([a-zA-Z0-9-_/]*)/;
 const pluser = /^https?:\/\/([^:\/\s]+)\/users\/([a-zA-Z0-9-_/]*)$/;
 
 let plembed = async function(msg, ctx) {
