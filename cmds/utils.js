@@ -1834,8 +1834,10 @@ Mods are defined as members which have any of those permissions:
     },
     {
         name: "cflake",
-        desc: "Converts a Discord snowflake to a readable time.",
-        fulldesc: `
+        desc:
+            "Converts a Discord or Twitter (via `--twitter`) snowflake to a readable time.",
+        fulldesc: `(Append \`--twitter\` to convert to Twitter timestamp, the timestamp of a tweet can be found in the URL)
+
 Snowflakes are Discord's way of identifying any kind of object (
 server, channel, user, role).
 
