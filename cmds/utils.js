@@ -50,11 +50,17 @@ let avatar = function(ctx, msg, args) {
 };
 
 let cflake = function(ctx, msg, args) {
+    let twitter = false;
+    if (args.startsWith("--twitter")) {
+        twitter = true;
+        args = args.replace("--twitter ", "");
+    }
     if (!isNaN(parseInt(args))) {
         let snowflake = parseInt(args).toString(2);
         snowflake = "0".repeat(64 - snowflake.length) + snowflake;
         let date = snowflake.substr(0, 42);
-        let timestamp = parseInt(date, 2) + 1420070400000;
+        let timestamp =
+            parseInt(date, 2) + (twitter ? 1288834974657 : 1420070400000);
 
         msg.channel.createMessage(
             `The timestamp for \`${args}\` is ${new Date(timestamp)}`
