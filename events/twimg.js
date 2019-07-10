@@ -87,13 +87,14 @@ async function getTweetImages(ctx, snowflake, msg) {
 let twimg = async function(msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
-    if (msg.author.bot) return;
 
-    const enabled = await ctx.db.models.sdata
-        .findOrCreate({
-            where: { id: msg.channel.guild.id }
-        })
-        .then(x => x[0].dataValues.twimg);
+    let data = await ctx.db.models.sdata.findOrCreate({
+        where: { id: msg.channel.guild.id }
+    });
+
+    if (msg.author.bot && !data[0].dataValues.funallowed) return;
+
+    const enabled = data[0].dataValues.twimg;
 
     if (enabled) {
         let url = msg.content.match(twitterurl);
@@ -167,13 +168,14 @@ async function getMastoImages(ctx, url, msg) {
 let fediimg = async function(msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
-    if (msg.author.bot) return;
 
-    const enabled = await ctx.db.models.sdata
-        .findOrCreate({
-            where: { id: msg.channel.guild.id }
-        })
-        .then(x => x[0].dataValues.twimg);
+    let data = await ctx.db.models.sdata.findOrCreate({
+        where: { id: msg.channel.guild.id }
+    });
+
+    if (msg.author.bot && !data[0].dataValues.funallowed) return;
+
+    const enabled = data[0].dataValues.twimg;
 
     if (enabled) {
         if (!msg.embeds[0]) return;
@@ -197,13 +199,14 @@ const pluser = /^https?:\/\/([^:\/\s]+)\/users\/([a-zA-Z0-9-_/]*)$/;
 let plembed = async function(msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
-    if (msg.author.bot) return;
 
-    const enabled = await ctx.db.models.sdata
-        .findOrCreate({
-            where: { id: msg.channel.guild.id }
-        })
-        .then(x => x[0].dataValues.twimg);
+    let data = await ctx.db.models.sdata.findOrCreate({
+        where: { id: msg.channel.guild.id }
+    });
+
+    if (msg.author.bot && !data[0].dataValues.funallowed) return;
+
+    const enabled = data[0].dataValues.twimg;
 
     if (!enabled) return;
 

@@ -22,11 +22,13 @@ const reglinks = {
 let onMessage = async function(msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
-    if (msg.author.bot) return;
 
     const data = await ctx.db.models.sdata.findOrCreate({
         where: { id: msg.channel.guild.id }
     });
+
+    if (msg.author.bot && !data[0].dataValues.funallowed) return;
+
     const enabled = data[0].dataValues.shortlinks;
 
     if (enabled) {
