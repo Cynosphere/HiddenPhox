@@ -234,6 +234,7 @@ for (let f of files) {
 async function commandHandler(msg) {
     ctx.libs = libs;
     if (msg.author) {
+        if (msg.author.id == ctx.bot.user.id) return;
         let sdata = await ctx.db.models.sdata.findOrCreate({
             where: { id: msg.channel.guild.id }
         });

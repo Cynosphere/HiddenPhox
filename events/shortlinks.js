@@ -22,6 +22,7 @@ const reglinks = {
 let onMessage = async function(msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
+    if (msg.author.id == ctx.bot.user.id) return;
 
     const data = await ctx.db.models.sdata.findOrCreate({
         where: { id: msg.channel.guild.id }

@@ -92,6 +92,7 @@ let twimg = async function(msg, ctx) {
         where: { id: msg.channel.guild.id }
     });
 
+    if (msg.author.id == ctx.bot.user.id) return;
     if (msg.author.bot && !data[0].dataValues.funallowed) return;
 
     const enabled = data[0].dataValues.twimg;
@@ -173,6 +174,7 @@ let fediimg = async function(msg, ctx) {
         where: { id: msg.channel.guild.id }
     });
 
+    if (msg.author.id == ctx.bot.user.id) return;
     if (msg.author.bot && !data[0].dataValues.funallowed) return;
 
     const enabled = data[0].dataValues.twimg;
@@ -204,6 +206,7 @@ let plembed = async function(msg, ctx) {
         where: { id: msg.channel.guild.id }
     });
 
+    if (msg.author.id == ctx.bot.user.id) return;
     if (msg.author.bot && !data[0].dataValues.funallowed) return;
 
     const enabled = data[0].dataValues.twimg;
