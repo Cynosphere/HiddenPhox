@@ -247,6 +247,33 @@ let pprefix = async function(ctx, msg, args) {
     }
 };
 
+let funmode = async function(ctx, msg, args) {
+    if (msg.author.id === ctx.ownerid) {
+        if (!msg.channel.guild) {
+            msg.channel.createMessage("Not in guild.");
+            return;
+        }
+
+        let data = await ctx.db.models.sdata.findOrCreate({
+            where: { id: msg.channel.guild.id }
+        });
+        if (data) {
+            let state = !data.funallowed;
+            await ctx.db.models.sdata.update(
+                {
+                    funallowed: state
+                },
+                {
+                    where: { id: msg.channel.guild.id }
+                }
+            );
+            msg.channel.createMessage(state ? ":)" : ":(");
+        }
+    } else {
+        msg.channel.createMessage("No\n\nSent from my iPhone.");
+    }
+};
+
 module.exports = [
     {
         name: "eval",
@@ -295,6 +322,12 @@ module.exports = [
         desc: "Sets your personal prefix to use with the bot.",
         func: pprefix,
         usage: "[set] [prefix]",
+        group: "bot"
+    },
+    {
+        name: "funmode",
+        desc: "its a secret",
+        func: funmode,
         group: "bot"
     }
 ];

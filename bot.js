@@ -8,7 +8,7 @@ const client = new Eris(config.token, {
 const ctx = {};
 ctx.client = client;
 ctx.bot = client;
-ctx.libs = {
+const libs = {
     eris: Eris,
     jimp: require("jimp"),
     fs: require("fs"),
@@ -20,7 +20,7 @@ ctx.libs = {
 
 ctx.utils = require("./utils.js");
 
-ctx.db = new ctx.libs.sequelize("database", "username", "password", {
+ctx.db = new libs.sequelize("database", "username", "password", {
     host: "localhost",
     dialect: "sqlite",
     logging: false,
@@ -59,7 +59,7 @@ client.on("ready", () => {
     });
 
     /*if (ctx.apikeys.dbots)
-        ctx.libs.superagent
+        libs.superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
             .set("Authorization", ctx.apikeys.dbots)
             .send({ server_count: ctx.bot.guilds.size })
@@ -71,7 +71,7 @@ client.on("ready", () => {
             });
 
     if (ctx.apikeys.dbl)
-        ctx.libs.superagent
+        libs.superagent
             .post(`https://discordbots.org/api/bots/stats`)
             .set("Authorization", ctx.apikeys.dbl)
             .send({ server_count: ctx.bot.guilds.size })
@@ -97,7 +97,7 @@ client.on("guildCreate", function(guild) {
     });
 
     /*if (ctx.apikeys.dbots)
-        ctx.libs.superagent
+        libs.superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
             .set("Authorization", ctx.apikeys.dbots)
             .send({ server_count: ctx.bot.guilds.size })
@@ -109,7 +109,7 @@ client.on("guildCreate", function(guild) {
             });
 
     if (ctx.apikeys.dbl)
-        ctx.libs.superagent
+        libs.superagent
             .post(`https://discordbots.org/api/bots/stats`)
             .set("Authorization", ctx.apikeys.dbl)
             .send({ server_count: ctx.bot.guilds.size })
@@ -142,7 +142,7 @@ client.on("guildCreate", function(guild) {
 
 client.on("guildDelete", function(guild) {
     /*if (ctx.apikeys.dbots)
-        ctx.libs.superagent
+        libs.superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
             .set("Authorization", ctx.apikeys.dbots)
             .send({ server_count: ctx.bot.guilds.size })
@@ -154,7 +154,7 @@ client.on("guildDelete", function(guild) {
             });
 
     if (ctx.apikeys.dbl)
-        ctx.libs.superagent
+        libs.superagent
             .post(`https://discordbots.org/api/bots/stats`)
             .set("Authorization", ctx.apikeys.dbl)
             .send({ server_count: ctx.bot.guilds.size })
@@ -173,7 +173,7 @@ client.on("guildDelete", function(guild) {
     );
 });
 
-var files = ctx.libs.fs.readdirSync(__dirname + "/cmds");
+var files = libs.fs.readdirSync(__dirname + "/cmds");
 for (let f of files) {
     let c = require(__dirname + "/cmds/" + f);
 
@@ -211,8 +211,9 @@ let createEvent = function(client, e, ctx) {
     }
 };
 
-var files = ctx.libs.fs.readdirSync(__dirname + "/events");
+var files = libs.fs.readdirSync(__dirname + "/events");
 for (let f of files) {
+    ctx.libs = libs;
     let e = require(__dirname + "/events/" + f);
     if (e.event && e.func && e.name) {
         ctx.events.set(e.event + "|" + e.name, e);
@@ -231,6 +232,7 @@ for (let f of files) {
 }
 
 async function commandHandler(msg) {
+    ctx.libs = libs;
     if (msg.author && !msg.author.bot) {
         let prefix = ctx.prefix;
         let prefix2 = ctx.bot.user.mention + " ";

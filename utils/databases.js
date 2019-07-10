@@ -1,54 +1,56 @@
+const sequelize = require("sequelize");
+
 module.exports = function(ctx) {
     let dbs = {};
 
     dbs.econ = ctx.db.define("econ", {
         id: {
-            type: ctx.libs.sequelize.STRING,
+            type: sequelize.STRING,
             unique: true,
             primaryKey: true
         },
         currency: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
         noreact: {
-            type: ctx.libs.sequelize.BOOLEAN,
+            type: sequelize.BOOLEAN,
             defaultValue: false,
             allowNull: false
         },
         lastdaily: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
         lastvote: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
         points: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 3,
             allowNull: false
         },
         cd_jail: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
         cd_grace: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
         cd_regen: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
         cd_heist: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         }
@@ -56,17 +58,17 @@ module.exports = function(ctx) {
 
     dbs.taxbanks = ctx.db.define("taxbanks", {
         id: {
-            type: ctx.libs.sequelize.STRING,
+            type: sequelize.STRING,
             unique: true,
             primaryKey: true
         },
         currency: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
         cooldown: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         }
@@ -74,47 +76,52 @@ module.exports = function(ctx) {
 
     dbs.sdata = ctx.db.define("sdata", {
         id: {
-            type: ctx.libs.sequelize.STRING,
+            type: sequelize.STRING,
             unique: true,
             primaryKey: true
         },
         roleme: {
-            type: ctx.libs.sequelize.STRING,
+            type: sequelize.STRING,
             defaultValue: "[]",
             allowNull: false
         },
         logging: {
-            type: ctx.libs.sequelize.BOOLEAN,
+            type: sequelize.BOOLEAN,
             defaultValue: false,
             allowNull: false
         },
         logchan: {
-            type: ctx.libs.sequelize.STRING,
+            type: sequelize.STRING,
             defaultValue: "0",
             allowNull: false
         },
         allow_snipe: {
-            type: ctx.libs.sequelize.BOOLEAN,
+            type: sequelize.BOOLEAN,
             defaultValue: true,
             allowNull: false
         },
         shortlinks: {
-            type: ctx.libs.sequelize.BOOLEAN,
+            type: sequelize.BOOLEAN,
             defaultValue: false,
             allowNull: false
         },
         twimg: {
-            type: ctx.libs.sequelize.BOOLEAN,
+            type: sequelize.BOOLEAN,
             defaultValue: false,
             allowNull: false
         },
         prefix: {
-            type: ctx.libs.sequelize.STRING,
+            type: sequelize.STRING,
             defaultValue: "",
             allowNull: false
         },
         noreactglobal: {
-            type: ctx.libs.sequelize.BOOLEAN,
+            type: sequelize.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
+        },
+        funallowed: {
+            type: sequelize.BOOLEAN,
             defaultValue: false,
             allowNull: false
         }
@@ -122,12 +129,12 @@ module.exports = function(ctx) {
 
     dbs.udata = ctx.db.define("udata", {
         id: {
-            type: ctx.libs.sequelize.STRING,
+            type: sequelize.STRING,
             unique: true,
             primaryKey: true
         },
         prefix: {
-            type: ctx.libs.sequelize.STRING,
+            type: sequelize.STRING,
             defaultValue: "",
             allowNull: false
         }
@@ -135,22 +142,22 @@ module.exports = function(ctx) {
 
     dbs.analytics = ctx.db.define("analytics", {
         id: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             unique: true,
             primaryKey: true
         },
         econ_steal_succ: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
         econ_steal_fail: {
-            type: ctx.libs.sequelize.INTEGER,
+            type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
         cmd_usage: {
-            type: ctx.libs.sequelize.STRING,
+            type: sequelize.STRING,
             defaultValue: "{}",
             allowNull: false
         }
