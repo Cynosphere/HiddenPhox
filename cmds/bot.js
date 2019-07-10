@@ -258,7 +258,7 @@ let funmode = async function(ctx, msg, args) {
             where: { id: msg.channel.guild.id }
         });
         if (data) {
-            let state = !data.funallowed;
+            let state = !data[0].dataValues.funallowed;
             await ctx.db.models.sdata.update(
                 {
                     funallowed: state
@@ -267,7 +267,7 @@ let funmode = async function(ctx, msg, args) {
                     where: { id: msg.channel.guild.id }
                 }
             );
-            msg.channel.createMessage(state ? ":)" : ":(");
+            msg.channel.createMessage(state == true ? ":)" : ":(");
         }
     } else {
         msg.channel.createMessage("No\n\nSent from my iPhone.");
