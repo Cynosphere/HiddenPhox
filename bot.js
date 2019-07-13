@@ -235,15 +235,19 @@ async function commandHandler(msg) {
     ctx.libs = libs;
     if (msg.author) {
         if (msg.author.id == ctx.bot.user.id) return;
-        if (msg.author.bot )
         let sdata = {};
-        if (msg.channel.guild){
+        if (msg.channel.guild) {
             sdata = await ctx.db.models.sdata.findOrCreate({
                 where: { id: msg.channel.guild.id }
             });
         }
 
-        if (msg.channel.guild && msg.author.bot && !sdata[0].dataValues.funallowed) return;
+        if (
+            msg.channel.guild &&
+            msg.author.bot &&
+            !sdata[0].dataValues.funallowed
+        )
+            return;
 
         let prefix = ctx.prefix;
         let prefix2 = ctx.bot.user.mention + " ";
