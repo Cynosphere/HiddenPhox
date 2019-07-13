@@ -236,9 +236,12 @@ async function commandHandler(msg) {
     if (msg.author) {
         if (msg.author.id == ctx.bot.user.id) return;
         if (msg.author.bot )
-        let sdata = msg.channel.guild ? await ctx.db.models.sdata.findOrCreate({
-            where: { id: msg.channel.guild.id }
-        }) : {};
+        let sdata = {};
+        if (msg.channel.guild){
+            sdata = await ctx.db.models.sdata.findOrCreate({
+                where: { id: msg.channel.guild.id }
+            });
+        }
 
         if (msg.channel.guild && msg.author.bot && !sdata[0].dataValues.funallowed) return;
 
