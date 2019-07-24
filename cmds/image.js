@@ -961,7 +961,7 @@ let _rover = async function(msg, url) {
     let img = await jimp.read(url);
     let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
     img.resize(187, 100);
-    img.rotate(3.2);
+    img.rotate(-3.2);
     out.composite(img, 64, 119);
     out.composite(template, 0, 0);
 
