@@ -101,7 +101,6 @@ let mirror = async function(msg, url, type) {
 let hooh = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
-    let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
         mirror(msg, args, 1);
     } else if (msg.attachments.length > 0) {
@@ -132,7 +131,6 @@ let hooh = async function(ctx, msg, args) {
 let haah = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
-    let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
         mirror(msg, args, 2);
     } else if (msg.attachments.length > 0) {
@@ -163,7 +161,6 @@ let haah = async function(ctx, msg, args) {
 let woow = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
-    let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
         mirror(msg, args, 3);
     } else if (msg.attachments.length > 0) {
@@ -194,7 +191,6 @@ let woow = async function(ctx, msg, args) {
 let waaw = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
-    let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
         mirror(msg, args, 4);
     } else if (msg.attachments.length > 0) {
@@ -233,7 +229,6 @@ let _invert = async function(msg, url) {
 let invert = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
-    let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
         _invert(msg, args);
     } else if (msg.attachments.length > 0) {
@@ -265,7 +260,6 @@ let invert = async function(ctx, msg, args) {
 let flip = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
-    let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
         jimp.read(args).then(async im => {
             im.mirror(true, false);
@@ -312,7 +306,6 @@ let flip = async function(ctx, msg, args) {
 let flop = async function(ctx, msg, args) {
     msg.channel.sendTyping();
 
-    let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
         jimp.read(args).then(async im => {
             im.mirror(false, true);
@@ -936,7 +929,6 @@ let _jpeg = async function(msg, url) {
 };
 
 let jpeg = async function(ctx, msg, args) {
-    let jimp = ctx.libs.jimp;
     if (args && urlRegex.test(args)) {
         _jpeg(msg, args);
     } else if (msg.attachments.length > 0) {
@@ -956,6 +948,46 @@ let jpeg = async function(ctx, msg, args) {
         try {
             let img = await ctx.utils.findLastImage(ctx, msg);
             _jpeg(msg, img);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
+    }
+};
+
+let _rover = async function(msg, url) {
+    let template = await jimp.read(`${__dirname}/../rover.png`);
+    let img = await jimp.read(url);
+    let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
+    img.resize(193, 103);
+    out.composite(img, 57, 123);
+    out.composite(template, 0, 0);
+
+    let toSend = await out.getBufferAsync(jimp.MIME_PNG);
+    msg.channel.createMessage("", { file: toSend, name: "rover.png" });
+};
+
+let rover = async function(ctx, msg, args) {
+    if (args && urlRegex.test(args)) {
+        _rover(msg, args);
+    } else if (msg.attachments.length > 0) {
+        _rover(msg, msg.attachments[0].url);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            let url =
+                u.avatar !== null
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
+            _rover(msg, url);
+        });
+    } else {
+        try {
+            let img = await ctx.utils.findLastImage(ctx, msg);
+            _rover(msg, img);
         } catch (e) {
             msg.channel.createMessage(
                 "Image not found. Please give URL, attachment or user mention."
@@ -1075,6 +1107,12 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         desc:
             "Creates a grid of all the role colors. Highest position to lowest.",
         func: rolegrid,
+        group: "image"
+    },
+    {
+        name: "rover",
+        desc: "HE",
+        func: rover,
         group: "image"
     }
 
