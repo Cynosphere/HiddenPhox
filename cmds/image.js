@@ -957,7 +957,7 @@ let jpeg = async function(ctx, msg, args) {
 };
 
 let _rover = async function(msg, url) {
-    let template = await jimp.read(`${__dirname}/../rover.png`);
+    let template = await jimp.read(`${__dirname}/../img/rover.png`);
     let img = await jimp.read(url);
     let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
     img.resize(193, 103);
