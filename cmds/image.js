@@ -961,8 +961,8 @@ let _rover = async function(msg, url) {
     let img = await jimp.read(url);
     let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
     img.resize(192, 102);
-    img.rotate(-2.8);
-    out.composite(img, 60, 120);
+    img.rotate(-2.4, false);
+    out.composite(img, 60, 125);
     out.composite(template, 0, 0);
 
     let toSend = await out.getBufferAsync(jimp.MIME_PNG);
