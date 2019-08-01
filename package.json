@@ -33,7 +33,7 @@
         "inkjet": "^2.1.2",
         "jimp": "^0.6.0",
         "jpeg-js": "^0.3.4",
-        "lodash": "^4.17.11",
+        "lodash": "^4.17.15",
         "moment": "^2.22.1",
         "node-ffprobe": "^1.2.2",
         "pngjs2": "^2.0.0",
@@ -42,13 +42,13 @@
         "sequelize": "^6.0.0",
         "sqlite3": "^4.0.2",
         "steam-web-api2": "^2.0.3",
-        "superagent": "^3.8.3",
+        "superagent": "^5.1.0",
         "svg2png": "^4.1.1",
         "tweetnacl": "^1.0.0",
         "uws": "^99.0.0",
         "xmldom": "^0.1.27",
         "xpath": "0.0.24",
         "youtube-dl": "^1.12.2",
-        "ytdl-core": "^0.29.1"
+        "ytdl-core": "^0.29.5"
     }
 }
