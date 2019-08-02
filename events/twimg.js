@@ -34,6 +34,10 @@ async function getTweetImages(ctx, snowflake, msg) {
                 `https://api.twitter.com/1.1/statuses/show.json?id=${snowflake}&trim_user=1&include_entities=1`
             )
             .set("Authorization", `Bearer ${token}`)
+            .set(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0"
+            )
             .then(x => x.body);
         if (tweet.is_quote_status && tweet.quoted_status_id) {
             msg.channel

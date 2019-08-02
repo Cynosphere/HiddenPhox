@@ -523,9 +523,13 @@ async function getTweetVideo(ctx, snowflake) {
 
         let tweet = await ctx.libs.superagent
             .get(
-                `https://api.twitter.com/1.1/statuses/show.json?id=${snowflake}&include_entities=1`
+                `https://api.twitter.com/1.1/statuses/show.json?id=${snowflake}&include_entities=true`
             )
             .set("Authorization", `Bearer ${token}`)
+            .set(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0"
+            )
             .then(x => x.body)
             .catch(e => reject(e));
         if (tweet.extended_entities) {
