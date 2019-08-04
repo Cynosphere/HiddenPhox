@@ -230,7 +230,7 @@ let roleme = async function(ctx, msg, args) {
             return;
         }*/
         msg.channel.createMessage("soon:tm:");
-    } else if (sub == "help") {
+    } else if (sub == "help" || sub == "" || !sub) {
         let sub = [
             "  \u2022 give - Give a roleme set role.",
             "  \u2022 rem(ove) - Remove a roleme set role.",
