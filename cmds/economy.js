@@ -743,14 +743,14 @@ let steal = async function(ctx, msg, args) {
                 await grace(ctx, u);
                 await takepoint(ctx, msg.author);
 
-                await ctx.db.models.analytics.update(
+                /*await ctx.db.models.analytics.update(
                     {
                         econ_steal_succ: ctx.libs.sequelize.literal(
                             `econ_steal_succ+1`
                         )
                     },
                     { where: { id: 1 } }
-                );
+                );*/
 
                 msg.channel.createMessage(
                     `${
@@ -775,14 +775,14 @@ let steal = async function(ctx, msg, args) {
                 await jail(ctx, msg.author);
                 await takepoint(ctx, msg.author);
 
-                await ctx.db.models.analytics.update(
+                /*await ctx.db.models.analytics.update(
                     {
                         econ_steal_fail: ctx.libs.sequelize.literal(
                             `econ_steal_fail+1`
                         )
                     },
                     { where: { id: 1 } }
-                );
+                );*/
 
                 msg.channel.createMessage(
                     `${
@@ -927,7 +927,7 @@ let heist = async function(ctx, msg, args) {
 let fcstats = async function(ctx, msg, args) {
     let data = await ctx.db.models.econ.findAll();
     let tdata = await ctx.db.models.taxbanks.findAll();
-    let analytics = await ctx.db.models.analytics.findOne({ where: { id: 1 } });
+    //let analytics = await ctx.db.models.analytics.findOne({ where: { id: 1 } });
 
     let fc = 0;
     let fct = 0;
@@ -955,8 +955,8 @@ let fcstats = async function(ctx, msg, args) {
                     name: "Total PhoxCoins in taxbanks",
                     value: fct + "FC",
                     inline: true
-                },
-                {
+                }
+                /*{
                     name: "Steal Successes",
                     value: analytics.econ_steal_succ,
                     inline: true
@@ -965,7 +965,7 @@ let fcstats = async function(ctx, msg, args) {
                     name: "Steal Fails",
                     value: analytics.econ_steal_fail,
                     inline: true
-                }
+                }*/
             ]
         }
     });
