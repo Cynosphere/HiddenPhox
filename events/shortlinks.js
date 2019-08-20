@@ -41,7 +41,7 @@ let onMessage = async function(msg, ctx) {
         for (const m in res) {
             for (const x in reglinks) {
                 let url = res[m];
-                if (!url.startsWith(x)) return;
+                if (!url.startsWith(x)) continue;
                 url = url.replace(x + "/", "");
 
                 if (x == "gh" || x == "gl" || x == "gd") {
