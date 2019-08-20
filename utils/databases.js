@@ -140,11 +140,11 @@ module.exports = function(ctx) {
         }
     });
 
-    ctx.db.query("SET FOREIGN_KEY_CHECKS = 0").success(_ => {
-        dbs.econ.sync({ force: false, alter: true }).success(_ => {
-            dbs.taxbanks.sync({ force: false, alter: true }).success(_ => {
-                dbs.sdata.sync({ force: false, alter: true }).success(_ => {
-                    dbs.udata.sync({ force: false, alter: true }).success(_ => {
+    ctx.db.query("SET FOREIGN_KEY_CHECKS = 0").then(_ => {
+        dbs.econ.sync({ force: false, alter: true }).then(_ => {
+            dbs.taxbanks.sync({ force: false, alter: true }).then(_ => {
+                dbs.sdata.sync({ force: false, alter: true }).then(_ => {
+                    dbs.udata.sync({ force: false, alter: true }).then(_ => {
                         ctx.db.query("SET FOREIGN_KEY_CHECKS = 1");
                     });
                 });
