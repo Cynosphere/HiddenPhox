@@ -140,21 +140,34 @@ module.exports = function(ctx) {
         }
     });
 
-    dbs.query("SET FOREIGN_KEY_CHECKS = 0").success(_ => {
-        dbs.econ.sync({ force: false, alter: true }).success(__ => {
-            dbs.taxbanks.sync({ force: false, alter: true }).success(___ => {
-                dbs.sdata.sync({ force: false, alter: true }).success(____ => {
-                    dbs.udata
-                        .sync({ force: false, alter: true })
-                        .success(_____ => {
-                            dbs.query("SET FOREIGN_KEY_CHECKS = 1").complete(
-                                callback
-                            );
-                        });
+    dbs.econ
+        .query("SET FOREIGN_KEY_CHECKS = 0")
+        .success(_ => {
+            dbs.econ.sync({ force: false, alter: true }).success(__ => {
+                dbs.econ.query("SET FOREIGN_KEY_CHECKS = 1");
+            });
+        })
+        .success(_ => {
+            dbs.taxbanks.query("SET FOREIGN_KEY_CHECKS = 0").success(_ => {
+                dbs.taxbanks.sync({ force: false, alter: true }).success(__ => {
+                    dbs.taxbanks.query("SET FOREIGN_KEY_CHECKS = 1");
+                });
+            });
+        })
+        .success(_ => {
+            dbs.sdata.query("SET FOREIGN_KEY_CHECKS = 0").success(_ => {
+                dbs.sdata.sync({ force: false, alter: true }).success(__ => {
+                    dbs.sdata.query("SET FOREIGN_KEY_CHECKS = 1");
+                });
+            });
+        })
+        .success(_ => {
+            dbs.udata.query("SET FOREIGN_KEY_CHECKS = 0").success(_ => {
+                dbs.udata.sync({ force: false, alter: true }).success(__ => {
+                    dbs.udata.query("SET FOREIGN_KEY_CHECKS = 1");
                 });
             });
         });
-    });
 
     return dbs;
 };
