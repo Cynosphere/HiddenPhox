@@ -17,84 +17,73 @@ async function jimpAsync(buf) {
     });
 }
 
+const mirrorNames = ["hooh", "haah", "woow", "waaw"];
 let mirror = async function(msg, url, type) {
-    const names = [null, "hooh", "haah", "woow", "waaw"];
+    let im = await jimp.read(url);
+    let a = im.clone();
+    let b = im.clone();
 
-    jimp.read(url).then(async im => {
-        let a = im.clone();
-        let b = im.clone();
+    switch (type) {
+        case 1:
+            a.crop(
+                0,
+                im.bitmap.height / 2,
+                im.bitmap.width,
+                im.bitmap.height / 2
+            );
+            b.crop(
+                0,
+                im.bitmap.height / 2,
+                im.bitmap.width,
+                im.bitmap.height / 2
+            );
+            b.mirror(false, true);
 
-        switch (type) {
-            case 1:
-                a.crop(
-                    0,
-                    im.bitmap.height / 2,
-                    im.bitmap.width,
-                    im.bitmap.height / 2
-                );
-                b.crop(
-                    0,
-                    im.bitmap.height / 2,
-                    im.bitmap.width,
-                    im.bitmap.height / 2
-                );
-                b.mirror(false, true);
-                break;
-            case 2:
-                a.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
-                b.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
-                b.mirror(true, false);
-                break;
-            case 3:
-                a.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
-                b.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
-                b.mirror(false, true);
-                break;
-            case 4:
-                a.crop(
-                    im.bitmap.width / 2,
-                    0,
-                    im.bitmap.width / 2,
-                    im.bitmap.height
-                );
-                b.crop(
-                    im.bitmap.width / 2,
-                    0,
-                    im.bitmap.width / 2,
-                    im.bitmap.height
-                );
-                a.mirror(true, false);
-                break;
-            default:
-                break;
-        }
+            im.composite(a, 0, im.bitmap.height / 2);
+            im.composite(b, 0, 0);
+            break;
+        case 2:
+            a.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
+            b.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
+            b.mirror(true, false);
 
-        switch (type) {
-            case 1:
-                im.composite(a, 0, im.bitmap.height / 2);
-                im.composite(b, 0, 0);
-                break;
-            case 2:
-                im.composite(a, 0, 0);
-                im.composite(b, im.bitmap.width / 2, 0);
-                break;
-            case 3:
-                im.composite(a, 0, 0);
-                im.composite(b, 0, im.bitmap.height / 2);
-                break;
-            case 4:
-                im.composite(a, 0, 0);
-                im.composite(b, im.bitmap.width / 2, 0);
-                break;
-            default:
-                break;
-        }
+            im.composite(a, 0, 0);
+            im.composite(b, im.bitmap.width / 2, 0);
+            break;
+        case 3:
+            a.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
+            b.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
+            b.mirror(false, true);
 
-        let file = await im.getBufferAsync(jimp.MIME_PNG);
-        msg.channel.createMessage("", {
-            name: `${names[type]}.png`,
-            file: file
-        });
+            im.composite(a, 0, 0);
+            im.composite(b, 0, im.bitmap.height / 2);
+            break;
+        case 4:
+            a.crop(
+                im.bitmap.width / 2,
+                0,
+                im.bitmap.width / 2,
+                im.bitmap.height
+            );
+            b.crop(
+                im.bitmap.width / 2,
+                0,
+                im.bitmap.width / 2,
+                im.bitmap.height
+            );
+            a.mirror(true, false);
+
+            im.composite(a, 0, 0);
+            im.composite(b, im.bitmap.width / 2, 0);
+            break;
+        default:
+            break;
+    }
+
+    let file = await im.getBufferAsync(jimp.MIME_PNG);
+    msg.channel.createMessage("", {
+        name: `${mirrorNames[type - 1]}.png`,
+        file: file
     });
 };
 

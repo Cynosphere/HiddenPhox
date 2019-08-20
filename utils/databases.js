@@ -140,34 +140,10 @@ module.exports = function(ctx) {
         }
     });
 
-    dbs.analytics = ctx.db.define("analytics", {
-        id: {
-            type: sequelize.INTEGER,
-            unique: true,
-            primaryKey: true
-        },
-        econ_steal_succ: {
-            type: sequelize.INTEGER,
-            defaultValue: 0,
-            allowNull: false
-        },
-        econ_steal_fail: {
-            type: sequelize.INTEGER,
-            defaultValue: 0,
-            allowNull: false
-        },
-        cmd_usage: {
-            type: sequelize.STRING,
-            defaultValue: "{}",
-            allowNull: false
-        }
-    });
-
     dbs.econ.sync({ force: false, alter: true });
     dbs.taxbanks.sync({ force: false, alter: true });
     dbs.sdata.sync({ force: false, alter: true });
     dbs.udata.sync({ force: false, alter: true });
-    dbs.analytics.sync({ force: false, alter: true });
 
     return dbs;
 };
