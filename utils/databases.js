@@ -140,10 +140,23 @@ module.exports = function(ctx) {
         }
     });
 
-    dbs.econ.sync({ force: false, alter: true });
-    dbs.taxbanks.sync({ force: false, alter: true });
-    dbs.sdata.sync({ force: false, alter: true });
-    dbs.udata.sync({ force: false, alter: true });
+    async.series(
+        [
+            function(callback) {
+                dbs.query("SET FOREIGN_KEY_CHECKS = 0").complete(callback);
+            },
+            function(callback) {
+                dbs.econ.sync({ force: false, alter: true });
+                dbs.taxbanks.sync({ force: false, alter: true });
+                dbs.sdata.sync({ force: false, alter: true });
+                dbs.udata.sync({ force: false, alter: true });
+            },
+            function(callback) {
+                dbs.query("SET FOREIGN_KEY_CHECKS = 1").complete(callback);
+            }
+        ],
+        callback
+    );
 
     return dbs;
 };
