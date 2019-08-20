@@ -196,7 +196,7 @@ let mods = function(ctx, msg, args) {
                 offline: ""
             };
 
-            msg.channel.guild.members.forEach(u => {
+            for (const u of msg.channel.guild.members.values()) {
                 if (
                     (msg.channel.permissionsOf(u.id).has("kickMembers") ||
                         msg.channel
@@ -212,7 +212,7 @@ let mods = function(ctx, msg, args) {
                         u.discriminator +
                         (u.nick ? " (" + u.nick + ")" : "");
                 }
-            });
+            }
 
             for (s in a) {
                 res += a[s];
@@ -222,7 +222,7 @@ let mods = function(ctx, msg, args) {
             let res =
                 "Online moderators for **" + msg.channel.guild.name + "**:";
 
-            msg.channel.guild.members.forEach(u => {
+            for (const u of msg.channel.guild.members.values()) {
                 if (
                     (msg.channel.permissionsOf(u.id).has("kickMembers") ||
                         msg.channel
@@ -238,7 +238,7 @@ let mods = function(ctx, msg, args) {
                         "#" +
                         u.discriminator;
                 }
-            });
+            }
             msg.channel.createMessage(res);
         }
     } else {
@@ -589,17 +589,17 @@ let sinfo = async function(ctx, msg, args) {
         let bots = g.members.filter(u => u.bot).length;
 
         let emojis = [];
-        g.emojis.forEach(e => {
+        for (const e of g.emojis.values()) {
             let hasRole = false;
 
-            e.roles.forEach(x => {
+            for (const x of e.roles.values()) {
                 if (g.members.get(ctx.bot.user.id).roles.includes(x))
                     hasRole = true;
-            });
+            }
 
             if (e.managed && hasRole == false) return;
             emojis.push(`<${e.animated ? "a" : ""}:${e.name}:${e.id}>`);
-        });
+        }
 
         emojis = emojis.sort(function(a, b) {
             a = a.toLowerCase().replace(/<(a)?:(.+):(.+)>/, "$2");
@@ -608,9 +608,9 @@ let sinfo = async function(ctx, msg, args) {
         });
 
         let tmp = [];
-        emojis.forEach(e => {
+        for (const e of emojis.values()) {
             tmp.push(e.replace(/:(.+):/, ":_:"));
-        });
+        }
         emojis = tmp;
         tmp = undefined;
 
@@ -831,21 +831,21 @@ let rinfo = function(ctx, msg, args) {
         .then(r => {
             let users = 0;
             let bots = 0;
-            msg.channel.guild.members.forEach(m => {
+            for (const m of msg.channel.guild.members.values()) {
                 if (m.roles.indexOf(r.id) > -1) {
                     if (m.bot) bots++;
                     users++;
                 }
-            });
+            }
 
             let perms = [];
-            Object.keys(r.permissions.json).forEach(k => {
+            for (const k of r.permissions.json.keys()) {
                 perms.push(
                     `${
                         r.permissions.json[k] == true ? "\u2705" : "\u274C"
                     } ${k}`
                 );
-            });
+            }
 
             if (perms.length == 0) {
                 perms.push("None");
@@ -917,9 +917,9 @@ let rinfo = function(ctx, msg, args) {
 let slist = function(ctx, msg, args) {
     let servers = [];
 
-    ctx.bot.guilds.forEach(s => {
+    for (const s of ctx.bot.guilds.values()) {
         servers.push(s);
-    });
+    }
 
     servers.sort((a, b) => {
         if (a.memberCount > b.memberCount) return -1;
@@ -1281,12 +1281,12 @@ let jumbo = async function(ctx, msg, args) {
         });
     } else {
         let pack = "twemoji";
-        Object.keys(emojiSets).forEach(x => {
+        for (const x of emojiSets.keys()) {
             if (args.startsWith(`--${x} `)) {
                 pack = x;
                 args = args.replace(`--${x} `, "");
             }
-        });
+        }
         let emoji = Array.from(args)
             .map(x => x.codePointAt().toString(16))
             .join(emojiSets[pack].joiner);

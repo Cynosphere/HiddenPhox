@@ -1,11 +1,11 @@
 let help = async function(ctx, msg, args) {
     const sorted = {};
-    ctx.cmds.forEach(c => {
-        if (sorted[c.group.toLowerCase()] === undefined) {
-            sorted[c.group.toLowerCase()] = [];
+    for (const cmd of ctx.cmds.values()) {
+        if (sorted[cmd.group.toLowerCase()] === undefined) {
+            sorted[cmd.group.toLowerCase()] = [];
         }
-        sorted[c.group.toLowerCase()].push(c);
-    });
+        sorted[cmd.group.toLowerCase()].push(cmd);
+    }
 
     if (args) {
         if (args.startsWith("--")) {
@@ -29,13 +29,13 @@ let help = async function(ctx, msg, args) {
                         fields: []
                     }
                 };
-                sorted[category].forEach(cmd => {
+                for (const cmd of sorted[category]) {
                     embed.embed.fields.push({
                         name: `${ctx.prefix}${cmd.name}`,
                         value: cmd.desc,
                         inline: true
                     });
-                });
+                }
                 msg.channel.createMessage(embed);
             } else {
                 msg.channel.createMessage("Category not found.");
@@ -102,7 +102,7 @@ let help = async function(ctx, msg, args) {
                 fields: []
             }
         };
-        Object.keys(sorted).forEach(x => {
+        for (const x of sorted.keys()) {
             embed.embed.fields.push({
                 name: x.toUpperCase().charAt(0) + x.toLowerCase().slice(1),
                 value: `${sorted[x].length} Commands\n${
@@ -110,7 +110,7 @@ let help = async function(ctx, msg, args) {
                 }help --${x.toLowerCase()}`,
                 inline: true
             });
-        });
+        }
         msg.channel.createMessage(embed);
     }
 };

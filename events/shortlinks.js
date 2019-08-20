@@ -39,7 +39,7 @@ let onMessage = async function(msg, ctx) {
         let links = [];
 
         for (const m in res) {
-            Object.keys(reglinks).forEach(x => {
+            for (const x of reglinks.keys()) {
                 let url = res[m];
                 if (!url.startsWith(x)) return;
                 url = url.replace(x + "/", "");
@@ -58,7 +58,7 @@ let onMessage = async function(msg, ctx) {
 
                 url = reglinks[x].replace("$link$", url);
                 links.push(url);
-            });
+            }
         }
 
         msg.channel.createMessage(links.join("\n"));

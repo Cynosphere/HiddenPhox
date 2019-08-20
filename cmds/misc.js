@@ -459,7 +459,7 @@ let wolfram = async function(ctx, msg, args) {
             }
         };
 
-        data.splice(1, 6).forEach(x => {
+        for (const x in data.splice(1, 6).values()) {
             embed.fields.push({
                 name: x.title,
                 value: `[${
@@ -469,7 +469,7 @@ let wolfram = async function(ctx, msg, args) {
                 }](${x.subpods[0].img.src})`,
                 inline: true
             });
-        });
+        }
 
         msg.channel.createMessage({ embed: embed });
     } else {

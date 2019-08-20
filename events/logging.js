@@ -436,7 +436,7 @@ let msgDelBulk = async function(msgs, ctx) {
 };
 
 let userUpdate = function(user, oldUser, ctx) {
-    ctx.bot.guilds.forEach(async g => {
+    for (const g of ctx.bot.guilds.values()){
         if (!g.members.get(user.id)) return;
         if (
             user &&
@@ -502,7 +502,7 @@ let userUpdate = function(user, oldUser, ctx) {
             let log = await getLogChannel(ctx, { channel: { guild: guild } });
             log.createMessage({ embed: e });
         }
-    });
+    }
 };
 
 module.exports = [

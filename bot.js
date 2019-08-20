@@ -82,19 +82,17 @@ client.on("ready", () => {
                 ctx.utils.logWarn(ctx, `[dbl] Failed to post stats: "${e}"`);
             });*/
 
-    ctx.bot.guilds.forEach(g => {
-        g.emojis.forEach(e => {
-            e.guild_id = g.id;
-            ctx.emotes.set(e.id, e);
-        });
-    });
+    for (const guild of ctx.bot.guilds.values()) {
+        for (const emote of guild.emojis.values()) {
+            emote.guild_id = guild.id;
+            ctx.emotes.set(emote.id, emote);
+        }
+    }
 });
 
 client.on("guildCreate", function(guild) {
     let bots = 0;
-    guild.members.forEach(m => {
-        if (m.bot) ++bots;
-    });
+    for (const m of guild.members.values()) if (m.bot) ++bots;
 
     /*if (ctx.apikeys.dbots)
         libs.superagent
@@ -281,7 +279,7 @@ async function commandHandler(msg) {
         cmd = cmd.toLowerCase();
         cmd2 = cmd2.toLowerCase();
 
-        ctx.cmds.forEach(async c => {
+        for (const c of ctx.cmds.values()) {
             if (cmd == prefix + c.name) {
                 if (
                     c.guild &&
@@ -404,7 +402,7 @@ async function commandHandler(msg) {
                 hasRan = true;
                 msg.hasRan = true;
             }
-        });
+        }
     }
 }
 

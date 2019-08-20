@@ -932,12 +932,12 @@ let fcstats = async function(ctx, msg, args) {
     let fc = 0;
     let fct = 0;
 
-    data.forEach(d => {
+    for (const d of data.values()) {
         fc = fc + d.dataValues.currency;
-    });
-    tdata.forEach(d => {
+    }
+    for (const d of tdata.values()) {
         fct = fct + d.dataValues.currency;
-    });
+    }
 
     msg.channel.createMessage({
         embed: {

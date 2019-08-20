@@ -43,7 +43,7 @@ let pointRegen = async function(ctx) {
 
     let now = new Date().getTime();
 
-    list.forEach(a => {
+    for (const a of list.values()) {
         if (a.dataValues.cd_regen < now && a.dataValues.points == 0) {
             ctx.utils.logInfo(
                 ctx,
@@ -54,7 +54,7 @@ let pointRegen = async function(ctx) {
                 { where: { id: a.dataValues.id } }
             );
         }
-    });
+    }
 };
 
 module.exports = [

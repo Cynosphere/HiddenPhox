@@ -62,45 +62,45 @@ utils.lookupUser = function(ctx, msg, str, filter) {
             let match = str.match(/(.+)#([0-9]{4})/);
             if (filter) {
                 let f = ctx.bot.users.filter(filter);
-                f.forEach(m => {
+                for (const m of f.values()) {
                     if (
                         m.username.toLowerCase() == match[1].toLowerCase() &&
                         m.discriminator == match[2]
                     ) {
                         resolve(m);
                     }
-                });
+                }
             } else if (msg.channel.guild && !filter) {
-                msg.channel.guild.members.forEach(m => {
+                for (const m of msg.channel.guild.members.values()) {
                     if (
                         m.username.toLowerCase() == match[1].toLowerCase() &&
                         m.discriminator == match[2]
                     ) {
                         resolve(m);
                     }
-                });
+                }
             } else {
-                ctx.bot.users.forEach(m => {
+                for (const m of ctx.bot.users.values()) {
                     if (
                         m.username.toLowerCase() == match[1].toLowerCase() &&
                         m.discriminator == match[2]
                     ) {
                         resolve(m);
                     }
-                });
+                }
             }
         }
 
         let userpool = [];
         if (filter) {
             let f = ctx.bot.users.filter(filter);
-            f.forEach(m => {
+            for (const m of f.values()) {
                 if (m.username.toLowerCase().indexOf(str.toLowerCase()) > -1) {
                     userpool.push(m);
                 }
-            });
+            }
         } else if (msg.channel.guild && !filter) {
-            msg.channel.guild.members.forEach(m => {
+            for (const m of msg.channel.guild.members.values()) {
                 if (
                     m.username.toLowerCase().indexOf(str.toLowerCase()) > -1 ||
                     (m.nick &&
@@ -108,13 +108,13 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                 ) {
                     userpool.push(m);
                 }
-            });
+            }
         } else {
-            ctx.bot.users.forEach(m => {
+            for (const m of ctx.bot.users.values()) {
                 if (m.username.toLowerCase().indexOf(str.toLowerCase()) > -1) {
                     userpool.push(m);
                 }
-            });
+            }
         }
 
         if (userpool.length > 0) {
@@ -206,17 +206,17 @@ utils.lookupGuild = function(ctx, msg, str, filter) {
         let userpool = [];
         if (filter) {
             let f = ctx.bot.guilds.filter(filter);
-            f.forEach(m => {
+            for (const m of f.values()) {
                 if (m.name.toLowerCase().indexOf(str.toLowerCase()) > -1) {
                     userpool.push(m);
                 }
-            });
+            }
         } else {
-            ctx.bot.users.forEach(m => {
+            for (const m of ctx.bot.guilds.values()) {
                 if (m.name.toLowerCase().indexOf(str.toLowerCase()) > -1) {
                     userpool.push(m);
                 }
-            });
+            }
         }
 
         if (userpool.length > 0) {
@@ -292,17 +292,17 @@ utils.lookupRole = function(ctx, msg, str, filter) {
         let userpool = [];
         if (filter) {
             let f = msg.channel.guild.roles.filter(filter);
-            f.forEach(r => {
+            for (const r of f.values()) {
                 if (r.name.toLowerCase().indexOf(str.toLowerCase()) > -1) {
                     userpool.push(r);
                 }
-            });
+            }
         } else {
-            msg.channel.guild.roles.forEach(r => {
+            for (const r of msg.channel.guild.roles.values()) {
                 if (r.name.toLowerCase().indexOf(str.toLowerCase()) > -1) {
                     userpool.push(r);
                 }
-            });
+            }
         }
 
         if (userpool.length > 0) {
