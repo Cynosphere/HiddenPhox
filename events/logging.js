@@ -435,8 +435,8 @@ let msgDelBulk = async function(msgs, ctx) {
     }
 };
 
-let userUpdate = function(user, oldUser, ctx) {
-    for (const g of ctx.bot.guilds.values()){
+let userUpdate = async function(user, oldUser, ctx) {
+    for (const g of ctx.bot.guilds.values()) {
         if (!g.members.get(user.id)) return;
         if (
             user &&
