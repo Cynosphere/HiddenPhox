@@ -39,7 +39,7 @@ let onMessage = async function(msg, ctx) {
         let links = [];
 
         for (const m in res) {
-            for (const x of reglinks.keys()) {
+            for (const x in reglinks) {
                 let url = res[m];
                 if (!url.startsWith(x)) return;
                 url = url.replace(x + "/", "");

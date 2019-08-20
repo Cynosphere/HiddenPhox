@@ -102,7 +102,7 @@ let help = async function(ctx, msg, args) {
                 fields: []
             }
         };
-        for (const x of sorted.keys()) {
+        for (const x in sorted) {
             embed.embed.fields.push({
                 name: x.toUpperCase().charAt(0) + x.toLowerCase().slice(1),
                 value: `${sorted[x].length} Commands\n${

@@ -839,7 +839,7 @@ let rinfo = function(ctx, msg, args) {
             }
 
             let perms = [];
-            for (const k of r.permissions.json.keys()) {
+            for (const k in r.permissions.json) {
                 perms.push(
                     `${
                         r.permissions.json[k] == true ? "\u2705" : "\u274C"
@@ -1281,7 +1281,7 @@ let jumbo = async function(ctx, msg, args) {
         });
     } else {
         let pack = "twemoji";
-        for (const x of emojiSets.keys()) {
+        for (const x in emojiSets) {
             if (args.startsWith(`--${x} `)) {
                 pack = x;
                 args = args.replace(`--${x} `, "");
