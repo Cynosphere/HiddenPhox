@@ -53,6 +53,21 @@ module.exports = function(ctx) {
             type: sequelize.INTEGER,
             defaultValue: 0,
             allowNull: false
+        },
+        steals: {
+            type: sequelize.INTEGER,
+            defaultValue: 0,
+            allowNull: false
+        },
+        steal_succ: {
+            type: sequelize.INTEGER,
+            defaultValue: 0,
+            allowNull: false
+        },
+        steal_fail: {
+            type: sequelize.INTEGER,
+            defaultValue: 0,
+            allowNull: false
         }
     });
 
@@ -140,14 +155,10 @@ module.exports = function(ctx) {
         }
     });
 
-    ctx.db.query("SET FOREIGN_KEY_CHECKS = 0").then(_ => {
-        dbs.econ.sync({ force: false, alter: true }).then(_ => {
-            dbs.taxbanks.sync({ force: false, alter: true }).then(_ => {
-                dbs.sdata.sync({ force: false, alter: true }).then(_ => {
-                    dbs.udata.sync({ force: false, alter: true }).then(_ => {
-                        ctx.db.query("SET FOREIGN_KEY_CHECKS = 1");
-                    });
-                });
+    dbs.econ.sync({ force: false, alter: true }).then(_ => {
+        dbs.taxbanks.sync({ force: false, alter: true }).then(_ => {
+            dbs.sdata.sync({ force: false, alter: true }).then(_ => {
+                dbs.udata.sync({ force: false, alter: true });
             });
         });
     });

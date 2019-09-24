@@ -1,4 +1,8 @@
 let account = async function(ctx, msg, args) {
+    if (msg.author.bot) {
+        msg.channel.createMessage(`Bots cannot create accounts.`);
+        return;
+    }
     try {
         let succ = await ctx.db.models.econ.create({ id: msg.author.id });
         msg.channel.createMessage(`Account \`${succ.id}\` created.`);
@@ -38,16 +42,12 @@ let wallet = async function(ctx, msg, args) {
                     );
                 } else {
                     msg.channel.createMessage(
-                        `**${u.username}#${u.discriminator}**'s balance is \`${
-                            wallet.currency
-                        }FC\``
+                        `**${u.username}#${u.discriminator}**'s balance is \`${wallet.currency}FC\``
                     );
                 }
             } else {
                 msg.channel.createMessage(
-                    `**${u.username}#${
-                        u.discriminator
-                    }** does not have an account.`
+                    `**${u.username}#${u.discriminator}** does not have an account.`
                 );
             }
         });
@@ -341,9 +341,7 @@ let daily = async function(ctx, msg, args) {
                 { where: { id: msg.author.id } }
             );
             msg.channel.createMessage(
-                `**${msg.author.username}#${
-                    msg.author.discriminator
-                }** claimed their daily reward and recieved **${value}FC**.`
+                `**${msg.author.username}#${msg.author.discriminator}** claimed their daily reward and recieved **${value}FC**.`
             );
         } else {
             msg.channel.createMessage(
@@ -356,9 +354,7 @@ let daily = async function(ctx, msg, args) {
         }
     } else {
         msg.channel.createMessage(
-            `You do not have an account, do \`${
-                ctx.prefix
-            }account\` to get an account.`
+            `You do not have an account, do \`${ctx.prefix}account\` to get an account.`
         );
     }
 };
@@ -372,9 +368,7 @@ let votereward = async function(ctx, msg, args) {
         if (now >= acc.lastvote) {
             let voted = await ctx.libs.superagent
                 .get(
-                    `https://discordbots.org/api/bots/${
-                        ctx.bot.user.id
-                    }/check?userId=${msg.author.id}`
+                    `https://discordbots.org/api/bots/${ctx.bot.user.id}/check?userId=${msg.author.id}`
                 )
                 .set("Authorization", ctx.apikeys.dbl)
                 .then(x => x.body.voted)
@@ -393,9 +387,7 @@ let votereward = async function(ctx, msg, args) {
                     { where: { id: msg.author.id } }
                 );
                 msg.channel.createMessage(
-                    `**${msg.author.username}#${
-                        msg.author.discriminator
-                    }** voted and recieved **${value}FC**.`
+                    `**${msg.author.username}#${msg.author.discriminator}** voted and recieved **${value}FC**.`
                 );
             } else {
                 msg.channel.createMessage(
@@ -413,9 +405,7 @@ let votereward = async function(ctx, msg, args) {
         }
     } else {
         msg.channel.createMessage(
-            `You do not have an account, do \`${
-                ctx.prefix
-            }account\` to get an account.`
+            `You do not have an account, do \`${ctx.prefix}account\` to get an account.`
         );
     }
 };
@@ -425,9 +415,7 @@ let transfer = async function(ctx, msg, args) {
 
     if (!args || !owo[0]) {
         msg.channel.createMessage(
-            `No arguments specified, usage: \`${
-                ctx.prefix
-            }transfer "user" amount\``
+            `No arguments specified, usage: \`${ctx.prefix}transfer "user" amount\``
         );
         return;
     }
@@ -467,9 +455,7 @@ let transfer = async function(ctx, msg, args) {
         if (target) {
             if (!owo[1]) {
                 msg.channel.createMessage(
-                    `No amount specified, usage: \`${
-                        ctx.prefix
-                    }transfer user,amount\``
+                    `No amount specified, usage: \`${ctx.prefix}transfer user,amount\``
                 );
                 return;
             }
@@ -503,17 +489,7 @@ let transfer = async function(ctx, msg, args) {
                 }**.\n\`\`\`diff\n- ${value}FC | transfer\n- ${tax}FC | 2.25% tax\n%%%%\n% ${value -
                     tax}FC sent\`\`\`\n\nTo complete transaction, type \`${pin}\`, else type \`c\` or \`cancel\``,
                 async m => {
-                    if (
-                        m.content.toLowerCase() == "c" ||
-                        m.content.toLowerCase() == "cancel"
-                    ) {
-                        msg.channel.createMessage("Canceled.");
-                        reject("Canceled");
-                        ctx.bot.removeListener(
-                            "messageCreate",
-                            ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
-                        );
-                    } else if (m.content == pin) {
+                    if (m.content == pin) {
                         ctx.db.models.econ.update(
                             { currency: acc.currency - value },
                             { where: { id: msg.author.id } }
@@ -544,6 +520,13 @@ let transfer = async function(ctx, msg, args) {
                         );
 
                         msg.channel.createMessage("Transaction complete.");
+                        ctx.bot.removeListener(
+                            "messageCreate",
+                            ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                        );
+                    } else {
+                        msg.channel.createMessage("Canceled.");
+                        reject("Canceled");
                         ctx.bot.removeListener(
                             "messageCreate",
                             ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
@@ -609,9 +592,7 @@ let takepoint = async function(ctx, user) {
     );
     ctx.utils.logInfo(
         ctx,
-        `[ECON] Removing a stealing point for ${user.username}#${
-            user.discriminator
-        }.`
+        `[ECON] Removing a stealing point for ${user.username}#${user.discriminator}.`
     );
     if (data.points - 1 <= 0) {
         regen(ctx, user);
@@ -718,9 +699,7 @@ let steal = async function(ctx, msg, args) {
 
             ctx.utils.logInfo(
                 ctx,
-                `[ECON] attempting steal amt:${amt}, u:${msg.author.username}#${
-                    msg.author.discriminator
-                }, t:${u.username}#${u.discriminator}, c:${chance}, r:${res}`
+                `[ECON] attempting steal amt:${amt}, u:${msg.author.username}#${msg.author.discriminator}, t:${u.username}#${u.discriminator}, c:${chance}, r:${res}`
             );
 
             if (res < chance) {
@@ -735,27 +714,22 @@ let steal = async function(ctx, msg, args) {
 
                 let dm = await ctx.bot.getDMChannel(u.id);
                 dm.createMessage(
-                    `**${msg.author.username}#${
-                        msg.author.discriminator
-                    }** stole **${amt}FC** from you.`
+                    `**${msg.author.username}#${msg.author.discriminator}** stole **${amt}FC** from you.`
                 );
 
                 await grace(ctx, u);
                 await takepoint(ctx, msg.author);
 
-                /*await ctx.db.models.analytics.update(
+                await ctx.db.models.econ.update(
                     {
-                        econ_steal_succ: ctx.libs.sequelize.literal(
-                            `econ_steal_succ+1`
-                        )
+                        steals: ctx.libs.sequelize.literal(`steals+1`),
+                        steal_succ: ctx.libs.sequelize.literal(`steal_succ+1`)
                     },
-                    { where: { id: 1 } }
-                );*/
+                    { where: { id: msg.author.id } }
+                );
 
                 msg.channel.createMessage(
-                    `${
-                        msg.author.mention
-                    } Steal successful. Stole **${amt}FC**.\n\`res: ${res}, chance: ${chance}\``
+                    `${msg.author.mention} Steal successful. Stole **${amt}FC**.\n\`res: ${res}, chance: ${chance}\``
                 );
             } else {
                 let oof = Math.round(amt / 2) < 1 ? amt : Math.round(amt / 2);
@@ -775,21 +749,16 @@ let steal = async function(ctx, msg, args) {
                 await jail(ctx, msg.author);
                 await takepoint(ctx, msg.author);
 
-                /*await ctx.db.models.analytics.update(
+                await ctx.db.models.econ.update(
                     {
-                        econ_steal_fail: ctx.libs.sequelize.literal(
-                            `econ_steal_fail+1`
-                        )
+                        steals: ctx.libs.sequelize.literal(`steals+1`),
+                        steal_fail: ctx.libs.sequelize.literal(`steal_fail+1`)
                     },
-                    { where: { id: 1 } }
-                );*/
+                    { where: { id: msg.author.id } }
+                );
 
                 msg.channel.createMessage(
-                    `${
-                        msg.author.mention
-                    } Steal failed. You are now jailed for **8 hours**.\n**${oof}FC** has been sent to **${
-                        msg.channel.guild.name
-                    }**'s taxbank.\n\`res: ${res}, chance: ${chance}\``
+                    `${msg.author.mention} Steal failed. You are now jailed for **8 hours**.\n**${oof}FC** has been sent to **${msg.channel.guild.name}**'s taxbank.\n\`res: ${res}, chance: ${chance}\``
                 );
             }
         })
@@ -927,13 +896,18 @@ let heist = async function(ctx, msg, args) {
 let fcstats = async function(ctx, msg, args) {
     let data = await ctx.db.models.econ.findAll();
     let tdata = await ctx.db.models.taxbanks.findAll();
-    //let analytics = await ctx.db.models.analytics.findOne({ where: { id: 1 } });
 
     let fc = 0;
     let fct = 0;
+    let steals = 0;
+    let succs = 0;
+    let fails = 0;
 
     for (const d of data.values()) {
-        fc = fc + d.dataValues.currency;
+        fc += d.dataValues.currency;
+        steals += d.dataValues.steals;
+        succs += d.dataValues.steal_succ;
+        fails += d.dataValues.steal_fail;
     }
     for (const d of tdata.values()) {
         fct = fct + d.dataValues.currency;
@@ -947,25 +921,29 @@ let fcstats = async function(ctx, msg, args) {
                 { name: "Total Accounts", value: data.length, inline: true },
                 {
                     name: "Total PhoxCoins in circulation",
-                    value: fc + "FC",
+                    value: `${fc}FC`,
                     inline: true
                 },
                 { name: "Total Taxbanks", value: tdata.length, inline: true },
                 {
                     name: "Total PhoxCoins in taxbanks",
-                    value: fct + "FC",
+                    value: `${fct}FC`,
                     inline: true
-                }
-                /*{
+                },
+                {
                     name: "Steal Successes",
-                    value: analytics.econ_steal_succ,
+                    value: `${succs}/${steals} (${Math.round(
+                        ((steals - succs) / steals) * 100
+                    )}%)`,
                     inline: true
                 },
                 {
                     name: "Steal Fails",
-                    value: analytics.econ_steal_fail,
+                    value: `${fails}/${steals} (${Math.round(
+                        ((steals - fails) / steals) * 100
+                    )}%)`,
                     inline: true
-                }*/
+                }
             ]
         }
     });
@@ -985,9 +963,7 @@ let taxbank = async function(ctx, msg, args) {
         msg.channel.createMessage("This guild does not have a taxbank.");
     } else {
         msg.channel.createMessage(
-            `**${msg.channel.guild.name}**'s taxbank has **${
-                data.currency
-            }FC**.`
+            `**${msg.channel.guild.name}**'s taxbank has **${data.currency}FC**.`
         );
     }
 };
