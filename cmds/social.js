@@ -151,8 +151,8 @@ let profile = async function(ctx, msg, args) {
         ranks.sort((a, b) => b.amt - a.amt);
         lranks.sort((a, b) => b.amt - a.amt);
 
-        let rank = ranks.map(x => x.id).indexOf(u.id) + 1;
-        let lrank = lranks.map(x => x.id).indexOf(u.id) + 1;
+        let rank = ranks.findIndex(x => x.id === u.id) + 1;
+        let lrank = lranks.findIndex(x => x.id === u.id) + 1;
 
         if (edata) {
             e.fields.push({
