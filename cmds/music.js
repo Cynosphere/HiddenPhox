@@ -1079,18 +1079,7 @@ let doSearchThingsOk = async function(id, str, msg, ctx) {
         m,
         async _msg => {
             let value = parseInt(_msg.content);
-            if (_msg.content == "c") {
-                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                    .botmsg).delete();
-                _msg.delete().catch(() => {
-                    return;
-                });
-                msg.channel.createMessage("Canceled.");
-                ctx.bot.removeListener(
-                    "messageCreate",
-                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
-                );
-            } else if (_msg.content == value) {
+            if (_msg.content == value) {
                 (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
                     .botmsg).delete();
                 _msg.delete().catch(() => {
@@ -1109,6 +1098,17 @@ let doSearchThingsOk = async function(id, str, msg, ctx) {
                     msg,
                     ctx,
                     msg.author.id
+                );
+            } else {
+                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                    .botmsg).delete();
+                _msg.delete().catch(() => {
+                    return;
+                });
+                msg.channel.createMessage("Canceled.");
+                ctx.bot.removeListener(
+                    "messageCreate",
+                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
                 );
             }
             clearTimeout(ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer);
@@ -1132,18 +1132,7 @@ let doQueueRemovalThingsOk = async function(ctx, msg, data) {
         m,
         async _msg => {
             let value = parseInt(_msg.content);
-            if (_msg.content == "c") {
-                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                    .botmsg).delete();
-                _msg.delete().catch(() => {
-                    return;
-                });
-                msg.channel.createMessage("Canceled.");
-                ctx.bot.removeListener(
-                    "messageCreate",
-                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
-                );
-            } else if (_msg.content == value) {
+            if (_msg.content == value) {
                 (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
                     .botmsg).delete();
                 _msg.delete().catch(() => {
@@ -1165,6 +1154,17 @@ let doQueueRemovalThingsOk = async function(ctx, msg, data) {
                 ctx.vc.get(msg.member.voiceState.channelID).queue = ctx.vc
                     .get(msg.member.voiceState.channelID)
                     .queue.filter(x => x.url !== torem.url);
+            } else {
+                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                    .botmsg).delete();
+                _msg.delete().catch(() => {
+                    return;
+                });
+                msg.channel.createMessage("Canceled.");
+                ctx.bot.removeListener(
+                    "messageCreate",
+                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                );
             }
             clearTimeout(ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer);
         },

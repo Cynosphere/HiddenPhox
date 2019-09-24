@@ -37,9 +37,7 @@ let avatar = function(ctx, msg, args) {
                 }`;
                 msg.channel.createMessage({
                     embed: {
-                        title: `Avatar for **${u.username}#${
-                            u.discriminator
-                        }**:`,
+                        title: `Avatar for **${u.username}#${u.discriminator}**:`,
                         image: {
                             url: av
                         }
@@ -145,9 +143,7 @@ let linvite = async function(ctx, msg, args) {
         if (inv.inviter) {
             edata.fields.push({
                 name: "Inviter",
-                value: `**${inv.inviter.username}#${
-                    inv.inviter.discriminator
-                }** (${inv.inviter.id})`,
+                value: `**${inv.inviter.username}#${inv.inviter.discriminator}** (${inv.inviter.id})`,
                 inline: true
             });
         }
@@ -162,9 +158,7 @@ let linvite = async function(ctx, msg, args) {
                     : "png?size=1024"
             })${
                 inv.guild.splash !== null
-                    ? ` | [Splash](https://cdn.discordapp.com/splashes/${
-                          inv.guild.id
-                      }/${inv.guild.splash}.png?size=2048)`
+                    ? ` | [Splash](https://cdn.discordapp.com/splashes/${inv.guild.id}/${inv.guild.splash}.png?size=2048)`
                     : ""
             }`,
             inline: false
@@ -172,9 +166,7 @@ let linvite = async function(ctx, msg, args) {
 
         if (inv.guild.splash !== null) {
             edata.image = {
-                url: `https://cdn.discordapp.com/splashes/${inv.guild.id}/${
-                    inv.guild.splash
-                }.png?size=256`
+                url: `https://cdn.discordapp.com/splashes/${inv.guild.id}/${inv.guild.splash}.png?size=256`
             };
         }
 
@@ -360,9 +352,8 @@ let binfo = async function(ctx, msg, args) {
 
             title: `Bots for user: \`${u.username}#${u.discriminator}\``,
             description:
-                `**${u.username}#${u.discriminator}** owns **${
-                    bots.length
-                } bot(s)**:\n\n` + bots.join("\n"),
+                `**${u.username}#${u.discriminator}** owns **${bots.length} bot(s)**:\n\n` +
+                bots.join("\n"),
             thumbnail: {
                 url:
                     "https://cdn.discordapp.com/avatars/" +
@@ -382,7 +373,7 @@ let ptypes = ["Playing", "Streaming", "Listening to", "Watching"];
 
 let uinfo = function(ctx, msg, args) {
     ctx.utils
-        .lookupUser(ctx, msg, args || msg.member.mention)
+        .lookupUser(ctx, msg, args || msg.author.id)
         .then(async u => {
             if (msg.channel.guild && msg.channel.guild.members.get(u.id)) {
                 u = msg.channel.guild.members.get(u.id);
@@ -740,17 +731,13 @@ let sinfo = async function(ctx, msg, args) {
                                 : "png?size=1024"
                         })` +
                         (g.splash
-                            ? ` | [Invite Splash](https://cdn.discordapp.com/splashes/${
-                                  g.id
-                              }/${g.splash}.png?size=2048)`
+                            ? ` | [Invite Splash](https://cdn.discordapp.com/splashes/${g.id}/${g.splash}.png?size=2048)`
                             : ""),
                     inline: true
                 }
             ],
             thumbnail: {
-                url: `https://cdn.discordapp.com/icons/${g.id}/${
-                    g.icon
-                }.png?size=256`
+                url: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=256`
             }
         };
 
@@ -1093,18 +1080,14 @@ let presence = function(ctx, msg, args) {
                               "http://i.scdn.co/image/"
                           )
                         : `https://cdn.discordapp.com/${path.normalize(
-                              `app-assets/${u.game.application_id}/${
-                                  u.game.assets.large_image
-                              }.png?size=128`
+                              `app-assets/${u.game.application_id}/${u.game.assets.large_image}.png?size=128`
                           )}`
                 ).then(async i => {
                     let a = i.clone().resize(96, jimp.AUTO);
                     let b =
                         u.game.assets && u.game.assets.small_image
                             ? `https://cdn.discordapp.com/${path.normalize(
-                                  `app-assets/${u.game.application_id}/${
-                                      u.game.assets.small_image
-                                  }.png?size=128`
+                                  `app-assets/${u.game.application_id}/${u.game.assets.small_image}.png?size=128`
                               )}`
                             : "";
 
@@ -1620,9 +1603,7 @@ let quote = async function(ctx, msg, args) {
 
         const embed = {
             author: {
-                name: `${message.author.username}#${
-                    message.author.discriminator
-                }`,
+                name: `${message.author.username}#${message.author.discriminator}`,
                 icon_url: message.author.avatarURL
             },
             description: message.content,
@@ -1631,9 +1612,7 @@ let quote = async function(ctx, msg, args) {
             fields: [
                 {
                     name: "Jump to",
-                    value: `https://canary.discordapp.com/channels/${
-                        msg.channel.guild.id
-                    }/${message.channel.id}/${message.id}`
+                    value: `https://canary.discordapp.com/channels/${msg.channel.guild.id}/${message.channel.id}/${message.id}`
                 }
             ]
         };
@@ -1646,21 +1625,15 @@ let quote = async function(ctx, msg, args) {
         msg.channel.createMessage({
             content:
                 quote === ""
-                    ? `Quoted by **${msg.author.username}#${
-                          msg.author.discriminator
-                      }**`
-                    : `**${msg.author.username}#${
-                          msg.author.discriminator
-                      }:** ${quote}`,
+                    ? `Quoted by **${msg.author.username}#${msg.author.discriminator}**`
+                    : `**${msg.author.username}#${msg.author.discriminator}:** ${quote}`,
             embed: embed
         });
 
         msg.delete().catch(_ => {});
     } catch (e) {
         msg.channel.createMessage(
-            `<@${
-                msg.author.id
-            }> Message not found. Are you in the right channel?`
+            `<@${msg.author.id}> Message not found. Are you in the right channel?`
         );
     }
 };

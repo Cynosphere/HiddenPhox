@@ -3,6 +3,8 @@ const entities = new Entities();
 
 const twitterurl = /(?:\s|^)https?:\/\/(www\.)?twitter\.com\/(.+\/status\/|statuses\/)([0-9]{17,21})/g;
 
+let twimg_embeds = {};
+
 // don't complain at me, do not PR for removal
 // taken from https://gist.github.com/shobotch/5160017
 // exact key: Twitter for Android
@@ -42,9 +44,7 @@ async function getTweetImages(ctx, snowflake, msg) {
         if (tweet.is_quote_status && tweet.quoted_status_id) {
             msg.channel
                 .createMessage(
-                    `Quoted Tweet: https://twitter.com/statuses/${
-                        tweet.quoted_status_id_str
-                    }`
+                    `Quoted Tweet: https://twitter.com/statuses/${tweet.quoted_status_id_str}`
                 )
                 .then(async x => {
                     let imgs = await getTweetImages(
@@ -63,18 +63,24 @@ async function getTweetImages(ctx, snowflake, msg) {
                 tweet.extended_entities.media[0].type == "animated_gif"
             ) {
                 let vid = tweet.extended_entities.media[0];
-                msg.channel.createMessage({
-                    embed: {
-                        description: `[Twitter Video/GIF File](${
-                            vid.video_info.variants.length > 1
-                                ? vid.video_info.variants
-                                      .filter(x => x.bitrate)
-                                      .sort((a, b) => b.bitrate - a.bitrate)[0]
-                                      .url
-                                : vid.video_info.variants[0].url
-                        })`
-                    }
-                });
+                msg.channel
+                    .createMessage({
+                        embed: {
+                            description: `[Twitter Video/GIF File](${
+                                vid.video_info.variants.length > 1
+                                    ? vid.video_info.variants
+                                          .filter(x => x.bitrate)
+                                          .sort(
+                                              (a, b) => b.bitrate - a.bitrate
+                                          )[0].url
+                                    : vid.video_info.variants[0].url
+                            })`
+                        }
+                    })
+                    .then(m => {
+                        m.addReaction("\u274c");
+                        twimg_embeds[m.id] = msg.id;
+                    });
             }
 
             let media = tweet.extended_entities.media.splice(1);
@@ -110,7 +116,10 @@ let twimg = async function(msg, ctx) {
         let imgs = await getTweetImages(ctx, id, msg);
 
         if (imgs.length > 0) {
-            msg.channel.createMessage(imgs.join("\n"));
+            msg.channel.createMessage(imgs.join("\n")).then(m => {
+                m.addReaction("\u274c");
+                twimg_embeds[m.id] = msg.id;
+            });
         }
     }
 };
@@ -245,9 +254,7 @@ let plembed = async function(msg, ctx) {
         ctx.bot.requestHandler
             .request(
                 "POST",
-                `/channels/${msg.channel.id}/messages/${
-                    msg.id
-                }/suppress-embeds`,
+                `/channels/${msg.channel.id}/messages/${msg.id}/suppress-embeds`,
                 true,
                 { suppress: true }
             )
@@ -306,6 +313,17 @@ let plembed = async function(msg, ctx) {
     }
 };
 
+async function twimgDelete(msg, emote, uid) {
+    if (twimg_embeds[msg.id] !== undefined) {
+        const m = await msg.channel.getMessage(twimg_embeds[msg.id]);
+
+        if (m.author.id == uid && emote.name == "\u274c") {
+            msg.delete();
+            delete twimg_embeds[msg.id];
+        }
+    }
+}
+
 module.exports = [
     {
         event: "messageCreate",
@@ -321,5 +339,10 @@ module.exports = [
         event: "messageCreate",
         name: "plembed",
         func: plembed
+    },
+    {
+        event: "messageReactionAdd",
+        name: "twimgDelete",
+        func: twimgDelete
     }
 ];
