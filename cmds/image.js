@@ -4,7 +4,6 @@ const imgfuckr = require("../utils/imgfuckr.js");
 const imgfkr = new imgfuckr();
 const { BitmapImage, GifFrame, GifUtil, GifCodec } = require("gifwrap");
 const { spawn } = require("child_process");
-//let i2b = require("image-to-braille");
 
 const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
 
@@ -559,57 +558,6 @@ let rolegrid = function(ctx, msg, args) {
     });
 };
 
-/*let _i2b = function(msg, url) {
-    jimp.read(url).then(im => {
-        im.getBuffer(jimp.MIME_PNG, (e, f) => {
-            i2b
-                .convert(f, {
-                    width:
-                        im.bitmap.width > 256
-                            ? im.bitmap.width / 2
-                            : im.bitmap.width,
-                    height:
-                        im.bitmap.height > 256
-                            ? im.bitmap.height / 2
-                            : im.bitmap.height,
-                    threshold: 64
-                })
-                .then(x => {
-                    ctx.libs.request.post(
-                        "https://hastebin.com/documents",
-                        {
-                            body: x
-                        },
-                        function(err, res, body) {
-                            if (res.statusCode == 200) {
-                                let key = JSON.parse(body).key;
-                                msg.channel.createMessage(
-                                    `Output: https://hastebin.com/${key}`
-                                );
-                            } else {
-                                msg.channel.createMessage(
-                                    ":warning: Cannot upload output to Hastebin."
-                                );
-                            }
-                        }
-                    );
-                });
-        });
-    });
-};
-
-let img2braille = async function(ctx, msg, args) {
-    if (args && urlRegex.test(args)) {
-        _i2b(msg, args);
-    } else if (msg.attachments.length > 0) {
-        _i2b(msg, msg.attachments[0].url);
-    } else {
-        msg.channel.createMessage(
-            "Image not found. Please give URL, attachment or user mention."
-        );
-    }
-};*/
-
 let imgfuck = async function(msg, url) {
     msg.channel.sendTyping();
     let i = await jimp
@@ -986,6 +934,46 @@ let rover = async function(ctx, msg, args) {
     }
 };
 
+let _carson = async function(msg, url) {
+    let template = await jimp.read(`${__dirname}/../img/carson_reacts.png`);
+    let img = await jimp.read(url);
+    let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
+    img.resize(301, 157);
+    out.composite(img, 315, 20);
+    out.composite(template, 0, 0);
+
+    let toSend = await out.getBufferAsync(jimp.MIME_PNG);
+    msg.channel.createMessage("", { file: toSend, name: "carson.png" });
+};
+
+let carson = async function(ctx, msg, args) {
+    if (args && urlRegex.test(args)) {
+        _carson(msg, args);
+    } else if (msg.attachments.length > 0) {
+        _carson(msg, msg.attachments[0].url);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            let url =
+                u.avatar !== null
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
+            _carson(msg, url);
+        });
+    } else {
+        try {
+            let img = await ctx.utils.findLastImage(ctx, msg);
+            _carson(msg, img);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
+    }
+};
+
 module.exports = [
     {
         name: "hooh",
@@ -1104,13 +1092,11 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         desc: "HE",
         func: rover,
         group: "image"
+    },
+    {
+        name: "carson",
+        desc: "CallMeCarson Reacts",
+        func: carson,
+        group: "image"
     }
-
-    /*{
-        name: "img2braille",
-        desc: "Makes an image into braille characters.",
-        func: img2braille,
-        group: "image",
-        aliases: ["i2b"]
-    }*/
 ];
