@@ -47,13 +47,19 @@ async function getTweetImages(ctx, snowflake, msg) {
                     `Quoted Tweet: https://twitter.com/statuses/${tweet.quoted_status_id_str}`
                 )
                 .then(async x => {
+                    x.addReaction("\u274c");
+                    twimg_embeds[x.id] = msg.id;
+
                     let imgs = await getTweetImages(
                         ctx,
                         tweet.quoted_status_id_str,
                         msg
                     );
                     if (imgs.length > 0) {
-                        msg.channel.createMessage(imgs.join("\n"));
+                        msg.channel.createMessage(imgs.join("\n")).then(m => {
+                            m.addReaction("\u274c");
+                            twimg_embeds[m.id] = msg.id;
+                        });
                     }
                 });
         }
@@ -147,25 +153,32 @@ async function getMastoImages(ctx, url, msg) {
             }
 
             if (vids.length > 0) {
-                msg.channel.createMessage({
-                    content: `**Post Content:** ${
-                        post.sensitive
-                            ? `Content Warning: ${entities.decode(
-                                  post.summary
-                                      .replace(/<br>/g, "\n")
-                                      .replace(/<(?:.|\n)*?>/gm, "")
-                              )}`
-                            : entities.decode(
-                                  post.content
-                                      .replace(/<br>/g, "\n")
-                                      .replace(/<(?:.|\n)*?>/gm, "")
-                              )
-                    }`,
-                    embed: {
-                        title: "Video/GIF URLs",
-                        description: vids.map(x => `- [bloop](${x})`).join("\n")
-                    }
-                });
+                msg.channel
+                    .createMessage({
+                        content: `**Post Content:** ${
+                            post.sensitive
+                                ? `Content Warning: ${entities.decode(
+                                      post.summary
+                                          .replace(/<br>/g, "\n")
+                                          .replace(/<(?:.|\n)*?>/gm, "")
+                                  )}`
+                                : entities.decode(
+                                      post.content
+                                          .replace(/<br>/g, "\n")
+                                          .replace(/<(?:.|\n)*?>/gm, "")
+                                  )
+                        }`,
+                        embed: {
+                            title: "Video/GIF URLs",
+                            description: vids
+                                .map(x => `- [bloop](${x})`)
+                                .join("\n")
+                        }
+                    })
+                    .then(m => {
+                        m.addReaction("\u274c");
+                        twimg_embeds[m.id] = msg.id;
+                    });
             }
 
             let media = post.attachment.splice(1);
@@ -202,7 +215,10 @@ let fediimg = async function(msg, ctx) {
         let imgs = await getMastoImages(ctx, url, msg);
 
         if (imgs.length > 0) {
-            msg.channel.createMessage(imgs.join("\n"));
+            msg.channel.createMessage(imgs.join("\n")).then(m => {
+                m.addReaction("\u274c");
+                twimg_embeds[m.id] = msg.id;
+            });
         }
     }
 };
