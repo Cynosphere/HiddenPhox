@@ -974,6 +974,66 @@ let carson = async function(ctx, msg, args) {
     }
 };
 
+// https://stackoverflow.com/a/30494623
+function getHeight(length, ratio) {
+    var height = length / Math.sqrt(Math.pow(ratio, 2) + 1);
+    return Math.round(height);
+}
+
+let _watermark = async function(msg, url) {
+    let template = await jimp.read(`${__dirname}/../img/watermark.png`);
+    let via9gag = await jimp.read(`${__dirname}/../img/via9gag.png`);
+    let img = await jimp.read(url);
+
+    let ratio = img.bitmap.width / img.bitmap.height;
+    let newH = getHeight(640, ratio);
+
+    //9gag watermark percentages
+    let nineX = 0.074;
+    let nineY = 0.076;
+
+    let out = new jimp(template.bitmap.width, newH + template.bitmap.height, 0);
+    img.resize(640, newH);
+    out.composite(img, 0, 0);
+    out.composite(
+        via9gag,
+        640 - Math.floor(640 * nineX),
+        via9gag.bitmap.height + Math.floor(newH * nineY)
+    );
+    out.composite(template, 0, newH);
+
+    let toSend = await out.getBufferAsync(jimp.MIME_PNG);
+    msg.channel.createMessage("", { file: toSend, name: "watermarked.png" });
+};
+
+let watermark = async function(ctx, msg, args) {
+    if (args && urlRegex.test(args)) {
+        _watermark(msg, args);
+    } else if (msg.attachments.length > 0) {
+        _watermark(msg, msg.attachments[0].url);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            let url =
+                u.avatar !== null
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
+            _watermark(msg, url);
+        });
+    } else {
+        try {
+            let img = await ctx.utils.findLastImage(ctx, msg);
+            _watermark(msg, img);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
+    }
+};
+
 module.exports = [
     {
         name: "hooh",
@@ -1097,6 +1157,12 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         name: "carson",
         desc: "CallMeCarson Reacts",
         func: carson,
+        group: "image"
+    },
+    {
+        name: "watermark",
+        desc: "Add a bunch of watermarks to an image",
+        func: watermark,
         group: "image"
     }
 ];
