@@ -7,6 +7,36 @@ const { spawn } = require("child_process");
 
 const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
 
+async function imageCallback(ctx, msg, args, callback, ...cbargs) {
+    msg.channel.sendTyping();
+
+    if (args && urlRegex.test(args)) {
+        callback.apply(this, [msg, args, ...cbargs]);
+    } else if (msg.attachments.length > 0) {
+        callback.apply(this, [msg, msg.attachments[0].url, ...cbargs]);
+    } else if (/[0-9]{17,21}/.test(args)) {
+        ctx.utils.lookupUser(ctx, msg, args).then(u => {
+            let url =
+                u.avatar !== null
+                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                          u.avatar.startsWith("a_") ? "gif" : "png"
+                      }?size=1024`
+                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                          5}.png`;
+            callback.apply(this, [msg, url, ...cbargs]);
+        });
+    } else {
+        try {
+            let img = await ctx.utils.findLastImage(ctx, msg);
+            callback.apply(this, [msg, img, ...cbargs]);
+        } catch (e) {
+            msg.channel.createMessage(
+                "Image not found. Please give URL, attachment or user mention."
+            );
+        }
+    }
+}
+
 async function jimpAsync(buf) {
     return new Promise((resolve, reject) => {
         new jimp(buf, (err, img) => {
@@ -86,125 +116,13 @@ let mirror = async function(msg, url, type) {
     });
 };
 
-let hooh = async function(ctx, msg, args) {
-    msg.channel.sendTyping();
+let hooh = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 1);
 
-    if (args && urlRegex.test(args)) {
-        mirror(msg, args, 1);
-    } else if (msg.attachments.length > 0) {
-        mirror(msg, msg.attachments[0].url, 1);
-    } else if (/[0-9]{17,21}/.test(args)) {
-        ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            let url =
-                u.avatar !== null
-                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
-                          u.avatar.startsWith("a_") ? "gif" : "png"
-                      }?size=1024`
-                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png`;
-            mirror(msg, url, 1);
-        });
-    } else {
-        try {
-            let img = await ctx.utils.findLastImage(ctx, msg);
-            mirror(msg, img, 1);
-        } catch (e) {
-            msg.channel.createMessage(
-                "Image not found. Please give URL, attachment or user mention."
-            );
-        }
-    }
-};
+let haah = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 2);
 
-let haah = async function(ctx, msg, args) {
-    msg.channel.sendTyping();
+let woow = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 3);
 
-    if (args && urlRegex.test(args)) {
-        mirror(msg, args, 2);
-    } else if (msg.attachments.length > 0) {
-        mirror(msg, msg.attachments[0].url, 2);
-    } else if (/[0-9]{17,21}/.test(args)) {
-        ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            let url =
-                u.avatar !== null
-                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
-                          u.avatar.startsWith("a_") ? "gif" : "png"
-                      }?size=1024`
-                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png`;
-            mirror(msg, url, 2);
-        });
-    } else {
-        try {
-            let img = await ctx.utils.findLastImage(ctx, msg);
-            mirror(msg, img, 2);
-        } catch (e) {
-            msg.channel.createMessage(
-                "Image not found. Please give URL, attachment or user mention."
-            );
-        }
-    }
-};
-
-let woow = async function(ctx, msg, args) {
-    msg.channel.sendTyping();
-
-    if (args && urlRegex.test(args)) {
-        mirror(msg, args, 3);
-    } else if (msg.attachments.length > 0) {
-        mirror(msg, msg.attachments[0].url, 3);
-    } else if (/[0-9]{17,21}/.test(args)) {
-        ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            let url =
-                u.avatar !== null
-                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
-                          u.avatar.startsWith("a_") ? "gif" : "png"
-                      }?size=1024`
-                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png`;
-            mirror(msg, url, 3);
-        });
-    } else {
-        try {
-            let img = await ctx.utils.findLastImage(ctx, msg);
-            mirror(msg, img, 3);
-        } catch (e) {
-            msg.channel.createMessage(
-                "Image not found. Please give URL, attachment or user mention."
-            );
-        }
-    }
-};
-
-let waaw = async function(ctx, msg, args) {
-    msg.channel.sendTyping();
-
-    if (args && urlRegex.test(args)) {
-        mirror(msg, args, 4);
-    } else if (msg.attachments.length > 0) {
-        mirror(msg, msg.attachments[0].url, 4);
-    } else if (/[0-9]{17,21}/.test(args)) {
-        ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            let url =
-                u.avatar !== null
-                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
-                          u.avatar.startsWith("a_") ? "gif" : "png"
-                      }?size=1024`
-                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png`;
-            mirror(msg, url, 4);
-        });
-    } else {
-        try {
-            let img = await ctx.utils.findLastImage(ctx, msg);
-            mirror(msg, img, 4);
-        } catch (e) {
-            msg.channel.createMessage(
-                "Image not found. Please give URL, attachment or user mention."
-            );
-        }
-    }
-};
+let waaw = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 4);
 
 let _invert = async function(msg, url) {
     jimp.read(url).then(async im => {
