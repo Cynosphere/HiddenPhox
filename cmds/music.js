@@ -15,7 +15,6 @@ const scplregex = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/sets\/.+$/;
 const scplregex2 = /^sc:.+\/sets\/.+$/;
 const scplregex3 = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/likes$/;
 const scplregex4 = /^sc:.+\/likes$/;
-const instaudio = /^(https?:\/\/)?(www\.)?instaud\.io\/([a-zA-Z0-9]{1,4}|random)/;
 
 /*async function grabYTVideoURL(ctx, url) {
     let vid = await ctx.libs.superagent.get(url).then(x => x.text);
@@ -37,30 +36,6 @@ const instaudio = /^(https?:\/\/)?(www\.)?instaud\.io\/([a-zA-Z0-9]{1,4}|random)
             return a.bitrate < b.bitrate ? 1 : a.bitrate > b.bitrate ? -1 : 0;
         })[0].url;
 }*/
-
-const iatitle1 = /<header id="title-header">([\s\S]+)<\/header>/;
-const iatitle2 = /<h1>(.+)<\/h1>/;
-const iaduration = /data-instaudio-player-duration="(.+)"$/m;
-const iaurl = /data-instaudio-player-file="(.+)"$/m;
-async function grabInstaudio(ctx, url) {
-    let data = await ctx.libs.superagent.get(url);
-    if (
-        url.endsWith("/random") &&
-        data.redirects &&
-        data.redirects.length > 0
-    ) {
-        url = data.redirects[0];
-        data = await ctx.libs.superagent.get(data.redirects[0]);
-    }
-    data = data.text;
-    let title = data.match(iatitle1)[1];
-    title = title.match(iatitle2)[1];
-    let duration = data.match(iaduration)[1];
-
-    let _url = data.match(iaurl)[1];
-    let info = { title: title, url: url, fileurl: _url, duration: duration };
-    return info;
-}
 
 function createEndFunction(id, url, type, msg, ctx) {
     if (ctx.vc.get(id).evntEnd) return;
@@ -114,9 +89,7 @@ async function doPlaylistThingsOk(ctx, msg, url) {
         (url.match(plregex2) && url.match(plregex2)[0]);
     let req = await ctx.libs.superagent
         .get(
-            `https://www.googleapis.com/youtube/v3/playlistItems?key=${
-                ctx.apikeys.google
-            }&part=snippet&playlistId=${plid}&maxResults=50`
+            `https://www.googleapis.com/youtube/v3/playlistItems?key=${ctx.apikeys.google}&part=snippet&playlistId=${plid}&maxResults=50`
         )
         .catch(e =>
             msg.channel
@@ -144,9 +117,7 @@ async function doPlaylistThingsOk(ctx, msg, url) {
                 embed: {
                     title:
                         "<a:typing:493087964742549515> Processing playlist...",
-                    description: `Processed ${processed} of ${
-                        data.length
-                    } items.`,
+                    description: `Processed ${processed} of ${data.length} items.`,
                     color: 0xff80c0
                 }
             });
@@ -598,9 +569,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             data.metadata.artist &&
                             data.metadata.title
                         ) {
-                            title = `${data.metadata.artist} - ${
-                                data.metadata.title
-                            }`;
+                            title = `${data.metadata.artist} - ${data.metadata.title}`;
                         }
                         if (
                             data &&
@@ -608,9 +577,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             data.metadata.ARTIST &&
                             data.metadata.TITLE
                         ) {
-                            title = `${data.metadata.ARTIST} - ${
-                                data.metadata.TITLE
-                            }`;
+                            title = `${data.metadata.ARTIST} - ${data.metadata.TITLE}`;
                         }
                         if (
                             data &&
@@ -698,9 +665,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             data.metadata.artist &&
                             data.metadata.title
                         ) {
-                            title = `${data.metadata.artist} - ${
-                                data.metadata.title
-                            }`;
+                            title = `${data.metadata.artist} - ${data.metadata.title}`;
                         }
                         if (
                             data &&
@@ -708,9 +673,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             data.metadata.ARTIST &&
                             data.metadata.TITLE
                         ) {
-                            title = `${data.metadata.ARTIST} - ${
-                                data.metadata.TITLE
-                            }`;
+                            title = `${data.metadata.ARTIST} - ${data.metadata.TITLE}`;
                         }
                         if (
                             data &&
@@ -800,9 +763,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 data.metadata.artist &&
                                 data.metadata.title
                             ) {
-                                title = `${data.metadata.artist} - ${
-                                    data.metadata.title
-                                }`;
+                                title = `${data.metadata.artist} - ${data.metadata.title}`;
                             }
                             if (
                                 data &&
@@ -810,9 +771,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 data.metadata.ARTIST &&
                                 data.metadata.TITLE
                             ) {
-                                title = `${data.metadata.ARTIST} - ${
-                                    data.metadata.TITLE
-                                }`;
+                                title = `${data.metadata.ARTIST} - ${data.metadata.TITLE}`;
                             }
                             if (
                                 data &&
@@ -890,165 +849,9 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     )
                 );
         }
-    } else if (type == "ia") {
-        if (ctx.vc.get(id)) {
-            let conn = ctx.vc.get(id);
-            if (conn.playing) {
-                let info = await grabInstaudio(ctx, url).catch(e =>
-                    msg.channel
-                        .createMessage(
-                            `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                        )
-                        .then(x => setTimeout(() => x.delete(), 10000))
-                );
-                ctx.vc.get(msg.member.voiceState.channelID).queue.push({
-                    url: info.url,
-                    type: "ia",
-                    title: info.title,
-                    len: info.duration,
-                    addedBy: addedBy
-                });
-                msg.channel
-                    .createMessage({
-                        embed: {
-                            title: `<:ms_tick:503341995348066313> Added to queue`,
-                            fields: [
-                                {
-                                    name: "Title",
-                                    value: `[${info.title}](${info.url})`,
-                                    inline: true
-                                },
-                                {
-                                    name: "Length",
-                                    value: ctx.utils.remainingTime(
-                                        info.duration
-                                    ),
-                                    inline: true
-                                },
-                                {
-                                    name: "Added By",
-                                    value: `<@${addedBy}>`,
-                                    inline: true
-                                }
-                            ],
-                            color: 0x80ffc0,
-                            thumbnail: {
-                                url: "https://instaud.io/logo.png"
-                            }
-                        }
-                    })
-                    .then(x => setTimeout(() => x.delete(), 10000));
-            } else {
-                let info = await grabInstaudio(ctx, url).catch(e =>
-                    msg.channel
-                        .createMessage(
-                            `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                        )
-                        .then(x => setTimeout(() => x.delete(), 10000))
-                );
-                msg.channel.createMessage({
-                    embed: {
-                        title: `:musical_note: Now Playing`,
-                        fields: [
-                            {
-                                name: "Title",
-                                value: `[${info.title}](${info.url})`,
-                                inline: true
-                            },
-                            {
-                                name: "Length",
-                                value: ctx.utils.remainingTime(info.duration),
-                                inline: true
-                            },
-                            {
-                                name: "Added By",
-                                value: `<@${addedBy}>`,
-                                inline: true
-                            }
-                        ],
-                        color: 0x80c0ff,
-                        thumbnail: {
-                            url: "https://instaud.io/logo.png"
-                        }
-                    }
-                });
-                conn.np = {
-                    title: info.title,
-                    addedBy: addedBy
-                };
-                conn.len = info.duration;
-                conn.start = Date.now();
-                conn.end = Date.now() + conn.len;
-
-                conn.play(info.fileurl, {
-                    inlineVolume: true,
-                    voiceDataTimeout: -1
-                });
-            }
-        } else {
-            ctx.bot
-                .joinVoiceChannel(id)
-                .then(async conn => {
-                    ctx.vc.set(id, conn);
-                    ctx.vc.get(id).iwastoldtoleave = false;
-                    let info = await grabInstaudio(ctx, url).catch(e =>
-                        msg.channel
-                            .createMessage(
-                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                            )
-                            .then(x => setTimeout(() => x.delete(), 10000))
-                    );
-                    msg.channel.createMessage({
-                        embed: {
-                            title: `:musical_note: Now Playing`,
-                            fields: [
-                                {
-                                    name: "Title",
-                                    value: `[${info.title}](${info.url})`,
-                                    inline: true
-                                },
-                                {
-                                    name: "Length",
-                                    value: ctx.utils.remainingTime(
-                                        info.duration
-                                    ),
-                                    inline: true
-                                },
-                                {
-                                    name: "Added By",
-                                    value: `<@${addedBy}>`,
-                                    inline: true
-                                }
-                            ],
-                            color: 0x80c0ff,
-                            thumbnail: {
-                                url: "https://instaud.io/logo.png"
-                            }
-                        }
-                    });
-                    conn.np = {
-                        title: info.title,
-                        addedBy: addedBy
-                    };
-                    conn.len = info.duration;
-                    conn.start = Date.now();
-                    conn.end = Date.now() + conn.len;
-
-                    conn.play(info.fileurl, {
-                        inlineVolume: true,
-                        voiceDataTimeout: -1
-                    });
-                    createEndFunction(id, url, type, msg, ctx);
-                })
-                .catch(e =>
-                    msg.channel.createMessage(
-                        `An error occured when joining: \`\`\`\n${e}\n\`\`\``
-                    )
-                );
-        }
     } else {
         msg.channel.createMessage(
-            "Unknown type passed, what. Report this kthx."
+            `Unknown type \`${type}\` passed. Report this, thanks.`
         );
     }
 }
@@ -1146,9 +949,7 @@ let doQueueRemovalThingsOk = async function(ctx, msg, data) {
 
                 msg.channel
                     .createMessage(
-                        `<:ms_cross:503341994974773250> Removed \`${
-                            torem.title
-                        }\` from queue.`
+                        `<:ms_cross:503341994974773250> Removed \`${torem.title}\` from queue.`
                     )
                     .then(x => setTimeout(() => x.delete(), 10000));
                 ctx.vc.get(msg.member.voiceState.channelID).queue = ctx.vc
@@ -1213,15 +1014,6 @@ let func = function(ctx, msg, args) {
                     msg.member.voiceState.channelID,
                     cargs,
                     "mp3",
-                    msg,
-                    ctx,
-                    msg.author.id
-                );
-            } else if (instaudio.test(cargs)) {
-                doMusicThingsOk(
-                    msg.member.voiceState.channelID,
-                    cargs,
-                    "ia",
                     msg,
                     ctx,
                     msg.author.id
@@ -1672,9 +1464,7 @@ let func = function(ctx, msg, args) {
         }
     } else {
         msg.channel.createMessage(
-            `Invalid/missing subcommand. See \`${
-                ctx.prefix
-            }help music\` for all subcommands.`
+            `Invalid/missing subcommand. See \`${ctx.prefix}help music\` for all subcommands.`
         );
     }
 };
