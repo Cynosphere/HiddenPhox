@@ -559,7 +559,6 @@ let rolegrid = function(ctx, msg, args) {
 };
 
 let imgfuck = async function(msg, url) {
-    msg.channel.sendTyping();
     let i = await jimp
         .read(url)
         .catch(e =>
@@ -576,6 +575,8 @@ let imgfuck = async function(msg, url) {
 };
 
 let glitch = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
+
     if (args && urlRegex.test(args)) {
         imgfuck(msg, args);
     } else if (msg.attachments.length > 0) {
@@ -603,9 +604,7 @@ let glitch = async function(ctx, msg, args) {
     }
 };
 
-let glitchfuck = function(ctx, msg, url) {
-    msg.channel.sendTyping();
-
+let giffkr = function(ctx, msg, url) {
     let limited = false;
 
     async function glitchFrames(m, inp) {
@@ -700,15 +699,17 @@ let glitchfuck = function(ctx, msg, url) {
 };
 
 let gglitch = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
+
     if (args && urlRegex.test(args)) {
-        glitchfuck(ctx, msg, args);
+        giffkr(ctx, msg, args);
     } else if (msg.attachments.length > 0) {
-        glitchfuck(ctx, msg, msg.attachments[0].url);
+        giffkr(ctx, msg, msg.attachments[0].url);
     } else if (/<a:([a-zA-Z0-9_*/-:]+):([0-9]+)>/.test(args)) {
         let emote = args.match(/<a:([a-zA-Z0-9_*/-:]+):([0-9]+)>/);
         let url = `https://cdn.discordapp.com/emojis/${emote[2]}.gif`;
 
-        glitchfuck(ctx, msg, url);
+        giffkr(ctx, msg, url);
     } else if (/[0-9]{17,21}/.test(args)) {
         ctx.utils.lookupUser(ctx, msg, args).then(u => {
             let url =
@@ -720,7 +721,7 @@ let gglitch = async function(ctx, msg, args) {
                           5}.png`;
 
             if (u.avatar.startsWith("a_")) {
-                glitchfuck(ctx, msg, url);
+                giffkr(ctx, msg, url);
             } else {
                 msg.channel.createMessage(
                     "User does not have an animated avatar."
@@ -730,7 +731,7 @@ let gglitch = async function(ctx, msg, args) {
     } else {
         try {
             let img = await ctx.utils.findLastImage(ctx, msg, true);
-            glitchfuck(ctx, msg, img);
+            giffkr(ctx, msg, img);
         } catch (e) {
             msg.channel.createMessage(
                 "Image not found. Please give URL, attachment or user mention."
@@ -822,6 +823,8 @@ let i2gg = async function(msg, url, avatar = false) {
 };
 
 let img2glitch = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
+
     let avatar = false;
 
     if (args.startsWith("--avatar")) {
@@ -866,6 +869,8 @@ let _jpeg = async function(msg, url) {
 };
 
 let jpeg = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
+
     if (args && urlRegex.test(args)) {
         _jpeg(msg, args);
     } else if (msg.attachments.length > 0) {
@@ -907,6 +912,8 @@ let _rover = async function(msg, url) {
 };
 
 let rover = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
+
     if (args && urlRegex.test(args)) {
         _rover(msg, args);
     } else if (msg.attachments.length > 0) {
@@ -947,6 +954,8 @@ let _carson = async function(msg, url) {
 };
 
 let carson = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
+
     if (args && urlRegex.test(args)) {
         _carson(msg, args);
     } else if (msg.attachments.length > 0) {
@@ -1007,6 +1016,8 @@ let _watermark = async function(msg, url) {
 };
 
 let watermark = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
+
     if (args && urlRegex.test(args)) {
         _watermark(msg, args);
     } else if (msg.attachments.length > 0) {
