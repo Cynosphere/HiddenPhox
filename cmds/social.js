@@ -171,7 +171,7 @@ let profile = async function(ctx, msg, args) {
             e.fields.push({
                 name: "Steal Stats",
                 value: `${edata.steals} tries, ${edata.steal_succ} success (${(
-                    100 - (isNan(stealPercent) ? 0 : stealPercent)
+                    100 - (isNaN(stealPercent) ? 0 : stealPercent)
                 ).toFixed(3)}%)`
             });
         }
