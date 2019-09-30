@@ -133,7 +133,7 @@ let profile = async function(ctx, msg, args) {
         };
 
         let edata = await ctx.db.models.econ.findOne({
-            where: { id: msg.author.id }
+            where: { id: u.id }
         });
 
         let gdata = await ctx.db.models.econ.findAll();
@@ -168,8 +168,8 @@ let profile = async function(ctx, msg, args) {
             e.fields.push({
                 name: "Steal Stats",
                 value: `${edata.steals} tries, ${edata.steal_succ} success (${(
-                    ((edata.steals - edata.steal_succ) / edata.steals) *
-                    100
+                    100 -
+                    ((edata.steals - edata.steal_succ) / edata.steals) * 100
                 ).toFixed(3)}%)`
             });
         }
