@@ -155,6 +155,9 @@ let profile = async function(ctx, msg, args) {
         let lrank = lranks.findIndex(x => x.id === u.id) + 1;
 
         if (edata) {
+            stealPercent =
+                ((edata.steals - edata.steal_succ) / edata.steals) * 100;
+
             e.fields.push({
                 name: "Wallet",
                 value: `${edata.currency}FC`,
@@ -168,8 +171,7 @@ let profile = async function(ctx, msg, args) {
             e.fields.push({
                 name: "Steal Stats",
                 value: `${edata.steals} tries, ${edata.steal_succ} success (${(
-                    100 -
-                    ((edata.steals - edata.steal_succ) / edata.steals) * 100
+                    100 - (isNan(stealPercent) ? 0 : stealPercent)
                 ).toFixed(3)}%)`
             });
         }
