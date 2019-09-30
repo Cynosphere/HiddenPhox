@@ -333,7 +333,11 @@ async function twimgDelete(msg, emote, uid) {
     if (twimg_embeds[msg.id] !== undefined) {
         const m = await msg.channel.getMessage(twimg_embeds[msg.id]);
 
-        if (m.author.id == uid && emote.name == "\u274c") {
+        if (
+            (m.author.id == uid ||
+                msg.channel.permissionsOf(uid).has("manageMessages")) &&
+            emote.name == "\u274c"
+        ) {
             msg.delete();
             delete twimg_embeds[msg.id];
         }
