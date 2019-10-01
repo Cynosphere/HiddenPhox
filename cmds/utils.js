@@ -581,32 +581,6 @@ let sinfo = async function(ctx, msg, args) {
 
         let bots = g.members.filter(u => u.bot).length;
 
-        let emojis = [];
-        for (const e of g.emojis.values()) {
-            let hasRole = false;
-
-            for (const x of e.roles.values()) {
-                if (g.members.get(ctx.bot.user.id).roles.includes(x))
-                    hasRole = true;
-            }
-
-            if (e.managed && hasRole == false) return;
-            emojis.push(`<${e.animated ? "a" : ""}:${e.name}:${e.id}>`);
-        }
-
-        emojis = emojis.sort(function(a, b) {
-            a = a.toLowerCase().replace(/<(a)?:(.+):(.+)>/, "$2");
-            b = b.toLowerCase().replace(/<(a)?:(.+):(.+)>/, "$2");
-            return a < b ? 1 : a > b ? -1 : 0;
-        });
-
-        let tmp = [];
-        for (const e of emojis.values()) {
-            tmp.push(e.replace(/:(.*?):/, ":_:"));
-        }
-        emojis = tmp;
-        delete tmp;
-
         let everyone = g.roles.filter(x => x.name == "@everyone")[0];
 
         let info = {
@@ -778,123 +752,158 @@ let sinfo = async function(ctx, msg, args) {
             });
         }
 
-        if (emojis.length > 0) {
-            info.fields.push({
-                name: "Emojis (1-25)",
-                value: emojis.slice(0, 25).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 25) {
-            info.fields.push({
-                name: "Emojis (26-50)",
-                value: emojis.slice(25, 50).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 50) {
-            info.fields.push({
-                name: "Emojis (51-75)",
-                value: emojis.slice(50, 75).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 75) {
-            info.fields.push({
-                name: "Emojis (76-100)",
-                value: emojis.slice(75, 100).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 100) {
-            info.fields.push({
-                name: "Emojis (101-150)",
-                value: emojis.slice(100, 150).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 150) {
-            info.fields.push({
-                name: "Emojis (151-200)",
-                value: emojis.slice(150, 200).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 200) {
-            info.fields.push({
-                name: "Emojis (201-250)",
-                value: emojis.slice(200, 250).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 200) {
-            info.fields.push({
-                name: "Emojis (201-250)",
-                value: emojis.slice(200, 250).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 250) {
-            info.fields.push({
-                name: "Emojis (251-300)",
-                value: emojis.slice(250, 300).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 300) {
-            info.fields.push({
-                name: "Emojis (301-350)",
-                value: emojis.slice(300, 350).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 350) {
-            info.fields.push({
-                name: "Emojis (351-400)",
-                value: emojis.slice(350, 400).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 400) {
-            info.fields.push({
-                name: "Emojis (401-450)",
-                value: emojis.slice(400, 450).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 450) {
-            info.fields.push({
-                name: "Emojis (451-500)",
-                value: emojis.slice(450, 500).join(" "),
-                inline: true
-            });
-        }
-
-        if (emojis.length > 500) {
-            info.fields.push({
-                name: "Emojis (501+)",
-                value: emojis.slice(500).join(" "),
-                inline: true
-            });
-        }
-
         msg.channel.createMessage({
             embed: info
         });
     } else {
         msg.channel.createMessage("This command can only be used in servers.");
+    }
+};
+
+let emotes = async function(ctx, msg, args) {
+    if (!msg.channel.guild) {
+        msg.channel.createMessage("This command can only be used in servers.");
+        return;
+    }
+
+    let emojis = [];
+    for (const e of msg.channel.guild.emojis.values()) {
+        let hasRole = false;
+
+        for (const x of e.roles.values()) {
+            if (
+                msg.channel.guild.members.get(ctx.bot.user.id).roles.includes(x)
+            )
+                hasRole = true;
+        }
+
+        if (e.managed && hasRole == false) return;
+        emojis.push(`<${e.animated ? "a" : ""}:${e.name}:${e.id}>`);
+    }
+
+    emojis = emojis.sort(function(a, b) {
+        a = a.toLowerCase().replace(/<(a)?:(.+):(.+)>/, "$2");
+        b = b.toLowerCase().replace(/<(a)?:(.+):(.+)>/, "$2");
+        return a < b ? 1 : a > b ? -1 : 0;
+    });
+
+    let tmp = [];
+    for (const e of emojis.values()) {
+        tmp.push(e.replace(/:(.*?):/, ":_:"));
+    }
+    emojis = tmp;
+    delete tmp;
+
+    if (emojis.length > 0) {
+        info.fields.push({
+            name: "Emojis (1-25)",
+            value: emojis.slice(0, 25).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 25) {
+        info.fields.push({
+            name: "Emojis (26-50)",
+            value: emojis.slice(25, 50).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 50) {
+        info.fields.push({
+            name: "Emojis (51-75)",
+            value: emojis.slice(50, 75).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 75) {
+        info.fields.push({
+            name: "Emojis (76-100)",
+            value: emojis.slice(75, 100).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 100) {
+        info.fields.push({
+            name: "Emojis (101-125)",
+            value: emojis.slice(100, 125).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 150) {
+        info.fields.push({
+            name: "Emojis (151-200)",
+            value: emojis.slice(150, 200).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 200) {
+        info.fields.push({
+            name: "Emojis (201-250)",
+            value: emojis.slice(200, 250).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 200) {
+        info.fields.push({
+            name: "Emojis (201-250)",
+            value: emojis.slice(200, 250).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 250) {
+        info.fields.push({
+            name: "Emojis (251-300)",
+            value: emojis.slice(250, 300).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 300) {
+        info.fields.push({
+            name: "Emojis (301-350)",
+            value: emojis.slice(300, 350).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 350) {
+        info.fields.push({
+            name: "Emojis (351-400)",
+            value: emojis.slice(350, 400).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 400) {
+        info.fields.push({
+            name: "Emojis (401-450)",
+            value: emojis.slice(400, 450).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 450) {
+        info.fields.push({
+            name: "Emojis (451-500)",
+            value: emojis.slice(450, 500).join(" "),
+            inline: true
+        });
+    }
+
+    if (emojis.length > 500) {
+        info.fields.push({
+            name: "Emojis (501+)",
+            value: emojis.slice(500).join(" "),
+            inline: true
+        });
     }
 };
 
