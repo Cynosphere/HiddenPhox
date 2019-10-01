@@ -725,7 +725,11 @@ let sinfo = async function(ctx, msg, args) {
                 }
             ],
             thumbnail: {
-                url: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=256`
+                url: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${
+                    g.icon.startsWith("a_")
+                        ? "gif?size=256&_=.gif"
+                        : "png?size=256"
+                }`
             }
         };
 
