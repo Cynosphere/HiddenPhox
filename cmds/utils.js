@@ -547,7 +547,7 @@ let uinfo = function(ctx, msg, args) {
 };
 
 let sinfo = async function(ctx, msg, args) {
-    let flags = {
+    const flags = {
         "eu-central": ":flag_eu:",
         london: ":flag_gb:",
         amsterdam: ":flag_nl:",
@@ -565,14 +565,16 @@ let sinfo = async function(ctx, msg, args) {
         russia: ":flag_ru:"
     };
 
-    let levels = [
+    const levels = [
         "None",
         "Low",
         "Medium",
         "(╯°□°）╯︵ ┻━┻ (High)",
         "┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻ (Very High/Phone)"
     ];
-    let notifs = ["All Messages", "Mentions Only"];
+    const notifs = ["All Messages", "Mentions Only"];
+    const emojiTiers = [100, 200, 300, 500]; //double the count because each category has the limit
+    const boostTiers = [2, 10, 20, 20];
 
     if (msg.channel.guild) {
         let g = msg.channel.guild;
@@ -600,10 +602,10 @@ let sinfo = async function(ctx, msg, args) {
 
         let tmp = [];
         for (const e of emojis.values()) {
-            tmp.push(e.replace(/:(.+):/, ":_:"));
+            tmp.push(e.replace(/:(.*?):/, ":_:"));
         }
         emojis = tmp;
-        tmp = undefined;
+        delete tmp;
 
         let everyone = g.roles.filter(x => x.name == "@everyone")[0];
 
@@ -681,7 +683,7 @@ let sinfo = async function(ctx, msg, args) {
                 },
                 {
                     name: "Emoji Count",
-                    value: `${g.emojis.length}/100 (${
+                    value: `${g.emojis.length}/${emojiTiers[g.premiumTier]} (${
                         g.emojis.filter(x => x.animated).length
                     } animated, ${
                         g.emojis.filter(x => x.managed).length
@@ -721,7 +723,16 @@ let sinfo = async function(ctx, msg, args) {
                     inline: true
                 },
                 {
-                    name: "Icon" + (g.splash ? "/Splash" : ""),
+                    name: "Nitro Boost Tier",
+                    value: `Tier ${g.premiumTier} with ${
+                        g.premiumSubscriptionCount
+                    }/${boostTiers[g.premiumTier]} boosters.`,
+                    inline: true
+                },
+                {
+                    name: `Icon${g.splash ? "/Splash" : ""}${
+                        g.banner ? "/Banner" : ""
+                    }`,
                     value:
                         `[Full Size](https://cdn.discordapp.com/icons/${g.id}/${
                             g.icon
@@ -732,6 +743,9 @@ let sinfo = async function(ctx, msg, args) {
                         })` +
                         (g.splash
                             ? ` | [Invite Splash](https://cdn.discordapp.com/splashes/${g.id}/${g.splash}.png?size=2048)`
+                            : "") +
+                        (g.banner
+                            ? ` | [Banner](https://cdn.discordapp.com/banners/${g.id}/${g.banner}.png?size=2048)`
                             : ""),
                     inline: true
                 }
@@ -752,6 +766,14 @@ let sinfo = async function(ctx, msg, args) {
                             .join(" ")
                     )
                     .join(", ")}`,
+                inline: true
+            });
+        }
+
+        if (g.vanityURL) {
+            info.fields.push({
+                name: "Vanity URL",
+                value: `\`discord.gg/${g.vanityURL}\``,
                 inline: true
             });
         }
