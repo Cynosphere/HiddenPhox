@@ -336,7 +336,7 @@ async function twimgDelete(msg, emote, uid, ctx) {
         if (
             (m.author.id == uid ||
                 (msg.channel.permissionsOf(uid).has("manageMessages") &&
-                    uid != ctx.bot.id)) &&
+                    uid != ctx.bot.user.id)) &&
             emote.name == "\u274c"
         ) {
             msg.delete();
