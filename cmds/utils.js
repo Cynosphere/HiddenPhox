@@ -798,8 +798,72 @@ let sinfo = async function(ctx, msg, args) {
 
         if (emojis.length > 150) {
             info.fields.push({
-                name: "Emojis (151-200+)",
-                value: emojis.slice(150).join(" "),
+                name: "Emojis (151-200)",
+                value: emojis.slice(150, 200).join(" "),
+                inline: true
+            });
+        }
+
+        if (emojis.length > 200) {
+            info.fields.push({
+                name: "Emojis (201-250)",
+                value: emojis.slice(200, 250).join(" "),
+                inline: true
+            });
+        }
+
+        if (emojis.length > 200) {
+            info.fields.push({
+                name: "Emojis (201-250)",
+                value: emojis.slice(200, 250).join(" "),
+                inline: true
+            });
+        }
+
+        if (emojis.length > 250) {
+            info.fields.push({
+                name: "Emojis (251-300)",
+                value: emojis.slice(250, 300).join(" "),
+                inline: true
+            });
+        }
+
+        if (emojis.length > 300) {
+            info.fields.push({
+                name: "Emojis (301-350)",
+                value: emojis.slice(300, 350).join(" "),
+                inline: true
+            });
+        }
+
+        if (emojis.length > 350) {
+            info.fields.push({
+                name: "Emojis (351-400)",
+                value: emojis.slice(350, 400).join(" "),
+                inline: true
+            });
+        }
+
+        if (emojis.length > 400) {
+            info.fields.push({
+                name: "Emojis (401-450)",
+                value: emojis.slice(400, 450).join(" "),
+                inline: true
+            });
+        }
+
+        if (emojis.length > 450) {
+            info.fields.push({
+                name: "Emojis (451-500)",
+                value: emojis.slice(450, 500).join(" "),
+                inline: true
+            });
+        }
+
+        if (emojis.length > 500) {
+            info.fields.push({
+                name: "Emojis (501+)",
+                value: emojis.slice(500).join(" "),
                 inline: true
             });
         }
