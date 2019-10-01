@@ -329,13 +329,14 @@ let plembed = async function(msg, ctx) {
     }
 };
 
-async function twimgDelete(msg, emote, uid) {
+async function twimgDelete(msg, emote, uid, ctx) {
     if (twimg_embeds[msg.id] !== undefined) {
         const m = await msg.channel.getMessage(twimg_embeds[msg.id]);
 
         if (
             (m.author.id == uid ||
-                msg.channel.permissionsOf(uid).has("manageMessages")) &&
+                (msg.channel.permissionsOf(uid).has("manageMessages") &&
+                    uid != ctx.bot.id)) &&
             emote.name == "\u274c"
         ) {
             msg.delete();
