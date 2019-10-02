@@ -812,7 +812,7 @@ let emotes = async function(ctx, msg, args) {
     let index = 0;
     for (let i = 0; i < emojis.length; i += 25) {
         embed.fields.push({
-            name: `${25 * index + 1}/${25 * (index + 1)}`,
+            name: `${25 * index + 1} - ${25 * (index + 1)}`,
             value: emojis.slice(25 * index, 25 * (index + 1)).join(" "),
             inline: true
         });
