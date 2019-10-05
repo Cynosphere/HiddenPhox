@@ -1578,6 +1578,7 @@ let translate = async function(ctx, msg, args) {
     }
 
     let inp = args.length == 3 ? args[2] : args[1];
+    inp = inp.replace(/\n/g, " ");
     let lang1 = args.length == 3 ? args[0] : "auto";
     let lang2 = args.length == 3 ? args[1] : args[0];
 
