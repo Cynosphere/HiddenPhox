@@ -91,9 +91,7 @@ let reactionAdd = async function(msg, emoji, uid, ctx) {
                 ],
                 thumbnail: {
                     url: emoji.id
-                        ? `https://cdn.discordapp.com/emojis/${
-                              emoji.id
-                          }.png?v=1`
+                        ? `https://cdn.discordapp.com/emojis/${emoji.id}.png?v=1`
                         : ""
                 },
                 timestamp: new Date().toISOString()
@@ -125,9 +123,7 @@ let reactionDelete = async function(msg, emoji, uid, ctx) {
                 ],
                 thumbnail: {
                     url: emoji.id
-                        ? `https://cdn.discordapp.com/emojis/${
-                              emoji.id
-                          }.png?v=1`
+                        ? `https://cdn.discordapp.com/emojis/${emoji.id}.png?v=1`
                         : ""
                 },
                 timestamp: new Date().toISOString()
@@ -156,9 +152,7 @@ let messageDelete = async function(msg, ctx) {
             },
             {
                 name: "Attachments/Embeds",
-                value: `${msg.attachments.length} attachments, ${
-                    msg.embeds.length
-                } embeds.`
+                value: `${msg.attachments.length} attachments, ${msg.embeds.length} embeds.`
             },
             { name: "Sender", value: `<@${msg.author.id}>`, inline: true },
             { name: "Channel", value: `<#${msg.channel.id}>`, inline: true }
@@ -218,9 +212,7 @@ let channelUpdate = async function(channel, oldChannel, ctx) {
         ) {
             fields.push({
                 name: "Permissions Size",
-                value: `${channel.permissionOverwrites.size} (was ${
-                    oldChannel.permissionOverwrites.size
-                })`,
+                value: `${channel.permissionOverwrites.size} (was ${oldChannel.permissionOverwrites.size})`,
                 inline: true
             });
         }
@@ -262,9 +254,7 @@ let banAdd = async function(guild, user, ctx) {
                 fields: [
                     {
                         name: "User",
-                        value: `<@${user.id}> (${user.username}#${
-                            user.discriminator
-                        } - \`${user.id}\`)`,
+                        value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
                         inline: true
                     }
                 ],
@@ -298,9 +288,7 @@ let banRem = async function(guild, user, ctx) {
                 fields: [
                     {
                         name: "User",
-                        value: `<@${user.id}> (${user.username}#${
-                            user.discriminator
-                        } - \`${user.id}\`)`,
+                        value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
                         inline: true
                     }
                 ],
@@ -333,9 +321,7 @@ let userJoin = async function(guild, user, ctx) {
                 fields: [
                     {
                         name: "User",
-                        value: `<@${user.id}> (${user.username}#${
-                            user.discriminator
-                        } - \`${user.id}\`)`,
+                        value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
                         inline: true
                     },
                     {
@@ -373,9 +359,7 @@ let userLeft = async function(guild, user, ctx) {
                 fields: [
                     {
                         name: "User",
-                        value: `<@${user.id}> (${user.user.username}#${
-                            user.user.discriminator
-                        } - \`${user.user.id}\`)`,
+                        value: `<@${user.id}> (${user.user.username}#${user.user.discriminator} - \`${user.user.id}\`)`,
                         inline: true
                     },
                     {
@@ -385,9 +369,10 @@ let userLeft = async function(guild, user, ctx) {
                     },
                     {
                         name: "Roles",
-                        value: user.roles
-                            ? user.roles.map(r => `<@&${r}>`).join(" ")
-                            : "<uncached>",
+                        value:
+                            user.roles && user.roles.length > 0
+                                ? user.roles.map(r => `<@&${r}>`).join(" ")
+                                : "None",
                         inline: true
                     }
                 ],
@@ -426,9 +411,7 @@ let msgDelBulk = async function(msgs, ctx) {
             embed: {
                 title: ":trashcan: Bulk Message Delete",
                 color: 0xaa0000,
-                description: `[${
-                    msgs.length
-                } Deleted Messages](https://mystb.in/${req.body.key})`,
+                description: `[${msgs.length} Deleted Messages](https://mystb.in/${req.body.key})`,
                 timestamp: new Date().toISOString()
             }
         });
@@ -453,9 +436,7 @@ let userUpdate = async function(user, oldUser, ctx) {
                 fields: [
                     {
                         name: "User",
-                        value: `<@${user.id}> (${user.username}#${
-                            user.discriminator
-                        })`,
+                        value: `<@${user.id}> (${user.username}#${user.discriminator})`,
                         inline: true
                     }
                 ],
@@ -485,9 +466,7 @@ let userUpdate = async function(user, oldUser, ctx) {
             if (user.discriminator != oldUser.discriminator) {
                 e.fields.push({
                     name: "Discrim",
-                    value: `#${user.discriminator} (was #${
-                        oldUser.discriminator
-                    })`,
+                    value: `#${user.discriminator} (was #${oldUser.discriminator})`,
                     inline: true
                 });
             }
