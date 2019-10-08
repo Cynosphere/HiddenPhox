@@ -35,9 +35,7 @@ let yt = async function(ctx, msg, args) {
         let others = [];
         for (let i = 1; i < data.length; i++) {
             others.push(
-                `- **${data[i].snippet.title}** | By: \`${
-                    data[i].snippet.channelTitle
-                }\` | <https://youtu.be/${data[i].id.videoId}>`
+                `- **${data[i].snippet.title}** | By: \`${data[i].snippet.channelTitle}\` | <https://youtu.be/${data[i].id.videoId}>`
             );
         }
 
@@ -71,9 +69,7 @@ let fyt = async function(ctx, msg, args) {
         let data = req.body.items;
 
         msg.channel.createMessage(
-            `**${data[0].snippet.title}** | \`${
-                data[0].snippet.channelTitle
-            }\`\nhttps://youtu.be/${data[0].id.videoId}`
+            `**${data[0].snippet.title}** | \`${data[0].snippet.channelTitle}\`\nhttps://youtu.be/${data[0].id.videoId}`
         );
     }
 };
@@ -288,9 +284,7 @@ let vote = function(ctx, msg, args) {
     } else {
         msg.channel
             .createMessage(
-                `**${msg.author.username}#${
-                    msg.author.discriminator
-                }** has started a vote:\n**__${args}__**\n<:ms_tick:503341995348066313>: Yes\n<:ms_cross:503341994974773250>: No`
+                `**${msg.author.username}#${msg.author.discriminator}** has started a vote:\n**__${args}__**\n<:ms_tick:503341995348066313>: Yes\n<:ms_cross:503341994974773250>: No`
             )
             .then(m => {
                 m.addReaction(":ms_tick:503341995348066313");
@@ -328,9 +322,7 @@ let currency = async function(ctx, msg, args) {
         let out = args[2];
         if (!amt || !inp || !out) {
             msg.channel.createMessage(
-                `Missing arguments. Usage: \`${
-                    ctx.prefix
-                }currency <amount> <from> <to>\``
+                `Missing arguments. Usage: \`${ctx.prefix}currency <amount> <from> <to>\``
             );
             return;
         }
@@ -447,7 +439,7 @@ let wolfram = async function(ctx, msg, args) {
     }
 
     if (verbose === true) {
-        const embed = {
+        let embed = {
             title: `Result for: \`${args}\``,
             fields: [],
             footer: {
@@ -459,14 +451,15 @@ let wolfram = async function(ctx, msg, args) {
             }
         };
 
-        for (const x in data.splice(1, 6).values()) {
+        const extra = data.slice(1, 6);
+        for (const x in extra) {
             embed.fields.push({
-                name: x.title,
+                name: extra[x].title,
                 value: `[${
-                    x.subpods[0].plaintext.length > 0
-                        ? x.subpods[0].plaintext
+                    extra[x].subpods[0].plaintext.length > 0
+                        ? extra[x].subpods[0].plaintext
                         : "<click for image>"
-                }](${x.subpods[0].img.src})`,
+                }](${extra[x].subpods[0].img.src})`,
                 inline: true
             });
         }
@@ -714,9 +707,7 @@ let redditdl = async function(ctx, msg, args) {
             .post("https://lew.la/reddit/download")
             .type("form")
             .send({
-                url: `https://www.reddit.com/${
-                    data.subreddit_name_prefixed
-                }/comments/${data.id}/`
+                url: `https://www.reddit.com/${data.subreddit_name_prefixed}/comments/${data.id}/`
             })
             .then(x => x.text);
 
