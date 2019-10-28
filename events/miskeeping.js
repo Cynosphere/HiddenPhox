@@ -1,10 +1,11 @@
 async function paulBlart(msg, ctx) {
     if (
         msg.channel.id == "625876101826084895" &&
-        msg.content !== "Paul Blart" &&
         msg.channel.permissionsOf(ctx.bot.user.id).has("manageMessages")
     ) {
-        msg.delete().catch(_ => {});
+        let m = msg.channel.getMessages(1, msg.id).then(x => x[0]);
+        if (msg.content !== "Paul Blart" || msg.author.id == m.id)
+            msg.delete().catch(_ => {});
     }
 }
 
