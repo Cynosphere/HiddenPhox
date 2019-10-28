@@ -4,8 +4,8 @@ async function paulBlart(msg, ctx) {
         msg.channel.permissionsOf(ctx.bot.user.id).has("manageMessages")
     ) {
         let m = msg.channel.getMessages(1, msg.id).then(x => x[0]);
-        if (msg.content !== "Paul Blart" || msg.author.id == m.author.id)
-            msg.delete().catch(_ => {});
+        if (msg.author.id == m.author.id) msg.delete().catch(_ => {});
+        if (msg.content !== "Paul Blart") msg.delete().catch(_ => {});
     }
 }
 
