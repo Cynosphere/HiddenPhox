@@ -212,6 +212,7 @@ let roleme = async function(ctx, msg, args) {
         if (rme.length > 0) {
             let roles = [];
             for (let i = 0; i < rme.length; i++) {
+                if (!msg.channel.guild.roles.get(rme[i])) return;
                 roles.push(msg.channel.guild.roles.get(rme[i]).name);
             }
             msg.channel.createMessage(
@@ -274,11 +275,7 @@ let roleme = async function(ctx, msg, args) {
             .catch(m => {
                 if (m == "No results.") {
                     msg.channel.createMessage(
-                        `No roles found. See \`${
-                            ctx.prefix
-                        }roleme list\` for a list and \`${
-                            ctx.prefix
-                        }roleme help\` for a full set of subcommands.`
+                        `No roles found. See \`${ctx.prefix}roleme list\` for a list and \`${ctx.prefix}roleme help\` for a full set of subcommands.`
                     );
                 } else if (m == "Canceled") {
                     msg.channel.createMessage(m);
@@ -355,9 +352,7 @@ let sconfig = async function(ctx, msg, args) {
 
         if (keys.find(k => k.name == val) == "undefined") {
             msg.channel.createMessage(
-                `Cannot find specified key \`${key}\`. Do \`${
-                    ctx.prefix
-                }config list\` for valid keys.`
+                `Cannot find specified key \`${key}\`. Do \`${ctx.prefix}config list\` for valid keys.`
             );
             return;
         }
@@ -393,9 +388,7 @@ let sconfig = async function(ctx, msg, args) {
 
         if (keys.find(k => k.name == val) == "undefined") {
             msg.channel.createMessage(
-                `Cannot find specified key \`${key}\`. Do \`${
-                    ctx.prefix
-                }config list\` for valid keys.`
+                `Cannot find specified key \`${key}\`. Do \`${ctx.prefix}config list\` for valid keys.`
             );
             return;
         }
@@ -474,12 +467,8 @@ let kick = function(ctx, msg, args) {
                                 ctx.bot.kickGuildMember(
                                     msg.channel.guild.id,
                                     u.id,
-                                    `[${msg.author.username}#${
-                                        msg.author.discriminator
-                                    }] ${reason}` ||
-                                        `[${msg.author.username}#${
-                                            msg.author.discriminator
-                                        }] No reason given.`
+                                    `[${msg.author.username}#${msg.author.discriminator}] ${reason}` ||
+                                        `[${msg.author.username}#${msg.author.discriminator}] No reason given.`
                                 );
                                 msg.addReaction("\uD83D\uDC4C");
                                 m.delete().catch(() => {});
@@ -553,12 +542,8 @@ let ban = function(ctx, msg, args) {
                                     msg.channel.guild.id,
                                     u.id,
                                     0,
-                                    `[${msg.author.username}#${
-                                        msg.author.discriminator
-                                    }] ${reason}` ||
-                                        `[${msg.author.username}#${
-                                            msg.author.discriminator
-                                        }] No reason given.`
+                                    `[${msg.author.username}#${msg.author.discriminator}] ${reason}` ||
+                                        `[${msg.author.username}#${msg.author.discriminator}] No reason given.`
                                 );
                                 msg.addReaction("\uD83D\uDC4C");
                                 m.delete().catch(() => {});
@@ -621,12 +606,8 @@ let unban = function(ctx, msg, args) {
                     ctx.bot.unbanGuildMember(
                         msg.channel.guild.id,
                         u.id,
-                        `[${msg.author.username}#${
-                            msg.author.discriminator
-                        }] ${reason}` ||
-                            `[${msg.author.username}#${
-                                msg.author.discriminator
-                            }] No reason given.`
+                        `[${msg.author.username}#${msg.author.discriminator}] ${reason}` ||
+                            `[${msg.author.username}#${msg.author.discriminator}] No reason given.`
                     );
                     msg.addReaction("\uD83D\uDC4C");
                 } catch (e) {
@@ -684,20 +665,12 @@ let multikick = function(ctx, msg, args) {
                                 .kickGuildMember(
                                     msg.channel.guild.id,
                                     u.id,
-                                    `[multikick] [${msg.author.username}#${
-                                        msg.author.discriminator
-                                    }] ${reason}` ||
-                                        `[multikick] [${msg.author.username}#${
-                                            msg.author.discriminator
-                                        }] No reason given.`
+                                    `[multikick] [${msg.author.username}#${msg.author.discriminator}] ${reason}` ||
+                                        `[multikick] [${msg.author.username}#${msg.author.discriminator}] No reason given.`
                                 )
                                 .catch(e => {
                                     msg.channel.createMessage(
-                                        `Could not kick **${u.username}#${
-                                            u.discriminator
-                                        }** (${i}):\n\`\`\`\n${
-                                            e.message
-                                        }\n\`\`\``
+                                        `Could not kick **${u.username}#${u.discriminator}** (${i}):\n\`\`\`\n${e.message}\n\`\`\``
                                     );
                                 });
                         });
@@ -767,20 +740,12 @@ let multiban = function(ctx, msg, args) {
                                     msg.channel.guild.id,
                                     u.id,
                                     0,
-                                    `[multiban] [${msg.author.username}#${
-                                        msg.author.discriminator
-                                    }] ${reason}` ||
-                                        `[multiban] [${msg.author.username}#${
-                                            msg.author.discriminator
-                                        }] No reason given.`
+                                    `[multiban] [${msg.author.username}#${msg.author.discriminator}] ${reason}` ||
+                                        `[multiban] [${msg.author.username}#${msg.author.discriminator}] No reason given.`
                                 )
                                 .catch(e => {
                                     msg.channel.createMessage(
-                                        `Could not ban **${u.username}#${
-                                            u.discriminator
-                                        }** (${i}):\n\`\`\`\n${
-                                            e.message
-                                        }\n\`\`\``
+                                        `Could not ban **${u.username}#${u.discriminator}** (${i}):\n\`\`\`\n${e.message}\n\`\`\``
                                     );
                                 });
                         });
