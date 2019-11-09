@@ -138,25 +138,28 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
         }
     });
     for (const item in data) {
-        await doMusicThingsOk(
-            msg.member.voiceState.channelID,
-            "https://youtu.be/" + data[item].snippet.resourceId.videoId,
-            "yt",
-            msg,
-            ctx,
-            msg.author.id,
-            true
-        );
+        setTimeout(async _ => {
+            await doMusicThingsOk(
+                msg.member.voiceState.channelID,
+                "https://youtu.be/" + data[item].snippet.resourceId.videoId,
+                "yt",
+                msg,
+                ctx,
+                msg.author.id,
+                true
+            );
 
-        if (item >= data.length - 1) {
-            out.edit({
-                embed: {
-                    title: "<:ms_tick:503341995348066313> Processed playlist",
-                    description: `Done processing!`,
-                    color: 0xff80c0
-                }
-            }).then(x => setTimeout(() => x.delete(), 10000));
-        }
+            if (item >= data.length - 1) {
+                out.edit({
+                    embed: {
+                        title:
+                            "<:ms_tick:503341995348066313> Processed playlist",
+                        description: `Done processing!`,
+                        color: 0xff80c0
+                    }
+                }).then(x => setTimeout(() => x.delete(), 10000));
+            }
+        }, item * 100);
     }
 }
 
@@ -179,25 +182,28 @@ async function doSCPlaylistThingsOk(ctx, msg, url) {
         }
     });
     for (const item in tracks) {
-        await doMusicThingsOk(
-            msg.member.voiceState.channelID,
-            tracks[item].permalink_url,
-            "sc",
-            msg,
-            ctx,
-            msg.author.id,
-            true
-        );
+        setTimeout(async _ => {
+            await doMusicThingsOk(
+                msg.member.voiceState.channelID,
+                tracks[item].permalink_url,
+                "sc",
+                msg,
+                ctx,
+                msg.author.id,
+                true
+            );
 
-        if (item >= tracks.length - 1) {
-            out.edit({
-                embed: {
-                    title: "<:ms_tick:503341995348066313> Processed playlist",
-                    description: `Done processing!`,
-                    color: 0xff80c0
-                }
-            }).then(x => setTimeout(() => x.delete(), 10000));
-        }
+            if (item >= tracks.length - 1) {
+                out.edit({
+                    embed: {
+                        title:
+                            "<:ms_tick:503341995348066313> Processed playlist",
+                        description: `Done processing!`,
+                        color: 0xff80c0
+                    }
+                }).then(x => setTimeout(() => x.delete(), 10000));
+            }
+        }, item * 100);
     }
 }
 
