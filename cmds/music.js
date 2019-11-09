@@ -138,8 +138,8 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
         }
     });
     for (const item in data) {
-        setTimeout(async _ => {
-            await doMusicThingsOk(
+        setTimeout(_ => {
+            doMusicThingsOk(
                 msg.member.voiceState.channelID,
                 "https://youtu.be/" + data[item].snippet.resourceId.videoId,
                 "yt",
@@ -159,7 +159,7 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
                     }
                 }).then(x => setTimeout(() => x.delete(), 10000));
             }
-        }, item * 500);
+        }, item * 1000);
     }
 }
 
@@ -182,8 +182,8 @@ async function doSCPlaylistThingsOk(ctx, msg, url) {
         }
     });
     for (const item in tracks) {
-        setTimeout(async _ => {
-            await doMusicThingsOk(
+        setTimeout(_ => {
+            doMusicThingsOk(
                 msg.member.voiceState.channelID,
                 tracks[item].permalink_url,
                 "sc",
@@ -203,7 +203,7 @@ async function doSCPlaylistThingsOk(ctx, msg, url) {
                     }
                 }).then(x => setTimeout(() => x.delete(), 10000));
             }
-        }, item * 500);
+        }, item * 1000);
     }
 }
 
