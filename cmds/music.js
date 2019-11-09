@@ -174,7 +174,7 @@ async function doSCPlaylistThingsOk(ctx, msg, url) {
     let out = await msg.channel.createMessage({
         embed: {
             title: "<a:typing:493087964742549515> Processing playlist...",
-            description: `Processing ${data.length} items.`,
+            description: `Processing ${tracks.length} items.`,
             color: 0xff80c0
         }
     });
