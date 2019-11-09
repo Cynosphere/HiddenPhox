@@ -159,7 +159,7 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
                     }
                 }).then(x => setTimeout(() => x.delete(), 10000));
             }
-        }, item * 100);
+        }, item * 200);
     }
 }
 
@@ -203,7 +203,7 @@ async function doSCPlaylistThingsOk(ctx, msg, url) {
                     }
                 }).then(x => setTimeout(() => x.delete(), 10000));
             }
-        }, item * 100);
+        }, item * 200);
     }
 }
 
