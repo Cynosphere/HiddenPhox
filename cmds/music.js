@@ -9,12 +9,8 @@ const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 const plregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
 const plregex2 = /^PL[a-zA-Z0-9-_]{1,32}$/;
 const mp3regex = /^(https?:\/\/)?.*\..*\/.+\.(mp3|ogg|flac|wav|webm|mp4|mov|mkv)$/;
-const scregex = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/.+$/;
-const scregex2 = /^sc:.+\/.+$/;
-const scplregex = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/sets\/.+$/;
-const scplregex2 = /^sc:.+\/sets\/.+$/;
-const scplregex3 = /^(https?:\/\/)?(www\.|m\.)?soundcloud\.com\/.+\/likes$/;
-const scplregex4 = /^sc:.+\/likes$/;
+const scregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/.+$/;
+const scplregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/(sets\/.+|likes|tracks)$/;
 
 /*async function grabYTVideoURL(ctx, url) {
     let vid = await ctx.libs.superagent.get(url).then(x => x.text);
@@ -36,6 +32,15 @@ const scplregex4 = /^sc:.+\/likes$/;
             return a.bitrate < b.bitrate ? 1 : a.bitrate > b.bitrate ? -1 : 0;
         })[0].url;
 }*/
+
+// https://stackoverflow.com/a/12646864 § "Updating to ES6 / ECMAScript 2015"
+// wow im using comments wtf is wrong with me
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
 
 function createEndFunction(id, url, type, msg, ctx) {
     if (ctx.vc.get(id).evntEnd) return;
@@ -61,36 +66,36 @@ function createEndFunction(id, url, type, msg, ctx) {
                         )
                         .then(x => setTimeout(() => x.delete(), 10000));
                 }
-                conn.removeListener("error", e =>
+                /*conn.removeListener("error", e =>
                     ctx.utils.logWarn(ctx, `[music] error catching: ${e}`)
                 );
                 conn.removeListener("warn", e =>
                     ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`)
-                );
+                );*/
                 ctx.vc.delete(id);
             }, 1000);
         }
     };
 
     ctx.vc.get(id).on("end", ctx.vc.get(id).evntEnd);
-    ctx.vc
+    /*ctx.vc
         .get(id)
         .on("error", e =>
             ctx.utils.logWarn(ctx, `[music] error catching: ${e}`)
         );
     ctx.vc
         .get(id)
-        .on("warn", e => ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`));
+        .on("warn", e => ctx.utils.logWarn(ctx, `[music] warn catching: ${e}`));*/
 }
 
-async function doPlaylistThingsOk(ctx, msg, url) {
+async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
     const plid =
         (url.match(plregex) && url.match(plregex)[4]) ||
         (url.match(plregex2) && url.match(plregex2)[0]);
+
+    const baseURL = `https://www.googleapis.com/youtube/v3/playlistItems?key=${ctx.apikeys.google}&part=snippet&playlistId=${plid}&maxResults=50`;
     let req = await ctx.libs.superagent
-        .get(
-            `https://www.googleapis.com/youtube/v3/playlistItems?key=${ctx.apikeys.google}&part=snippet&playlistId=${plid}&maxResults=50`
-        )
+        .get(baseURL)
         .catch(e =>
             msg.channel
                 .createMessage(
@@ -102,51 +107,99 @@ async function doPlaylistThingsOk(ctx, msg, url) {
         );
     let data = req.body.items;
 
-    let processed = 0;
+    let pageToken = req.body.nextPageToken;
+    let pages = Math.round(req.body.pageInfo.totalResults / 50);
+    if (pageToken) {
+        for (let i = 0; i < pages; i++) {
+            let page = await ctx.libs.superagent
+                .get(`${baseURL}&pageToken=${pageToken}`)
+                .catch(e =>
+                    msg.channel
+                        .createMessage(
+                            `:warning: Could not get playlist: \`${e
+                                .toString()
+                                .replace("Error: ", "")}\``
+                        )
+                        .then(x => setTimeout(() => x.delete(), 10000))
+                );
+            if (page.body.nextPageToken) pageToken = page.body.nextPageToken;
+            let items = page.body.items;
+            for (const item in items) {
+                data.push(items[item]);
+            }
+        }
+    }
+
     let out = await msg.channel.createMessage({
         embed: {
             title: "<a:typing:493087964742549515> Processing playlist...",
-            description: `Processed ${processed} of ${data.length} items.`,
+            description: `Processing ${data.length} items.`,
             color: 0xff80c0
         }
     });
     for (const item in data) {
-        setTimeout(async () => {
-            processed++;
+        await doMusicThingsOk(
+            msg.member.voiceState.channelID,
+            "https://youtu.be/" + data[item].snippet.resourceId.videoId,
+            "yt",
+            msg,
+            ctx,
+            msg.author.id,
+            true
+        );
+
+        if (item >= data.length - 1) {
             out.edit({
                 embed: {
-                    title:
-                        "<a:typing:493087964742549515> Processing playlist...",
-                    description: `Processed ${processed} of ${data.length} items.`,
+                    title: "<:ms_tick:503341995348066313> Processed playlist",
+                    description: `Done processing!`,
                     color: 0xff80c0
                 }
-            });
-
-            await doMusicThingsOk(
-                msg.member.voiceState.channelID,
-                "https://youtu.be/" + data[item].snippet.resourceId.videoId,
-                "yt",
-                msg,
-                ctx,
-                msg.author.id,
-                true
-            );
-
-            if (item >= data.length - 1) {
-                out.edit({
-                    embed: {
-                        title:
-                            "<:ms_tick:503341995348066313> Processed playlist",
-                        description: `Done processing!`,
-                        color: 0xff80c0
-                    }
-                }).then(x => setTimeout(() => x.delete(), 10000));
-            }
-        }, 2500 * item);
+            }).then(x => setTimeout(() => x.delete(), 10000));
+        }
     }
 }
 
-async function doSCPlaylistThingsOk(ctx, msg, url) {}
+async function doSCPlaylistThingsOk(ctx, msg, url) {
+    let playlistURL = await ctx.libs.superagent
+        .get(
+            `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+        )
+        .then(x => x.redirects[0]);
+
+    const tracks = await ctx.libs.superagent
+        .get(`${playlistURL}&limit=5000`)
+        .then(x => x.body.tracks);
+
+    let out = await msg.channel.createMessage({
+        embed: {
+            title: "<a:typing:493087964742549515> Processing playlist...",
+            description: `Processing ${data.length} items.`,
+            color: 0xff80c0
+        }
+    });
+    for (const item in tracks) {
+        await doMusicThingsOk(
+            msg.member.voiceState.channelID,
+            tracks[item].permalink_url,
+            "sc",
+            msg,
+            ctx,
+            msg.author.id,
+            true
+        );
+
+        if (item >= tracks.length - 1) {
+            out.edit({
+                embed: {
+                    title: "<:ms_tick:503341995348066313> Processed playlist",
+                    description: `Done processing!`,
+                    color: 0xff80c0
+                }
+            }).then(x => setTimeout(() => x.delete(), 10000));
+        }
+    }
+}
 
 async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
     if (type == "yt") {
@@ -406,6 +459,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     len: info.duration,
                     addedBy: addedBy
                 });
+                if (playlist) return;
                 msg.channel
                     .createMessage({
                         embed: {
@@ -990,6 +1044,9 @@ let func = function(ctx, msg, args) {
             if (plregex.test(cargs) || plregex2.test(cargs)) {
                 doPlaylistThingsOk(ctx, msg, cargs);
                 processed = true;
+            } else if (scplregex.test(cargs)) {
+                doSCPlaylistThingsOk(ctx, msg, cargs);
+                processed = true;
             } else if (ytregex.test(cargs) && processed == false) {
                 doMusicThingsOk(
                     msg.member.voiceState.channelID,
@@ -1000,7 +1057,7 @@ let func = function(ctx, msg, args) {
                     msg.author.id
                 );
                 processed = true;
-            } else if (scregex.test(cargs) || scregex2.test(cargs)) {
+            } else if (scregex.test(cargs)) {
                 doMusicThingsOk(
                     msg.member.voiceState.channelID,
                     cargs,
