@@ -172,7 +172,7 @@ async function doSCPlaylistThingsOk(ctx, msg, url) {
 
     const tracks = await ctx.libs.superagent
         .get(`${playlistURL}&limit=5000`)
-        .then(x => x.body.tracks);
+        .then(x => (Array.isArray(x.body) ? x.body : x.body.tracks));
 
     let out = await msg.channel.createMessage({
         embed: {
