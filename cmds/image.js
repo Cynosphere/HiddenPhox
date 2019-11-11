@@ -435,8 +435,12 @@ let _watermark = async function(msg, url) {
 let _toolbars = async function(msg, url) {
     let template = await jimp.read(`${__dirname}/../img/toolbars.png`);
     let img = await jimp.read(url);
+
+    let ratio = img.bitmap.width / img.bitmap.height;
+    let newH = getHeight(1008, ratio);
+
     let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
-    img.resize(1008, 126);
+    img.resize(1008, newH);
     out.composite(img, 0, 592);
     out.composite(template, 0, 0);
 
