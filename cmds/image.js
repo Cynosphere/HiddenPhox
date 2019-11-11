@@ -3,8 +3,8 @@ const c2c = require("colorcolor");
 const imgfuckr = require("../utils/imgfuckr.js");
 const imgfkr = new imgfuckr();
 const superagent = require("superagent");
-const { GifUtil } = require("gifwrap");
-const { spawn } = require("child_process");
+const { BitmapImage, GifFrame, GifCodec, GifUtil } = require("gifwrap");
+const gifEncoder = new GifCodec();
 
 const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
 
@@ -13,24 +13,51 @@ async function imageCallback(ctx, msg, args, callback, ...cbargs) {
     msg.channel.sendTyping();
 
     if (args && urlRegex.test(args)) {
-        callback.apply(this, [msg, args, ...cbargs]);
+        let filename,
+            out = await callback.apply(this, [msg, args, ...cbargs]);
+        if (filename && out)
+            msg.channel.createMessage("", {
+                name: filename,
+                file: out
+            });
     } else if (msg.attachments.length > 0) {
-        callback.apply(this, [msg, msg.attachments[0].url, ...cbargs]);
+        let filename,
+            out = await callback.apply(this, [
+                msg,
+                msg.attachments[0].url,
+                ...cbargs
+            ]);
+        if (filename && out)
+            msg.channel.createMessage("", {
+                name: filename,
+                file: out
+            });
     } else if (/[0-9]{17,21}/.test(args)) {
-        ctx.utils.lookupUser(ctx, msg, args).then(u => {
-            let url =
-                u.avatar !== null
-                    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
-                          u.avatar.startsWith("a_") ? "gif" : "png"
-                      }?size=1024`
-                    : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                          5}.png`;
-            callback.apply(this, [msg, url, ...cbargs]);
-        });
+        let u = await ctx.utils.lookupUser(ctx, msg, args);
+        let url =
+            u.avatar !== null
+                ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
+                      u.avatar.startsWith("a_") ? "gif" : "png"
+                  }?size=1024`
+                : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
+                      5}.png`;
+        let filename,
+            out = await callback.apply(this, [msg, url, ...cbargs]);
+        if (filename && out)
+            msg.channel.createMessage("", {
+                name: filename,
+                file: out
+            });
     } else {
         try {
             let img = await ctx.utils.findLastImage(ctx, msg);
-            callback.apply(this, [msg, img, ...cbargs]);
+            let filename,
+                out = await callback.apply(this, [msg, img, ...cbargs]);
+            if (filename && out)
+                msg.channel.createMessage("", {
+                    name: filename,
+                    file: out
+                });
         } catch (e) {
             msg.channel.createMessage(
                 "Image not found. Please give URL, attachment or user mention."
@@ -56,7 +83,7 @@ function getHeight(length, ratio) {
 
 // image manipulation
 const mirrorNames = ["hooh", "haah", "woow", "waaw"];
-let mirror = async function(msg, url, type) {
+async function mirror(msg, url, type) {
     let im = await jimp.read(url);
     let a = im.clone();
     let b = im.clone();
@@ -119,52 +146,51 @@ let mirror = async function(msg, url, type) {
     }
 
     let file = await im.getBufferAsync(jimp.MIME_PNG);
-    msg.channel.createMessage("", {
-        name: `${mirrorNames[type - 1]}.png`,
-        file: file
-    });
-};
+    return `${mirrorNames[type - 1]}.png`, file;
+}
 
-let _invert = async function(msg, url) {
+async function _invert(msg, url) {
     jimp.read(url).then(async im => {
         im.invert();
         let file = await im.getBufferAsync(jimp.MIME_PNG);
-        msg.channel.createMessage("", { name: "invert.png", file: file });
+        return "invert.png", file;
     });
-};
+}
 
-let _flip = async function(msg, url) {
+async function _flip(msg, url) {
     let im = await jimp.read(url);
     im.mirror(true, false);
     let file = await im.getBufferAsync(jimp.MIME_PNG);
-    msg.channel.createMessage("", { name: "flip.png", file: file });
-};
+    return "flip.png", file;
+}
 
-let _flop = async function(msg, url) {
+async function _flop(msg, url) {
     let im = await jimp.read(url);
     im.mirror(false, true);
     let file = await im.getBufferAsync(jimp.MIME_PNG);
-    msg.channel.createMessage("", { name: "flop.png", file: file });
-};
+    return "flop.png", file;
+}
 
-let imgfuck = async function(msg, url) {
-    let i = await jimp
-        .read(url)
-        .catch(e =>
-            msg.channel.createMessage(
-                `:warning: An error occurred reading image: \`${e}\``
-            )
+async function imgfuck(msg, url) {
+    let failed = false;
+    let i = await jimp.read(url).catch(e => {
+        msg.channel.createMessage(
+            `:warning: An error occurred reading image: \`${e}\``
         );
+        failed = true;
+    });
+    if (failed) return;
     let img = await i.getBufferAsync(jimp.MIME_JPEG);
 
     msg.channel.createMessage("", {
         name: "glitch.jpg",
         file: Buffer.from(imgfkr.processBuffer(img), "base64")
     });
-};
+}
 
-let giffuck = function(msg, url) {
+async function giffuck(msg, url) {
     let limited = false;
+    let failed = false;
 
     async function glitchFrames(m, inp) {
         m.edit(
@@ -178,13 +204,19 @@ let giffuck = function(msg, url) {
             let frame = inp.frames[f];
             let img = frame.bitmap;
 
-            let i = await jimpAsync(img).catch(e =>
-                m.edit(`:warning: An error occurred reading image: \`${e}\``)
-            );
+            let i = await jimpAsync(img).catch(e => {
+                m.edit(`:warning: An error occurred reading image: \`${e}\``);
+                failed = true;
+            });
+            if (failed) return;
             let out = await i.getBufferAsync(jimp.MIME_JPEG);
-            let glitch = Buffer.from(imgfkr.processBuffer(out), "base64");
+            let glitch = await jimp.read(
+                Buffer.from(imgfkr.processBuffer(out), "base64")
+            );
 
-            outframes.push({ data: glitch, delay: frame.delayCentisecs });
+            outframes.push(new GifFrame(new BitmapImage(glitch.bitmap)), {
+                delayCentisecs: Math.max(frame.delayCentisecs, 15)
+            });
         }
 
         return outframes;
@@ -194,36 +226,9 @@ let giffuck = function(msg, url) {
         m.edit(
             "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Creating gif)`"
         );
-        return new Promise((resolve, reject) => {
-            let opt = {
-                stdio: [0, "pipe", "ignore"]
-            };
-            //now where could my pipe be?
-            for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
 
-            let args = ["-loop", "0"];
-            for (let f in frames) {
-                args.push("-delay");
-                args.push(Math.max(frames[f].delay, 15));
-                args.push(`fd:${parseInt(f) + 3}`);
-            }
-            args.push("gif:-");
-
-            let im = spawn("convert", args, opt);
-            for (let f = 0; f < frames.length; f++)
-                im.stdio[f + 3].write(frames[f].data);
-            for (let f = 0; f < frames.length; f++) im.stdio[f + 3].end();
-
-            let out = [];
-
-            im.stdout.on("data", c => {
-                out.push(c);
-            });
-
-            im.stdout.on("end", _ => {
-                resolve(Buffer.concat(out));
-            });
-        });
+        let gif = await gifEncoder.encodeGif(frames);
+        return gif.buffer;
     }
 
     superagent.get(url).then(img => {
@@ -232,16 +237,18 @@ let giffuck = function(msg, url) {
                 "<a:typing:493087964742549515> Please wait, glitching in progress."
             );
 
-            var outframes = await glitchFrames(m, inp).catch(e =>
+            var outframes = await glitchFrames(m, inp).catch(e => {
                 m.edit(
                     `:warning: An error occurred extracting frames: \`${e}\``
-                )
-            );
-
-            var gif = await makeTheGif(m, outframes).catch(e =>
-                m.edit(`:warning: An error occurred creating gif: \`${e}\``)
-            );
-
+                );
+                failed = true;
+            });
+            if (failed) return;
+            var gif = await makeTheGif(m, outframes).catch(e => {
+                m.edit(`:warning: An error occurred creating gif: \`${e}\``);
+                failed = true;
+            });
+            if (failed) return;
             m.edit(
                 "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Uploading)`"
             );
@@ -255,9 +262,11 @@ let giffuck = function(msg, url) {
                 .then(_ => m.delete());
         });
     });
-};
+}
 
 let i2gg = async function(msg, url, avatar = false) {
+    let failed = false;
+
     async function glitchImageXTimes(m, inp) {
         return new Promise(async (resolve, reject) => {
             m.edit(
@@ -265,13 +274,11 @@ let i2gg = async function(msg, url, avatar = false) {
             );
             var outframes = [];
 
-            var img = await jimp
-                .read(inp)
-                .catch(e =>
-                    m.edit(
-                        `:warning: An error occurred reading image: \`${e}\``
-                    )
-                );
+            var img = await jimp.read(inp).catch(e => {
+                m.edit(`:warning: An error occurred reading image: \`${e}\``);
+                failed = true;
+            });
+            if (failed) return;
             var orig = await img.getBufferAsync(jimp.MIME_PNG);
             if (avatar) outframes.push(orig);
 
@@ -324,12 +331,16 @@ let i2gg = async function(msg, url, avatar = false) {
         "<a:typing:493087964742549515> Please wait, glitching in progress."
     );
 
-    var frames = await glitchImageXTimes(m, url).catch(e =>
-        m.edit(`:warning: An error occurred making frames: \`${e}\``)
-    );
-    var out = await makeTheGif(m, frames).catch(e =>
-        m.edit(`:warning: An error occurred creating gif: \`${e}\``)
-    );
+    var frames = await glitchImageXTimes(m, url).catch(e => {
+        m.edit(`:warning: An error occurred making frames: \`${e}\``);
+        failed = true;
+    });
+    if (failed) return;
+    var out = await makeTheGif(m, frames).catch(e => {
+        m.edit(`:warning: An error occurred creating gif: \`${e}\``);
+        failed = true;
+    });
+    if (failed) return;
 
     m.edit(
         "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Uploading)`"
@@ -421,12 +432,27 @@ let _watermark = async function(msg, url) {
     msg.channel.createMessage("", { file: toSend, name: "watermarked.png" });
 };
 
+let _toolbars = async function(msg, url) {
+    let template = await jimp.read(`${__dirname}/../img/toolbars.png`);
+    let img = await jimp.read(url);
+    let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
+    img.resize(1008, 126);
+    out.composite(img, 0, 592);
+    out.composite(template, 0, 0);
+
+    let toSend = await out.getBufferAsync(jimp.MIME_PNG);
+    msg.channel.createMessage("", { file: toSend, name: "toolbars.png" });
+};
+
 let rover = (ctx, msg, args) => imageCallback(ctx, msg, args, _rover);
 let carson = (ctx, msg, args) => imageCallback(ctx, msg, args, _carson);
 let watermark = (ctx, msg, args) => imageCallback(ctx, msg, args, _watermark);
+let toolbars = (ctx, msg, args) => imageCallback(ctx, msg, args, _toolbars);
 
 // one off commands
-let orly = function(ctx, msg, args) {
+async function chain(ctx, msg, args) {}
+
+function orly(ctx, msg, args) {
     msg.channel.sendTyping();
 
     if (!args) {
@@ -491,9 +517,9 @@ let orly = function(ctx, msg, args) {
             });
         });
     }
-};
+}
 
-let colsquare = function(ctx, msg, args) {
+function colsquare(ctx, msg, args) {
     let im = new jimp(256, 256, 0);
 
     let colors = [];
@@ -518,9 +544,9 @@ let colsquare = function(ctx, msg, args) {
             file: f
         });
     });
-};
+}
 
-let color = async function(ctx, msg, args) {
+async function color(ctx, msg, args) {
     async function createColMsg(ctx, msg, col, random = false) {
         let im = new jimp(128, 128, parseInt(`0x${col}FF`));
         let img = await im.getBufferAsync(jimp.MIME_PNG);
@@ -613,9 +639,9 @@ let color = async function(ctx, msg, args) {
 
         createColMsg(ctx, msg, col, true);
     }
-};
+}
 
-let rolegrid = function(ctx, msg, args) {
+function rolegrid(ctx, msg, args) {
     let roles = msg.channel.guild.roles.filter(x => x.color != 0);
     roles.sort((a, b) => b.position - a.position);
     let offset = Math.floor(Math.sqrt(roles.length));
@@ -645,7 +671,7 @@ let rolegrid = function(ctx, msg, args) {
             }
         );
     });
-};
+}
 
 //command registry
 module.exports = [
@@ -749,6 +775,12 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         name: "watermark",
         desc: "Add a bunch of watermarks to an image",
         func: watermark,
+        group: "image"
+    },
+    {
+        name: "toolbars",
+        desc: "Add a bunch of toolbars to an image",
+        func: toolbars,
         group: "image"
     },
 
