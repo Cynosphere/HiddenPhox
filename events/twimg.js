@@ -73,11 +73,11 @@ async function getTweetImages(ctx, snowflake, msg) {
 					});
 			}
 
-			let media = tweet.extended_entities.media.splice(1);
+			/*let media = tweet.extended_entities.media.splice(1);
 
 			for (m in media) {
 				imgs.push(media[m].media_url_https + ':orig');
-			}
+			}*/
 		}
 
 		resolve(imgs);
