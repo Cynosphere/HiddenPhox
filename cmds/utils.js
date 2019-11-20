@@ -369,7 +369,7 @@ let binfo = async function(ctx, msg, args) {
     }
 };
 
-let ptypes = ["Playing", "Streaming", "Listening to", "Watching"];
+let ptypes = ["Playing", "Streaming", "Listening to", "Watching", "Custom Status"];
 
 let uinfo = function(ctx, msg, args) {
     ctx.utils
@@ -406,7 +406,7 @@ let uinfo = function(ctx, msg, args) {
                         },
                         {
                             name: ptypes[(u.game && u.game.type) || 0],
-                            value: u.game ? u.game.name : "Nothing",
+                            value: `${u.game.emoji ? `<${u.game.emoji.animated ? "a" : ""}:_:${u.game.emoji.id}> ` : ""}${u.game ? u.game.name : (u.game.emoji ? "" : "Nothing")}`,
                             inline: true
                         },
                         {
