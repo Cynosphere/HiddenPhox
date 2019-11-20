@@ -406,7 +406,7 @@ let uinfo = function(ctx, msg, args) {
                         },
                         {
                             name: ptypes[(u.game && u.game.type) || 0],
-                            value: `${u.game.emoji ? `<${u.game.emoji.animated ? "a" : ""}:_:${u.game.emoji.id}> ` : ""}${u.game ? u.game.name : (u.game.emoji ? "" : "Nothing")}`,
+                            value: `${u.game.emoji && ctx.emojis.get(u.game.emoji.id) ? `<${u.game.emoji.animated ? "a" : ""}:_:${u.game.emoji.id}> ` : ""}${u.game ? u.game.name : (u.game.emoji ? (ctx.emojis.get(u.game.emoji.id) ? "" : "<bot doesnt have emote>") : "Nothing")}`,
                             inline: true
                         },
                         {
