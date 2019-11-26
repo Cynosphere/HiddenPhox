@@ -509,8 +509,13 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             )
                             .then(x => setTimeout(() => x.delete(), 10000))
                     );
-                let streamURL = await ctx.libs.superagent.get(`${info.media.transcodings[1].url}?client_id=${scCID}`)
-                    .then(x => x.body.url).catch(e =>
+                let formatURL = info.media.transcodings
+                    .filter(x => !x.snipped)
+                    .filter(x.format.protocol == "progressive")[0].url;
+                let streamURL = await ctx.libs.superagent
+                    .get(`${formatURL}?client_id=${scCID}`)
+                    .then(x => x.body.url)
+                    .catch(e =>
                         msg.channel
                             .createMessage(
                                 `Error getting track:\n\`\`\`\n${e}\n\`\`\``
@@ -529,7 +534,9 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             },
                             {
                                 name: "Length",
-                                value: ctx.utils.remainingTime(info.full_duration),
+                                value: ctx.utils.remainingTime(
+                                    info.full_duration
+                                ),
                                 inline: true
                             },
                             {
@@ -575,8 +582,13 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 )
                                 .then(x => setTimeout(() => x.delete(), 10000))
                         );
-                    let streamURL = await ctx.libs.superagent.get(`${info.media.transcodings[1].url}?client_id=${scCID}`)
-                        .then(x => x.body.url).catch(e =>
+                    let formatURL = info.media.transcodings
+                        .filter(x => !x.snipped)
+                        .filter(x.format.protocol == "progressive")[0].url;
+                    let streamURL = await ctx.libs.superagent
+                        .get(`${formatURL}?client_id=${scCID}`)
+                        .then(x => x.body.url)
+                        .catch(e =>
                             msg.channel
                                 .createMessage(
                                     `Error getting track:\n\`\`\`\n${e}\n\`\`\``
@@ -758,9 +770,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             data.metadata["icy-name"] &&
                             data.metadata.StreamTitle
                         ) {
-                            title = `${data.metadata.StreamTitle} [${
-                                data.metadata["icy-name"]
-                            }]`;
+                            title = `${data.metadata.StreamTitle} [${data.metadata["icy-name"]}]`;
                             stream = true;
                         }
 
@@ -856,9 +866,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 data.metadata["icy-name"] &&
                                 data.metadata.StreamTitle
                             ) {
-                                title = `${data.metadata.StreamTitle} [${
-                                    data.metadata["icy-name"]
-                                }]`;
+                                title = `${data.metadata.StreamTitle} [${data.metadata["icy-name"]}]`;
                                 stream = true;
                             }
 
@@ -960,8 +968,9 @@ let doSearchThingsOk = async function(id, str, msg, ctx) {
         async _msg => {
             let value = parseInt(_msg.content);
             if (_msg.content == value) {
-                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                    .botmsg).delete();
+                (
+                    await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg
+                ).delete();
                 _msg.delete().catch(() => {
                     return;
                 });
@@ -980,8 +989,9 @@ let doSearchThingsOk = async function(id, str, msg, ctx) {
                     msg.author.id
                 );
             } else {
-                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                    .botmsg).delete();
+                (
+                    await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg
+                ).delete();
                 _msg.delete().catch(() => {
                     return;
                 });
@@ -1013,8 +1023,9 @@ let doQueueRemovalThingsOk = async function(ctx, msg, data) {
         async _msg => {
             let value = parseInt(_msg.content);
             if (_msg.content == value) {
-                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                    .botmsg).delete();
+                (
+                    await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg
+                ).delete();
                 _msg.delete().catch(() => {
                     return;
                 });
@@ -1033,8 +1044,9 @@ let doQueueRemovalThingsOk = async function(ctx, msg, data) {
                     .get(msg.member.voiceState.channelID)
                     .queue.filter(x => x.url !== torem.url);
             } else {
-                (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                    .botmsg).delete();
+                (
+                    await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg
+                ).delete();
                 _msg.delete().catch(() => {
                     return;
                 });
