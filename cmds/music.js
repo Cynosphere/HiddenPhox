@@ -166,7 +166,7 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
 async function doSCPlaylistThingsOk(ctx, msg, url) {
     let playlistURL = await ctx.libs.superagent
         .get(
-            `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+            `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}&app_version=1574772913`
         )
         .then(x => x.redirects[0]);
 
@@ -448,7 +448,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             if (conn.playing) {
                 let info = await ctx.libs.superagent
                     .get(
-                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}&app_version=1574772913`
                     )
                     .then(x => x.body)
                     .catch(e =>
@@ -499,7 +499,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             } else {
                 let info = await ctx.libs.superagent
                     .get(
-                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}&app_version=1574772913`
                     )
                     .then(x => x.body)
                     .catch(e =>
@@ -543,7 +543,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 conn.start = Date.now();
                 conn.end = Date.now() + conn.len;
 
-                conn.play(info.stream_url + "?client_id=" + scCID, {
+                conn.play(`${info.stream_url}?client_id=${scCID}&app_version=1574772913`, {
                     inlineVolume: true,
                     voiceDataTimeout: -1
                 });
@@ -556,7 +556,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     ctx.vc.get(id).iwastoldtoleave = false;
                     let info = await ctx.libs.superagent
                         .get(
-                            `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+                            `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}&app_version=1574772913`
                         )
                         .then(x => x.body)
                         .catch(e =>
@@ -602,7 +602,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     conn.start = Date.now();
                     conn.end = Date.now() + conn.len;
 
-                    conn.play(info.stream_url + "?client_id=" + scCID, {
+                    conn.play(`${info.stream_url}?client_id=${scCID}&app_version=1574772913`, {
                         inlineVolume: true,
                         voiceDataTimeout: -1
                     });
