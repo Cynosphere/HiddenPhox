@@ -166,7 +166,7 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
 async function doSCPlaylistThingsOk(ctx, msg, url) {
     let playlistURL = await ctx.libs.superagent
         .get(
-            `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}&app_version=1574772913`
+            `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
         )
         .then(x => x.redirects[0]);
 
@@ -448,7 +448,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             if (conn.playing) {
                 let info = await ctx.libs.superagent
                     .get(
-                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}&app_version=1574772913`
+                        `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                     )
                     .then(x => x.body)
                     .catch(e =>
@@ -462,7 +462,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     url: url,
                     type: "sc",
                     title: info.title,
-                    len: info.duration,
+                    len: info.full_duration,
                     addedBy: addedBy
                 });
                 if (playlist) return;
@@ -499,7 +499,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             } else {
                 let info = await ctx.libs.superagent
                     .get(
-                        `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}&app_version=1574772913`
+                        `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                     )
                     .then(x => x.body)
                     .catch(e =>
@@ -509,6 +509,15 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             )
                             .then(x => setTimeout(() => x.delete(), 10000))
                     );
+                let streamURL = await ctx.libs.superagent.get(`${info.media.transcodings[1].url}?client_id=${scCID}`)
+                    .then(x => x.body.url).catch(e =>
+                        msg.channel
+                            .createMessage(
+                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                            )
+                            .then(x => setTimeout(() => x.delete(), 10000))
+                    );
+
                 msg.channel.createMessage({
                     embed: {
                         title: `:musical_note: Now Playing`,
@@ -520,7 +529,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             },
                             {
                                 name: "Length",
-                                value: ctx.utils.remainingTime(info.duration),
+                                value: ctx.utils.remainingTime(info.full_duration),
                                 inline: true
                             },
                             {
@@ -539,11 +548,11 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     title: info.title,
                     addedBy: addedBy
                 };
-                conn.len = info.duration;
+                conn.len = info.fullduration;
                 conn.start = Date.now();
                 conn.end = Date.now() + conn.len;
 
-                conn.play(`${info.stream_url}?client_id=${scCID}&app_version=1574772913`, {
+                conn.play(`${streamURL}?client_id=${scCID}`, {
                     inlineVolume: true,
                     voiceDataTimeout: -1
                 });
@@ -556,10 +565,18 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     ctx.vc.get(id).iwastoldtoleave = false;
                     let info = await ctx.libs.superagent
                         .get(
-                            `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}&app_version=1574772913`
+                            `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                         )
                         .then(x => x.body)
                         .catch(e =>
+                            msg.channel
+                                .createMessage(
+                                    `Error getting track:\n\`\`\`\n${e}\n\`\`\``
+                                )
+                                .then(x => setTimeout(() => x.delete(), 10000))
+                        );
+                    let streamURL = await ctx.libs.superagent.get(`${info.media.transcodings[1].url}?client_id=${scCID}`)
+                        .then(x => x.body.url).catch(e =>
                             msg.channel
                                 .createMessage(
                                     `Error getting track:\n\`\`\`\n${e}\n\`\`\``
@@ -578,7 +595,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 {
                                     name: "Length",
                                     value: ctx.utils.remainingTime(
-                                        info.duration
+                                        info.full_duration
                                     ),
                                     inline: true
                                 },
@@ -598,11 +615,11 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         title: info.title,
                         addedBy: addedBy
                     };
-                    conn.len = info.duration;
+                    conn.len = info.full_duration;
                     conn.start = Date.now();
                     conn.end = Date.now() + conn.len;
 
-                    conn.play(`${info.stream_url}?client_id=${scCID}&app_version=1574772913`, {
+                    conn.play(`${streamURL}?client_id=${scCID}`, {
                         inlineVolume: true,
                         voiceDataTimeout: -1
                     });
