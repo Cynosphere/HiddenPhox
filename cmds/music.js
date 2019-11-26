@@ -511,7 +511,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     );
                 let formatURL = info.media.transcodings
                     .filter(x => !x.snipped)
-                    .filter(x.format.protocol == "progressive")[0].url;
+                    .filter(x => x.format.protocol == "progressive")[0].url;
                 let streamURL = await ctx.libs.superagent
                     .get(`${formatURL}?client_id=${scCID}`)
                     .then(x => x.body.url)
@@ -584,7 +584,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         );
                     let formatURL = info.media.transcodings
                         .filter(x => !x.snipped)
-                        .filter(x.format.protocol == "progressive")[0].url;
+                        .filter(x => x.format.protocol == "progressive")[0].url;
                     let streamURL = await ctx.libs.superagent
                         .get(`${formatURL}?client_id=${scCID}`)
                         .then(x => x.body.url)
