@@ -552,7 +552,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 conn.start = Date.now();
                 conn.end = Date.now() + conn.len;
 
-                conn.play(`${streamURL}?client_id=${scCID}`, {
+                conn.play(streamURL, {
                     inlineVolume: true,
                     voiceDataTimeout: -1
                 });
@@ -619,7 +619,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     conn.start = Date.now();
                     conn.end = Date.now() + conn.len;
 
-                    conn.play(`${streamURL}?client_id=${scCID}`, {
+                    conn.play(streamURL, {
                         inlineVolume: true,
                         voiceDataTimeout: -1
                     });
