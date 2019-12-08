@@ -82,6 +82,7 @@ let linvite = async function(ctx, msg, args) {
             msg.channel.createMessage("Invite provided is not valid.");
             return;
         });
+    if (!data) return;
     let inv = data.body;
 
     if (inv.message && inv.message == "Unknown Invite") {
@@ -102,11 +103,7 @@ let linvite = async function(ctx, msg, args) {
                 },
                 {
                     name: "Member Count",
-                    value: `${statusIcons["online"]}${
-                        inv.approximate_presence_count
-                    } online\t\t${statusIcons["offline"]} ${
-                        inv.approximate_member_count
-                    } members`,
+                    value: `${statusIcons["online"]}${inv.approximate_presence_count} online\t\t${statusIcons["offline"]} ${inv.approximate_member_count} members`,
                     inline: false
                 },
                 {
@@ -369,7 +366,13 @@ let binfo = async function(ctx, msg, args) {
     }
 };
 
-let ptypes = ["Playing", "Streaming", "Listening to", "Watching", "Custom Status"];
+let ptypes = [
+    "Playing",
+    "Streaming",
+    "Listening to",
+    "Watching",
+    "Custom Status"
+];
 
 let uinfo = function(ctx, msg, args) {
     ctx.utils
@@ -406,7 +409,28 @@ let uinfo = function(ctx, msg, args) {
                         },
                         {
                             name: ptypes[(u.game && u.game.type) || 0],
-                            value: `${u.game.emoji ? (u.game.emoji.id && ctx.emotes.get(u.game.emoji.id) ? `<${u.game.emoji.animated ? "a" : ""}:_:${u.game.emoji.id}> ` : (u.game.emoji.id ? "" : u.game.emoji.name+" ")) : ""}${u.game ? (u.game.type == 4 ? (u.game.state ? u.game.state : (ctx.emotes.get(u.game.emoji.id) ? "" : "<bot doesnt have emote> ")) : u.game.name) : "Nothing"}`,
+                            value: `${
+                                u.game.emoji
+                                    ? u.game.emoji.id &&
+                                      ctx.emotes.get(u.game.emoji.id)
+                                        ? `<${
+                                              u.game.emoji.animated ? "a" : ""
+                                          }:_:${u.game.emoji.id}> `
+                                        : u.game.emoji.id
+                                        ? ""
+                                        : u.game.emoji.name + " "
+                                    : ""
+                            }${
+                                u.game
+                                    ? u.game.type == 4
+                                        ? u.game.state
+                                            ? u.game.state
+                                            : ctx.emotes.get(u.game.emoji.id)
+                                            ? ""
+                                            : "<bot doesnt have emote> "
+                                        : u.game.name
+                                    : "Nothing"
+                            }`,
                             inline: true
                         },
                         {
@@ -1032,9 +1056,7 @@ let presence = function(ctx, msg, args) {
                 if (u.game.party && u.game.party.size)
                     embed.fields.push({
                         name: "Party Size",
-                        value: `${u.game.party.size[0]} of ${
-                            u.game.party.size[1]
-                        }`,
+                        value: `${u.game.party.size[0]} of ${u.game.party.size[1]}`,
                         inline: true
                     });
                 if (u.game.assets && u.game.assets.large_text)
@@ -1762,6 +1784,34 @@ let jump = async function(ctx, msg, args) {
         .catch(e => msg.channel.createMessage(e));
 };
 
+let readtxt = async function(ctx, msg, args) {
+    if (!args) {
+        msg.channel.createMessage("Arguments required.");
+        return;
+    }
+
+    if (/[0-9]{17,21}/.test(args)) {
+        let m = await msg.channel.getMessage(args);
+        if (m) {
+            if (m.attachments && m.attachments[0]) {
+                let req = await ctx.libs.superagent.get(m.attachments[0].url);
+                if (req.type == "text/plain") {
+                    ctx.utils.makeHaste(ctx, msg, req.text, "");
+                } else {
+                    msg.channel.createMessage("Attachment is not a text file.");
+                    return;
+                }
+            }
+        } else {
+            msg.channel.createMessage("Message not found in channel.");
+            return;
+        }
+    } else {
+        msg.channel.createMessage("Not an ID.");
+        return;
+    }
+};
+
 module.exports = [
     {
         name: "avatar",
@@ -1909,5 +1959,12 @@ If the bot has Manage Messages, it'll delete your regular command message.`,
         func: emotes,
         group: "utils",
         aliases: ["emotes"]
+    },
+    {
+        name: "readtxt",
+        desc:
+            "Takes a text file attachment from a message and uploads it to mystbin.",
+        func: readtxt,
+        group: "utils"
     }
 ];
