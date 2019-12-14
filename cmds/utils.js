@@ -148,25 +148,27 @@ let linvite = async function(ctx, msg, args) {
             });
         }
 
-        edata.fields.push({
-            name: "\u200b",
-            value: `${
-                inv.guild.icon !== null
-                    ? `[Icon](https://cdn.discordapp.com/icons/${
-                          inv.guild.id
-                      }/${inv.guild.icon}.${
-                          inv.guild.icon.startsWith("a_")
-                              ? "gif?size=1024&_=.gif"
-                              : "png?size=1024"
-                      })`
-                    : ""
-            }${
-                inv.guild.splash !== null
-                    ? ` | [Splash](https://cdn.discordapp.com/splashes/${inv.guild.id}/${inv.guild.splash}.png?size=2048)`
-                    : ""
-            }`,
-            inline: false
-        });
+        if (inv.guild.icon || inv.guild.splash) {
+            edata.fields.push({
+                name: "\u200b",
+                value: `${
+                    inv.guild.icon !== null
+                        ? `[Icon](https://cdn.discordapp.com/icons/${
+                              inv.guild.id
+                          }/${inv.guild.icon}.${
+                              inv.guild.icon.startsWith("a_")
+                                  ? "gif?size=1024&_=.gif"
+                                  : "png?size=1024"
+                          })`
+                        : ""
+                }${
+                    inv.guild.splash !== null
+                        ? ` | [Splash](https://cdn.discordapp.com/splashes/${inv.guild.id}/${inv.guild.splash}.png?size=2048)`
+                        : ""
+                }`,
+                inline: false
+            });
+        }
 
         if (inv.guild.splash !== null) {
             edata.image = {
