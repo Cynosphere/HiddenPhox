@@ -127,13 +127,15 @@ let linvite = async function(ctx, msg, args) {
                 }
             ],
             thumbnail: {
-                url: `https://cdn.discordapp.com/icons/${inv.guild.id}/${
-                    inv.guild.icon
-                }.${
-                    inv.guild.icon.startsWith("a_")
-                        ? "gif?size=1024&_=.gif"
-                        : "png?size=1024"
-                }`
+                url: inv.guild.icon
+                    ? `https://cdn.discordapp.com/icons/${inv.guild.id}/${
+                          inv.guild.icon
+                      }.${
+                          inv.guild.icon.startsWith("a_")
+                              ? "gif?size=1024&_=.gif"
+                              : "png?size=1024"
+                      }`
+                    : null
             }
         };
 
