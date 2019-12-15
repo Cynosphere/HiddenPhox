@@ -2,7 +2,8 @@ const Eris = require("eris");
 const config = require("./config.json");
 const client = new Eris(config.token, {
     defaultImageFormat: "png",
-    defaultImageSize: 1024
+    defaultImageSize: 1024,
+    maxShards: "auto"
 });
 
 const ctx = {};
@@ -130,9 +131,7 @@ client.on("guildCreate", function(guild) {
     if (bots >= 50 && Math.floor((bots / guild.memberCount) * 100) >= 70) {
         ctx.utils.logInfo(
             ctx,
-            `'${guild.name}' (${
-                guild.id
-            }) detected as a bot collection, leaving!`
+            `'${guild.name}' (${guild.id}) detected as a bot collection, leaving!`
         );
         guild.leave();
     }
@@ -165,9 +164,7 @@ client.on("guildDelete", function(guild) {
 
     ctx.utils.logInfo(
         ctx,
-        `Left Guild: '${guild.name}' (${guild.id}) | Now in ${
-            ctx.bot.guilds.size
-        } guilds.`
+        `Left Guild: '${guild.name}' (${guild.id}) | Now in ${ctx.bot.guilds.size} guilds.`
     );
 });
 
