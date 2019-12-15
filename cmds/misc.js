@@ -876,6 +876,7 @@ let rextester = async function(ctx, msg, args) {
         .query({ Program: code })
         .query({ Input: stdin })
         .query({ CompilerArgs: cArgs })
+        .then(x => x.body)
         .catch(err => {
             msg.channel.createMessage(
                 `:warning: An error occurred:\n\`\`\`\n${err.message}\`\`\``
@@ -883,10 +884,13 @@ let rextester = async function(ctx, msg, args) {
         });
     if (!data) return;
 
-    let out = ctx.utils.safeString(data.body.Result);
-    msg.channel.createMessage(`\`\`\`${lang}\n${out}\`\`\``);
+    let out = ctx.utils.safeString(data.Result);
     msg.channel.createMessage(
-        `DEBUG:\n\`\`\`json\n${JSON.stringify(data.body)}\`\`\``
+        `\`\`\`${lang}\n${out}\`\`\`${
+            data.Warnings != null
+                ? `\n\nWarnings:\`\`\`${data.Warnings}\`\`\``
+                : ""
+        }${data.Errors != null ? `\n\nErrors:\`\`\`${data.Errors}\`\`\`` : ""}`
     );
 };
 
