@@ -37,7 +37,11 @@ let _eval = async function(ctx, msg, args) {
                 ? out
                 : require("util").inspect(out, { depth: 0 });
 
-        out = out.replace(ctx.bot.token, "lol no key 4 u");
+        let token = ctx.bot.token;
+        out = out.replace(
+            new RegExp(token.replace(/\./g, "\\."), "g"),
+            "lol no key 4 u"
+        );
 
         if (errored) {
             msg.channel.createMessage(
