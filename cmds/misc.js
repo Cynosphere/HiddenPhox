@@ -884,7 +884,7 @@ let rextester = async function(ctx, msg, args) {
         });
     if (!data) return;
 
-    let out = ctx.utils.safeString(data.result);
+    let out = ctx.utils.safeString(data.Result);
     msg.channel.createMessage(`\`\`\`${lang}\n${out}\`\`\``);
 };
 
