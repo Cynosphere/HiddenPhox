@@ -886,6 +886,9 @@ let rextester = async function(ctx, msg, args) {
 
     let out = ctx.utils.safeString(data.Result);
     msg.channel.createMessage(`\`\`\`${lang}\n${out}\`\`\``);
+    msg.channel.createMessage(
+        `DEBUG:\n\`\`\`json\n${JSON.stringify(data)}\`\`\``
+    );
 };
 
 module.exports = [
