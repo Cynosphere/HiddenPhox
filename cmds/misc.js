@@ -873,9 +873,9 @@ let rextester = async function(ctx, msg, args) {
     let data = await ctx.libs.superagent
         .post("https://rextester.com/rundotnet/api")
         .query("LanguageChoice", langcode)
-        .query("Program", encodeURIComponent(code))
-        .query("Input", encodeURIComponent(stdin))
-        .query("CompilerArgs", encodeURIComponent(cArgs))
+        .query("Program", code)
+        .query("Input", stdin)
+        .query("CompilerArgs", cArgs)
         .then(x => x.body)
         .catch(e => {
             msg.channel.createMessage(
