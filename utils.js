@@ -154,8 +154,10 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                     async m => {
                         let value = parseInt(m.content);
                         if (m.content == value) {
-                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                .botmsg).delete();
+                            (
+                                await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                    .botmsg
+                            ).delete();
                             m.delete().catch(() => {
                                 return;
                             });
@@ -168,8 +170,10 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                                 ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer
                             );
                         } else {
-                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                .botmsg).delete();
+                            (
+                                await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                    .botmsg
+                            ).delete();
                             m.delete().catch(() => {
                                 return;
                             });
@@ -244,8 +248,10 @@ utils.lookupGuild = function(ctx, msg, str, filter) {
                     async m => {
                         let value = parseInt(m.content);
                         if (m.content == value) {
-                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                .botmsg).delete();
+                            (
+                                await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                    .botmsg
+                            ).delete();
                             m.delete().catch(() => {
                                 return;
                             });
@@ -255,8 +261,10 @@ utils.lookupGuild = function(ctx, msg, str, filter) {
                                 ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
                             );
                         } else {
-                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                .botmsg).delete();
+                            (
+                                await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                    .botmsg
+                            ).delete();
                             m.delete().catch(() => {
                                 return;
                             });
@@ -330,8 +338,10 @@ utils.lookupRole = function(ctx, msg, str, filter) {
                     async m => {
                         let value = parseInt(m.content);
                         if (m.content == value) {
-                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                .botmsg).delete();
+                            (
+                                await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                    .botmsg
+                            ).delete();
                             m.delete().catch(() => {
                                 return;
                             });
@@ -341,8 +351,10 @@ utils.lookupRole = function(ctx, msg, str, filter) {
                                 ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
                             );
                         } else {
-                            (await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
-                                .botmsg).delete();
+                            (
+                                await ctx.awaitMsgs.get(msg.channel.id)[msg.id]
+                                    .botmsg
+                            ).delete();
                             m.delete().catch(() => {
                                 return;
                             });
@@ -383,13 +395,13 @@ function timeString() {
     );
 }
 
-utils.safeString = function(str) {
+utils.safeString = function(str, newlines = true) {
     let s = str ? str.toString() : "";
     s = s.replace(/`/g, "'");
     s = s.replace(/<@/g, "<@\u200b");
     s = s.replace(/<#/g, "<#\u200b");
     s = s.replace(/<&/g, "<&\u200b");
-    s = s.replace(/\n/g, " ");
+    if (newlines) s = s.replace(/\n/g, " ");
     return s;
 };
 
@@ -416,9 +428,7 @@ utils.logError = function(ctx, string) {
     string = utils.safeString(string);
     ctx.bot.createMessage(
         ctx.logid,
-        `<:RedTick:349381062054510604> **[ERROR] [${time}]** \`${string}\`\nCC: <@${
-            ctx.ownerid
-        }>`
+        `<:RedTick:349381062054510604> **[ERROR] [${time}]** \`${string}\`\nCC: <@${ctx.ownerid}>`
     );
 };
 
