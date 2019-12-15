@@ -694,8 +694,8 @@ let redditdl = async function(ctx, msg, args) {
             if (
                 !msg.channel.nsfw ||
                 (msg.channel.nsfw &&
-                    (msg.channel.topic &&
-                        msg.channel.topic.includes("[no_nsfw]")))
+                    msg.channel.topic &&
+                    msg.channel.topic.includes("[no_nsfw]"))
             ) {
                 msg.channel.createMessage(
                     "Post marked as NSFW whilst trying to use command in non-NSFW or NSFW blacklisted channel."
@@ -740,6 +740,152 @@ let redditdl = async function(ctx, msg, args) {
         msg.channel.createMessage("Reddit post is not a video.");
         return;
     }
+};
+
+// rextester
+// mappings for hljs -> rextester
+let languages = {
+    csharp: 1,
+    vbnet: 2,
+    fsharp: 3,
+    java: 4,
+    //python: 5 // 2.7, --2.7
+    c: 6, // gcc
+    cpp: 7, // gcc
+    php: 8,
+    pascal: 9,
+    objc: 10,
+    haskell: 11,
+    ruby: 12,
+    perl: 13,
+    lua: 14,
+    //js: 17, // using node only
+    lisp: 18,
+    prolog: 19,
+    go: 20,
+    scala: 21,
+    js: 23, // node
+    py: 24, // py 3
+    //c: 26, // clang, --clang
+    //cpp: 27, // clang, --clang
+    //c: 28, // vc, --vc
+    //cpp: 29, // vc, --vc
+    d: 30,
+    r: 31,
+    swift: 37,
+    bash: 38,
+    erlang: 40,
+    elixir: 41,
+    kotlin: 43,
+    brainfuck: 44
+};
+
+let shortcuts = {
+    cs: "csharp",
+    rb: "ruby",
+    javascript: "js",
+    python: "py",
+    kt: "kotlin",
+    bf: "brainfuck",
+    python: "py"
+};
+
+let rextester = async function(ctx, msg, args) {
+    msg.channel.sendTyping();
+    if (!args) {
+        msg.channel.createMessage("Arguments required.");
+        return;
+    }
+
+    let use27 = false;
+    let useClang = false;
+    let useVC = false;
+
+    let cArgs = "";
+    let stdin = "";
+
+    if (args.startsWith("--2.7 ")) {
+        use27 = true;
+        args = args.replace("--2.7 ", "");
+    }
+
+    if (args.startsWith("--clang ")) {
+        useClang = true;
+        args = args.replace("--clang ", "");
+    }
+
+    if (args.startsWith("--vc ")) {
+        useVC = true;
+        args = args.replace("--vc ", "");
+    }
+
+    if (args.startsWith("--args=")) {
+        let reg = /--args=(.+?) /;
+        let a = args.match(reg);
+        cArgs = a[1];
+        args = args.replace(reg, "");
+    }
+
+    if (args.startsWith("--stdin=")) {
+        let reg = /--stdin=(.+?) /;
+        let a = args.match(reg);
+        stdin = a[1];
+        args = args.replace(reg, "");
+    }
+
+    let codeblock = /^```(.+?)\n(.+?)```$/s;
+
+    if (!codeblock.test(args)) {
+        msg.channel.createMessage("Codeblock not found.");
+        return;
+    }
+
+    let matches = args.match(codeblock);
+
+    let lang = matches[1];
+    let code = matches[2];
+
+    if (shortcuts[lang]) lang = shortcuts[lang];
+
+    if (!languages[lang]) {
+        msg.channel.createMessage("Language not supported.");
+        return;
+    }
+
+    let langcode = languages[lang];
+
+    if (lang == "c") {
+        if (useClang) {
+            langcode = 26;
+        } else if (useVC) {
+            langcode = 28;
+        }
+    } else if (lang == "cpp") {
+        if (useClang) {
+            langcode = 27;
+        } else if (useVC) {
+            langcode = 29;
+        }
+    } else if (lang == "py") {
+        if (use27) langcode = 5;
+    }
+
+    let data = await ctx.libs.superagent
+        .post("https://rextester.com/rundotnet/api")
+        .query("LanguageChoice", langcode.toString())
+        .query("Program", encodeURIComponent(code))
+        .query("Input", encodeURIComponent(stdin))
+        .query("CompilerArgs", encodeURIComponent(cArgs))
+        .then(x => x.body)
+        .catch(e => {
+            msg.channel.createMessage(
+                `:warning: An error occurred:\n\`\`\`\n${err.message}\`\`\``
+            );
+        });
+    if (!data) return;
+
+    let out = ctx.utils.safeString(data.result);
+    msg.channel.createMessage(`\`\`\`${lang}\n${out}\`\`\``);
 };
 
 module.exports = [
@@ -891,5 +1037,12 @@ Can be called with --url to get URL.`,
 Can be called with --url to get URL.`,
         func: redditdl,
         group: "misc"
+    },
+    {
+        name: "rextester",
+        desc: "Run code in a sandbox",
+        func: rextester,
+        group: "misc",
+        aliases: ["rex"]
     }
 ];
