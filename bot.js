@@ -2,8 +2,7 @@ const Eris = require("eris");
 const config = require("./config.json");
 const client = new Eris(config.token, {
     defaultImageFormat: "png",
-    defaultImageSize: 1024,
-    maxShards: "auto"
+    defaultImageSize: 1024
 });
 
 const ctx = {};
