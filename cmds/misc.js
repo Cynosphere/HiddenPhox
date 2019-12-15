@@ -872,22 +872,21 @@ let rextester = async function(ctx, msg, args) {
 
     let data = await ctx.libs.superagent
         .post("https://rextester.com/rundotnet/api")
-        .query("LanguageChoice", langcode)
-        .query("Program", code)
-        .query("Input", stdin)
-        .query("CompilerArgs", cArgs)
-        .then(x => x.body)
-        .catch(e => {
+        .query({ LanguageChoice: langcode })
+        .query({ Program: code })
+        .query({ Input: stdin })
+        .query({ CompilerArgs: cArgs })
+        .catch(err => {
             msg.channel.createMessage(
                 `:warning: An error occurred:\n\`\`\`\n${err.message}\`\`\``
             );
         });
     if (!data) return;
 
-    let out = ctx.utils.safeString(data.Result);
+    let out = ctx.utils.safeString(data.body.Result);
     msg.channel.createMessage(`\`\`\`${lang}\n${out}\`\`\``);
     msg.channel.createMessage(
-        `DEBUG:\n\`\`\`json\n${JSON.stringify(data)}\`\`\``
+        `DEBUG:\n\`\`\`json\n${JSON.stringify(data.body)}\`\`\``
     );
 };
 
