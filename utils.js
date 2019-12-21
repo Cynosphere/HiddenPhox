@@ -432,8 +432,8 @@ utils.logError = function(ctx, string) {
     );
 };
 
-utils.remainingTime = function(owo) {
-    let s = parseInt(owo) / 1000;
+utils.remainingTime = function(inp) {
+    let s = parseInt(inp) / 1000;
     let d = parseInt(s / 86400);
     s = s % 86400;
     let h = parseInt(s / 3600);
@@ -449,6 +449,8 @@ utils.remainingTime = function(owo) {
         (s < 10 ? "0" + s : s)
     );
 };
+
+utils.formatTime = utils.remainingTime;
 
 utils.createEvent = function(client, type, func, ctx) {
     client.on(type, (...args) => func(...args, ctx));
@@ -540,6 +542,93 @@ utils.makeHaste = async function(ctx, msg, content, txt) {
         .catch(e => {
             msg.channel.createMessage(`Could not upload to Mystbin.`);
         });
+};
+
+function fmod(a, b) {
+    return Number((a - Math.floor(a / b) * b).toPrecision(8));
+}
+
+function stringHash(str) {
+    let counter = 1;
+    let len = str.length;
+    for (i = 0; i < len; i = i + 3) {
+        counter =
+            fmod(counter * 8161, 4294967279) +
+            str.charCodeAt(i) * 16776193 +
+            (str.charCodeAt(i + 1) || len - i + 256) * 8372226 +
+            (str.charCodeAt(i + 2) || len - i + 256) * 3932164;
+    }
+
+    return fmod(counter, 4294967291);
+}
+
+function hsvToInt(h, s, v) {
+    let c = v * s;
+    let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    let m = v - c;
+
+    let r, g, b;
+
+    if (0 <= h && h < 60) {
+        r = c;
+        g = x;
+        b = 0;
+    } else if (60 <= h && h < 120) {
+        r = x;
+        g = c;
+        b = 0;
+    } else if (120 <= h && h < 180) {
+        r = 0;
+        g = c;
+        b = x;
+    } else if (180 <= h && h < 240) {
+        r = 0;
+        g = x;
+        b = c;
+    } else if (240 <= h && h < 300) {
+        r = x;
+        g = 0;
+        b = c;
+    } else if (300 <= h && h < 360) {
+        r = c;
+        g = 0;
+        b = x;
+    }
+
+    r += m;
+    g += m;
+    b += m;
+
+    r *= 255;
+    g *= 255;
+    b *= 255;
+
+    let out = r;
+    out = (out << 8) + g;
+    out = (out << 8) + b;
+
+    return out;
+}
+
+utils.pastelize = function(str) {
+    let h = stringHash(str) - 5;
+
+    let light = h % 3 == 0;
+    let dark = h % 127 == 0;
+
+    return hsvToInt((h % 180) * 2, light ? 0.3 : 0.6, dark ? 0.6 : 1);
+};
+
+utils.toReadableTime = function(time) {
+    let seconds = time / 1000;
+    let days = seconds / 60 / 60 / 24;
+    let years = days / 365.25;
+
+    if (years >= 1) {
+        return `${years.toFixed(2)} years`;
+    } else {
+        return `${days.toFixed(2)} days`;
+    }
 };
 
 //utils.google = require("./utils/google.js");

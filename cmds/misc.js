@@ -894,6 +894,176 @@ let rextester = async function(ctx, msg, args) {
     );
 };
 
+let speedrun = async function(ctx, msg, args) {
+    if (!args) {
+        msg.channel.createMessage("Arguments required.");
+        return;
+    }
+
+    let searchResults = await ctx.libs.superagent
+        .get(
+            `https://www.speedrun.com/api/v1/games?name=${encodeURIComponent(
+                args
+            )}`
+        )
+        .set(
+            "User-Agent",
+            "HiddenPhox v9 (Discord Bot) - https://gitlab.com/Cynosphere/HiddenPhox"
+        ) // asked for in docs, might as well to be nice
+        .then(x => x.body.data);
+
+    if (!searchResults) {
+        msg.channel.createMessage(":warning: No results returned.");
+        return;
+    }
+
+    let m = "Please type a number to choose your selection\n```ini\n";
+
+    for (let i = 0; i < searchResults.length; i++) {
+        m = m + `[${i + 1}] ${names.international}\n`;
+    }
+
+    m = m + "\n[c] Cancel\n```";
+
+    ctx.utils.awaitMessage(
+        ctx,
+        msg,
+        m,
+        async _msg => {
+            let value = parseInt(_msg.content);
+            if (_msg.content == value) {
+                (
+                    await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg
+                ).delete();
+                _msg.delete().catch(() => {
+                    return;
+                });
+                let gameID = searchResults[value - 1].id;
+                ctx.bot.removeListener(
+                    "messageCreate",
+                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                );
+
+                let gameInfo = await ctx.libs.superagent
+                    .get(`https://www.speedrun.com/api/v1/games/${gameID}`)
+                    .set(
+                        "User-Agent",
+                        "HiddenPhox v9 (Discord Bot) - https://gitlab.com/Cynosphere/HiddenPhox"
+                    )
+                    .then(x => x.body.data);
+
+                if (!gameInfo) {
+                    msg.channel.createMessage(
+                        ":warning: No game data returned."
+                    );
+                    return;
+                }
+
+                let categories = await ctx.libs.superagent
+                    .get(
+                        `https://www.speedrun.com/api/v1/games/${gameID}/categories`
+                    )
+                    .set(
+                        "User-Agent",
+                        "HiddenPhox v9 (Discord Bot) - https://gitlab.com/Cynosphere/HiddenPhox"
+                    )
+                    .then(x => x.body.data);
+
+                if (!categories) {
+                    msg.channel.createMessage(
+                        ":warning: No categories returned."
+                    );
+                    return;
+                }
+
+                let records = await ctx.libs.superagent
+                    .get(
+                        `https://www.speedrun.com/api/v1/games/${gameID}/records`
+                    )
+                    .set(
+                        "User-Agent",
+                        "HiddenPhox v9 (Discord Bot) - https://gitlab.com/Cynosphere/HiddenPhox"
+                    )
+                    .then(x => x.body.data);
+
+                if (!records) {
+                    msg.channel.createMessage(":warning: No records returned.");
+                    return;
+                }
+
+                let embed = {
+                    title: `${gameInfo.names.international} ${
+                        names.japanese != null ? `(${names.japanese})` : ""
+                    }`,
+                    thumbnail: {
+                        url: gameInfo.assets["cover-large"].uri
+                    },
+                    fields: [],
+                    color: ctx.utils.pastelize(gameInfo.names.international)
+                };
+
+                for (let c = 0; c < records.length; c++) {
+                    let catName = categories.filter(
+                        x => x.id == records[c].category
+                    )[0].name;
+
+                    let field = {
+                        name: catName,
+                        value: []
+                    };
+
+                    for (let r = 0; r < records[c].runs.length; r++) {
+                        let run = runs[r].run;
+                        let runner = await ctx.libs.superagent
+                            .get(run.players[0].uri)
+                            .set(
+                                "User-Agent",
+                                "HiddenPhox v9 (Discord Bot) - https://gitlab.com/Cynosphere/HiddenPhox"
+                            )
+                            .then(x => x.body.data);
+
+                        let len = ctx.utils.formatTime(
+                            run.times.primary_t * 1000
+                        );
+
+                        field.value.push(
+                            `${r + 1}. ${
+                                run.status.status == "verified"
+                                    ? "<:ms_tick:503341995348066313>"
+                                    : "<:blankboi:393555375389016065>"
+                            } ${len} - [${runner.names.international}](${
+                                runner.weblink
+                            }) | [\uD83D\uDCC4](${
+                                run.weblink
+                            }) [\uD83D\uDCF9](${run.videos.links[0].uri})`
+                        );
+                    }
+
+                    field.value = field.value.join("\n");
+
+                    embed.fields.push(field);
+                }
+
+                msg.channel.createMessage({ embed: embed });
+            } else {
+                (
+                    await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg
+                ).delete();
+                _msg.delete().catch(() => {
+                    return;
+                });
+                msg.channel.createMessage("Canceled.");
+                ctx.bot.removeListener(
+                    "messageCreate",
+                    ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
+                );
+            }
+            clearTimeout(ctx.awaitMsgs.get(msg.channel.id)[msg.id].timer);
+        },
+        30000
+    );
+};
+
 module.exports = [
     {
         name: "calc",
@@ -1050,5 +1220,12 @@ Can be called with --url to get URL.`,
         func: rextester,
         group: "misc",
         aliases: ["rex"]
+    },
+    {
+        name: "speedrun",
+        desc: "Look up world records for a game",
+        func: speedrun,
+        group: "misc",
+        aliases: ["wr"]
     }
 ];

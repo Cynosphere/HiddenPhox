@@ -54,9 +54,7 @@ let help = async function(ctx, msg, args) {
                         (c.aliases && c.aliases.includes(args))
                 )[0];
                 const embed = {
-                    title: `HiddenPhox Help: Command > \`${ctx.prefix}${
-                        cmd.name
-                    }\``,
+                    title: `HiddenPhox Help: Command > \`${ctx.prefix}${cmd.name}\``,
                     color: ctx.utils.topColor(
                         ctx,
                         msg,
@@ -132,25 +130,6 @@ let ping = function(ctx, msg, args) {
 };
 
 let stats = function(ctx, msg, args) {
-    let uptime = ctx.bot.uptime;
-    let s = uptime / 1000;
-    let d = parseInt(s / 86400);
-    s = s % 86400;
-    let h = parseInt(s / 3600);
-    s = s % 3600;
-    let m = parseInt(s / 60);
-    s = s % 60;
-    s = parseInt(s);
-
-    let tstr =
-        (d < 10 ? "0" + d : d) +
-        ":" +
-        (h < 10 ? "0" + h : h) +
-        ":" +
-        (m < 10 ? "0" + m : m) +
-        ":" +
-        (s < 10 ? "0" + s : s);
-
     msg.channel.createMessage({
         embed: {
             title: `${ctx.bot.user.username} Stats`,
@@ -177,7 +156,11 @@ let stats = function(ctx, msg, args) {
                     value: ctx.bot.users.filter(u => u.bot).length,
                     inline: true
                 },
-                { name: "Uptime", value: tstr, inline: true }
+                {
+                    name: "Uptime",
+                    value: ctx.utils.formatTime(uptime),
+                    inline: true
+                }
             ],
             color: 0x50596d
         }
@@ -234,9 +217,7 @@ let info = function(ctx, msg, args) {
     const contributorPrettyText = contributors
         .map(({ id, name, contribs }) => {
             const user = u.get(id);
-            return `**${user.username}#${
-                user.discriminator
-            }** (${name}) - ${contribs}`;
+            return `**${user.username}#${user.discriminator}** (${name}) - ${contribs}`;
         })
         .join("\n");
 
@@ -245,9 +226,7 @@ let info = function(ctx, msg, args) {
     msg.channel.createMessage({
         embed: {
             title: "HiddenPhox, a general use and utility bot",
-            description: `Written by **Cynthia Foxwell** \`${owner.username}#${
-                owner.discriminator
-            }\`.`,
+            description: `Written by **Cynthia Foxwell** \`${owner.username}#${owner.discriminator}\`.`,
             color: 0x50596d,
             fields: [
                 { name: "Language", value: "JavaScript", inline: true },

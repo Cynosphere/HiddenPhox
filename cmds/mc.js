@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 let scol = {
     green: "<:online:493173082421461002>",
     yellow: "<:idle:493173082006093836>",
@@ -109,10 +111,7 @@ let mcserver = async function(ctx, msg, args) {
     };
 
     let img = {
-        file: await ctx.libs.superagent
-            .get("https://cdn.discordapp.com/emojis/543598700639813653.png")
-            .buffer(1)
-            .then(x => x.body),
+        file: fs.readFileSync(`${__dirname}/../img/noicon.png`),
         name: "icon.png"
     };
 

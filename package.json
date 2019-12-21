@@ -26,6 +26,7 @@
         "duck-duck-scrape": "^1.0.3",
         "eris": "github:abalabahaha/eris#dev",
         "expr-eval": "^1.0.1",
+        "gamedig": "^2.0.20",
         "gifwrap": "^0.7.5",
         "gm": "^1.23.1",
         "google-images": "^2.1.0",
