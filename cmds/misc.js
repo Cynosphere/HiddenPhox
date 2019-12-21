@@ -920,7 +920,7 @@ let speedrun = async function(ctx, msg, args) {
     let m = "Please type a number to choose your selection\n```ini\n";
 
     for (let i = 0; i < searchResults.length; i++) {
-        m = m + `[${i + 1}] ${names.international}\n`;
+        m = m + `[${i + 1}] ${searchResults[i].names.international}\n`;
     }
 
     m = m + "\n[c] Cancel\n```";
