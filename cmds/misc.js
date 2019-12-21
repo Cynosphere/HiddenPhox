@@ -1015,7 +1015,7 @@ let speedrun = async function(ctx, msg, args) {
                     };
 
                     for (let r = 0; r < records[c].runs.length; r++) {
-                        let run = runs[r].run;
+                        let run = records[c].runs[r].run;
                         let runner = await ctx.libs.superagent
                             .get(run.players[0].uri)
                             .set(
