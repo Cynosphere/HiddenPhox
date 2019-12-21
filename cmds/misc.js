@@ -991,6 +991,23 @@ let speedrun = async function(ctx, msg, args) {
                     return;
                 }
 
+                msg.channel.createMessage(
+                    `DEBUG: gameInfo = ${gameInfo ? 1 : 0}, categories = ${
+                        categories ? 1 : 0
+                    }, records = ${records ? 1 : 0}, gameInfo.names = ${
+                        gameInfo.names ? 1 : 0
+                    }`,
+                    msg.channel.createMessage(
+                        `DEBUG: gameInfo = ${gameInfo ? 1 : 0}, categories = ${
+                            categories ? 1 : 0
+                        }, records = ${
+                            records ? 1 : 0
+                        }, gameInfo.names.japanese = ${
+                            gameInfo.names.japanese != null ? 1 : 0
+                        }`
+                    )
+                );
+
                 let embed = {
                     title: `${gameInfo.names.international} ${
                         gameInfo.names.japanese != null
