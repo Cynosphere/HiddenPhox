@@ -993,7 +993,9 @@ let speedrun = async function(ctx, msg, args) {
 
                 let embed = {
                     title: `${gameInfo.names.international} ${
-                        names.japanese != null ? `(${names.japanese})` : ""
+                        gameInfo.names.japanese != null
+                            ? `(${gameInfo.names.japanese})`
+                            : ""
                     }`,
                     thumbnail: {
                         url: gameInfo.assets["cover-large"].uri
