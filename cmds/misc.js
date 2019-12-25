@@ -744,7 +744,7 @@ let redditdl = async function(ctx, msg, args) {
 
 // rextester
 // mappings for hljs -> rextester
-let languages = {
+const languages = {
     csharp: 1,
     vbnet: 2,
     fsharp: 3,
@@ -780,7 +780,7 @@ let languages = {
     brainfuck: 44
 };
 
-let shortcuts = {
+const shortcuts = {
     cs: "csharp",
     rb: "ruby",
     javascript: "js",
@@ -789,6 +789,9 @@ let shortcuts = {
     bf: "brainfuck",
     python: "py"
 };
+
+const cargsRegex = /--args="(.+?)" /;
+const stdinRegex = /--stdin="(.+?)" /;
 
 let rextester = async function(ctx, msg, args) {
     msg.channel.sendTyping();
@@ -819,18 +822,16 @@ let rextester = async function(ctx, msg, args) {
         args = args.replace("--vc ", "");
     }
 
-    if (args.startsWith("--args=")) {
-        let reg = /--args=(.+?) /;
-        let a = args.match(reg);
+    if (cargsRegex.test(args)) {
+        let a = args.match(cargsRegex);
         cArgs = a[1];
-        args = args.replace(reg, "");
+        args = args.replace(cargsRegex, "");
     }
 
-    if (args.startsWith("--stdin=")) {
-        let reg = /--stdin=(.+?) /;
-        let a = args.match(reg);
+    if (stdinRegex.test(args)) {
+        let a = args.match(stdinRegex);
         stdin = a[1];
-        args = args.replace(reg, "");
+        args = args.replace(stdinRegex, "");
     }
 
     let codeblock = /^```(.+?)\n(.+?)```$/s;
@@ -886,11 +887,13 @@ let rextester = async function(ctx, msg, args) {
 
     let out = ctx.utils.safeString(data.Result, false);
     msg.channel.createMessage(
-        `\`\`\`${lang}\n${out}\`\`\`${
-            data.Warnings != null
-                ? `\n\nWarnings:\`\`\`${data.Warnings}\`\`\``
-                : ""
-        }${data.Errors != null ? `\n\nErrors:\`\`\`${data.Errors}\`\`\`` : ""}`
+        data.Errors != null
+            ? `:warning: Errors:\`\`\`${data.Errors}\`\`\``
+            : `\`\`\`${lang}\n${out}\`\`\`${
+                  data.Warnings != null
+                      ? `\n\n:warning: Warnings:\`\`\`${data.Warnings}\`\`\``
+                      : ""
+              }`
     );
 };
 
