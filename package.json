@@ -27,7 +27,7 @@
         "eris": "github:abalabahaha/eris#dev",
         "expr-eval": "^1.0.1",
         "gamedig": "^2.0.20",
-        "gifwrap": "^0.7.5",
+        "gifwrap": "^0.9.0",
         "gm": "^1.23.1",
         "google-images": "^2.1.0",
         "html-entities": "^1.2.1",
