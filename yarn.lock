@@ -698,9 +698,9 @@ exif-parser@^0.1.12:
   version "0.1.12"
   resolved "https://registry.yarnpkg.com/exif-parser/-/exif-parser-0.1.12.tgz#58a9d2d72c02c1f6f02a0ef4a9166272b7760922"
 
-expr-eval@^1.0.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/expr-eval/-/expr-eval-1.2.1.tgz#1425caf4d7ccb7439ce72d0488b20c3f6e4ea25a"
+expr-eval@^2.0.0:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/expr-eval/-/expr-eval-2.0.2.tgz#fa6f044a7b0c93fde830954eb9c5b0f7fbc7e201"
 
 extend@~3.0.1:
   version "3.0.1"
