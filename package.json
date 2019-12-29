@@ -37,7 +37,7 @@
         "lodash": "^4.17.15",
         "minipass": "^2.7.0",
         "moment": "^2.22.1",
-        "node-ffprobe": "^1.2.2",
+        "node-ffprobe": "^3.0.0",
         "pngjs2": "^2.0.0",
         "prominence": "^0.2.0",
         "require-reload": "^0.2.2",
