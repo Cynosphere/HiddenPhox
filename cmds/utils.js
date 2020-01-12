@@ -1218,12 +1218,6 @@ const emojiSets = {
         joiner: "_",
         ext: ".svg"
     },
-    "noto-old": {
-        url:
-            "https://cdn.jsdelivr.net/gh/googlei18n/noto-emoji@e456654119cc3a5f9bebb7bbd00512456f983d2d/svg/emoji_u",
-        joiner: "_",
-        ext: ".svg"
-    },
     noto: {
         url: "https://gitcdn.xyz/repo/googlei18n/noto-emoji/master/svg/emoji_u",
         joiner: "_",
@@ -1234,32 +1228,9 @@ const emojiSets = {
         joiner: "-",
         ext: ".svg"
     },
-    twitter: {
-        url: "https://twitter.github.io/twemoji/2/svg/",
-        joiner: "-",
-        ext: ".svg"
-    },
     mustd: {
         url:
-            "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
-        joiner: "-",
-        ext: ".svg"
-    },
-    mutant: {
-        url:
-            "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
-        joiner: "-",
-        ext: ".svg"
-    },
-    mutstd: {
-        url:
-            "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
-        joiner: "-",
-        ext: ".svg"
-    },
-    ms: {
-        url:
-            "https://gitcdn.xyz/repo/Mstrodl/mutant-standard-mirror/master/emoji/",
+            "https://cdn.jsdelivr.net/gh/mstrodl/mutant-standard-mirror/emoji/",
         joiner: "-",
         ext: ".svg"
     },
@@ -1272,22 +1243,25 @@ const emojiSets = {
         url: "https://intrnl.github.io/assetsEmoji/facebook/emoji_u",
         joiner: "_",
         ext: ".png"
-    },
-    fb: {
-        url: "https://intrnl.github.io/assetsEmoji/facebook/emoji_u",
-        joiner: "_",
-        ext: ".png"
     }
 };
+emojiSets["noto-old"] = emojiSets.blobs;
+emojiSets.mutant = emojiSets.mustd;
+emojiSets.mutstd = emojiSets.mustd;
+emojiSets.ms = emojiSets.mustd;
+emojiSets.twitter = emojiSets.twemoji;
+emojiSets.fb = emojiSets.facebook;
 
 const svg2png = require("svg2png");
 
 let jumbo = async function(ctx, msg, args) {
     let emojiNames = await ctx.libs.superagent
-        .get("https://cdn.jsdelivr.net/gh/omnidan/node-emoji/lib/emoji.json")
+        .get("https://unpkg.com/emoji.json/emoji.json")
         .then(x => x.body);
     let temp = [];
-    Object.keys(emojiNames).map(x => (temp[emojiNames[x]] = x));
+    Object.keys(emojiNames).map(
+        x => (temp[emojiNames[x].char] = x.name.replace(/ /g, "_"))
+    );
     emojiNames = temp;
     if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
         let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
