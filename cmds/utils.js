@@ -1259,9 +1259,7 @@ let jumbo = async function(ctx, msg, args) {
         .get("https://unpkg.com/emoji.json/emoji.json")
         .then(x => x.body);
     let temp = [];
-    Object.keys(emojiNames).map(
-        x => (temp[emojiNames[x].char] = x.name.replace(/ /g, "_"))
-    );
+    emojiNames.map(x => (temp[x.char] = x.name.replace(/ /g, "_")));
     emojiNames = temp;
     if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
         let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
