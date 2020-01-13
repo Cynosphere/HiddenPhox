@@ -35,7 +35,7 @@
         "jimp": "^0.8.4",
         "jpeg-js": "^0.3.4",
         "lodash": "^4.17.15",
-        "minipass": "^2.7.0",
+        "minipass": "^3.0.0",
         "moment": "^2.22.1",
         "node-ffprobe": "^3.0.0",
         "pngjs2": "^2.0.0",
