@@ -22,7 +22,7 @@
     "dependencies": {
         "cheerio": "^1.0.0-rc.2",
         "colorcolor": "^1.1.1",
-        "deep-extend": "^0.5.1",
+        "deep-extend": "^0.6.0",
         "duck-duck-scrape": "^1.0.3",
         "eris": "github:abalabahaha/eris#dev",
         "expr-eval": "^2.0.0",
