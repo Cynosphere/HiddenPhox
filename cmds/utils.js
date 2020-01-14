@@ -419,7 +419,7 @@ let uinfo = function(ctx, msg, args) {
                         {
                             name: ptypes[(u.game && u.game.type) || 0],
                             value: `${
-                                u.game.emoji
+                                u.game && u.game.emoji
                                     ? u.game.emoji.id &&
                                       ctx.emotes.get(u.game.emoji.id)
                                         ? `<${
