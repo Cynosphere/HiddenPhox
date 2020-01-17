@@ -1164,8 +1164,18 @@ let presence = function(ctx, msg, args) {
         ) {
             msg.channel.createMessage(
                 `**${u.username}#${u.discriminator}**: ${
-                    u.game.state
-                }\n**Status:** ${statusIcons[u.status] +
+                    u.game && u.game.emoji
+                        ? u.game.emoji.id && ctx.emotes.get(u.game.emoji.id)
+                            ? `<${u.game.emoji.animated ? "a" : ""}:_:${
+                                  u.game.emoji.id
+                              }> `
+                            : u.game.emoji.id
+                            ? ""
+                            : u.game.emoji.name + " "
+                        : ""
+                }${u.game.state ? u.game.state : ""}\n**Status:** ${statusIcons[
+                    u.status
+                ] +
                     " " +
                     u.status}\n\n__**Extended Status**__\n\uD83C\uDF10 **Web:** ${statusIcons[
                     u.clientStatus.web
