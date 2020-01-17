@@ -293,6 +293,8 @@ async function giffuck(msg, url) {
                 .then(_ => m.delete());
         });
     });
+
+    return { filename: null, out: null };
 }
 
 let i2gg = async function(msg, url, avatar = false) {
@@ -379,6 +381,8 @@ let i2gg = async function(msg, url, avatar = false) {
     msg.channel
         .createMessage("", { name: "img2glitch.gif", file: out })
         .then(_ => m.delete());
+
+    return { filename: null, out: null };
 };
 
 let _jpeg = async function(msg, url) {
@@ -422,7 +426,7 @@ let _rover = async function(msg, url) {
     out.composite(template, 0, 0);
 
     let toSend = await out.getBufferAsync(jimp.MIME_PNG);
-    msg.channel.createMessage("", { file: toSend, name: "rover.png" });
+    return { filename: "rover.png", out: toSend };
 };
 
 let _carson = async function(msg, url) {
@@ -434,7 +438,7 @@ let _carson = async function(msg, url) {
     out.composite(template, 0, 0);
 
     let toSend = await out.getBufferAsync(jimp.MIME_PNG);
-    msg.channel.createMessage("", { file: toSend, name: "carson.png" });
+    return { filename: "carson.png", out: toSend };
 };
 
 let _watermark = async function(msg, url) {
@@ -460,7 +464,7 @@ let _watermark = async function(msg, url) {
     out.composite(template, 0, newH);
 
     let toSend = await out.getBufferAsync(jimp.MIME_PNG);
-    msg.channel.createMessage("", { file: toSend, name: "watermarked.png" });
+    return { filename: "watermarked.png", out: toSend };
 };
 
 let _toolbars = async function(msg, url) {
@@ -476,7 +480,7 @@ let _toolbars = async function(msg, url) {
     out.composite(template, 0, 0);
 
     let toSend = await out.getBufferAsync(jimp.MIME_PNG);
-    msg.channel.createMessage("", { file: toSend, name: "toolbars.png" });
+    return { filename: "toolbars.png", out: toSend };
 };
 
 let rover = (ctx, msg, args) => imageCallback(ctx, msg, args, _rover);
@@ -485,8 +489,6 @@ let watermark = (ctx, msg, args) => imageCallback(ctx, msg, args, _watermark);
 let toolbars = (ctx, msg, args) => imageCallback(ctx, msg, args, _toolbars);
 
 // one off commands
-async function chain(ctx, msg, args) {}
-
 function orly(ctx, msg, args) {
     msg.channel.sendTyping();
 
@@ -627,7 +629,7 @@ async function color(ctx, msg, args) {
     }
 
     if (args) {
-        if (/#[0-9a-fA-F]{3,6}/.test(args)) {
+        if (/#?[0-9a-fA-F]{3,6}/.test(args)) {
             let hex = args.match(/#[0-9a-fA-F]{3,6}/)[0].replace("#", "");
             let col = c2c(`#${hex}`, "hex").replace("#", "");
 
@@ -658,10 +660,13 @@ async function color(ctx, msg, args) {
         } else {
             let col = Math.floor(Math.random() * 0xffffff).toString("16");
             if (col.length < 6) {
-                col += Math.floor(Math.random() * 16).toString("16");
+                let len = 6 - col.length;
+                for (i = 0; i < len; i++) {
+                    col += Math.floor(Math.random() * 16).toString("16");
+                }
             }
 
-            createColMsg(ctx, msg, col);
+            createColMsg(ctx, msg, col, true);
         }
     } else {
         let col = Math.floor(Math.random() * 0xffffff).toString("16");
