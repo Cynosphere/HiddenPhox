@@ -13,20 +13,22 @@ async function imageCallback(ctx, msg, args, callback, ...cbargs) {
     msg.channel.sendTyping();
 
     if (args && urlRegex.test(args)) {
-        let filename,
-            out = await callback.apply(this, [msg, args, ...cbargs]);
+        let { filename, out } = await callback.apply(this, [
+            msg,
+            args,
+            ...cbargs
+        ]);
         if (filename && out)
             msg.channel.createMessage("", {
                 name: filename,
                 file: out
             });
     } else if (msg.attachments.length > 0) {
-        let filename,
-            out = await callback.apply(this, [
-                msg,
-                msg.attachments[0].url,
-                ...cbargs
-            ]);
+        let { filename, out } = await callback.apply(this, [
+            msg,
+            msg.attachments[0].url,
+            ...cbargs
+        ]);
         if (filename && out)
             msg.channel.createMessage("", {
                 name: filename,
@@ -41,8 +43,11 @@ async function imageCallback(ctx, msg, args, callback, ...cbargs) {
                   }?size=1024`
                 : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
                       5}.png`;
-        let filename,
-            out = await callback.apply(this, [msg, url, ...cbargs]);
+        let { filename, out } = await callback.apply(this, [
+            msg,
+            url,
+            ...cbargs
+        ]);
         if (filename && out)
             msg.channel.createMessage("", {
                 name: filename,
@@ -87,11 +92,9 @@ async function mirror(msg, url, type) {
     let im = await jimp.read(url);
     let a = im.clone();
     let b = im.clone();
-    console.log(`mirror: type=${type}, url=${url}`);
 
     switch (type) {
         case 1:
-            console.log(`mirror: performing hooh`);
             a.crop(
                 0,
                 im.bitmap.height / 2,
@@ -110,7 +113,6 @@ async function mirror(msg, url, type) {
             im.composite(b, 0, 0);
             break;
         case 2:
-            console.log(`mirror: performing haah`);
             a.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
             b.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
             b.mirror(true, false);
@@ -119,7 +121,6 @@ async function mirror(msg, url, type) {
             im.composite(b, im.bitmap.width / 2, 0);
             break;
         case 3:
-            console.log(`mirror: performing woow`);
             a.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
             b.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
             b.mirror(false, true);
@@ -128,7 +129,6 @@ async function mirror(msg, url, type) {
             im.composite(b, 0, im.bitmap.height / 2);
             break;
         case 4:
-            console.log(`mirror: performing waaw`);
             a.crop(
                 im.bitmap.width / 2,
                 0,
@@ -151,9 +151,6 @@ async function mirror(msg, url, type) {
     }
 
     let file = await im.getBufferAsync(jimp.MIME_PNG);
-    console.log(
-        `mirror: name=${mirrorNames[type - 1]}.png file=${file.toString()}`
-    );
     return `${mirrorNames[type - 1]}.png`, file;
 }
 
