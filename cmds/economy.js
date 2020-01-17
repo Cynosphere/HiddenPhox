@@ -543,7 +543,6 @@ let transfer = async function(ctx, msg, args) {
 };
 
 /* Start Steal Code Stuffs */
-
 let jail = async function(ctx, user) {
     let data = await ctx.db.models.econ.findOne({ where: { id: user.id } });
 
@@ -850,11 +849,9 @@ let sstate = async function(ctx, msg, args) {
             }
         });
 };
-
 /* End Steal Code Stuffs */
 
 /* Start Heist Code Stuffs */
-
 let startHeist = function(ctx, msg) {};
 
 let heist = async function(ctx, msg, args) {
@@ -890,7 +887,6 @@ let heist = async function(ctx, msg, args) {
     //  destroy collection
     //  apply cooldown and grace
 };
-
 /* End Heist Code Stuffs */
 
 let fcstats = async function(ctx, msg, args) {
