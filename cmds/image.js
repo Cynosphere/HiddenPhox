@@ -3,8 +3,8 @@ const c2c = require("colorcolor");
 const imgfuckr = require("../utils/imgfuckr.js");
 const imgfkr = new imgfuckr();
 const superagent = require("superagent");
-const { BitmapImage, GifFrame, GifCodec, GifUtil } = require("gifwrap");
-const gifEncoder = new GifCodec();
+const { GifUtil } = require("gifwrap");
+const { spawn } = require("child_process");
 
 const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
 
@@ -56,8 +56,11 @@ async function imageCallback(ctx, msg, args, callback, ...cbargs) {
     } else {
         try {
             let img = await ctx.utils.findLastImage(ctx, msg);
-            let filename,
-                out = await callback.apply(this, [msg, img, ...cbargs]);
+            let { filename, out } = await callback.apply(this, [
+                msg,
+                img,
+                ...cbargs
+            ]);
             if (filename && out)
                 msg.channel.createMessage("", {
                     name: filename,
@@ -151,14 +154,14 @@ async function mirror(msg, url, type) {
     }
 
     let file = await im.getBufferAsync(jimp.MIME_PNG);
-    return `${mirrorNames[type - 1]}.png`, file;
+    return { filename: `${mirrorNames[type - 1]}.png`, out: file };
 }
 
 async function _invert(msg, url) {
     jimp.read(url).then(async im => {
         im.invert();
         let file = await im.getBufferAsync(jimp.MIME_PNG);
-        return "invert.png", file;
+        return { filename: "invert.png", out: file };
     });
 }
 
@@ -166,14 +169,14 @@ async function _flip(msg, url) {
     let im = await jimp.read(url);
     im.mirror(true, false);
     let file = await im.getBufferAsync(jimp.MIME_PNG);
-    return "flip.png", file;
+    return { filename: "flip.png", out: file };
 }
 
 async function _flop(msg, url) {
     let im = await jimp.read(url);
     im.mirror(false, true);
     let file = await im.getBufferAsync(jimp.MIME_PNG);
-    return "flop.png", file;
+    return { filename: "flop.png", out: file };
 }
 
 async function imgfuck(msg, url) {
@@ -215,13 +218,9 @@ async function giffuck(msg, url) {
             });
             if (failed) return;
             let out = await i.getBufferAsync(jimp.MIME_JPEG);
-            let glitch = await jimp.read(
-                Buffer.from(imgfkr.processBuffer(out), "base64")
-            );
+            let glitch = Buffer.from(imgfkr.processBuffer(out), "base64");
 
-            outframes.push(new GifFrame(new BitmapImage(glitch.bitmap)), {
-                delayCentisecs: Math.max(frame.delayCentisecs, 15)
-            });
+            outframes.push({ data: glitch, delay: frame.delayCentisecs });
         }
 
         return outframes;
@@ -231,9 +230,36 @@ async function giffuck(msg, url) {
         m.edit(
             "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Creating gif)`"
         );
+        return new Promise((resolve, reject) => {
+            let opt = {
+                stdio: [0, "pipe", "ignore"]
+            };
+            //now where could my pipe be?
+            for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
 
-        let gif = await gifEncoder.encodeGif(frames);
-        return gif.buffer;
+            let args = ["-loop", "0"];
+            for (let f in frames) {
+                args.push("-delay");
+                args.push(Math.max(frames[f].delay, 15));
+                args.push(`fd:${parseInt(f) + 3}`);
+            }
+            args.push("gif:-");
+
+            let im = spawn("convert", args, opt);
+            for (let f = 0; f < frames.length; f++)
+                im.stdio[f + 3].write(frames[f].data);
+            for (let f = 0; f < frames.length; f++) im.stdio[f + 3].end();
+
+            let out = [];
+
+            im.stdout.on("data", c => {
+                out.push(c);
+            });
+
+            im.stdout.on("end", _ => {
+                resolve(Buffer.concat(out));
+            });
+        });
     }
 
     superagent.get(url).then(img => {
