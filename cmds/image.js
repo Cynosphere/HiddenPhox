@@ -87,9 +87,11 @@ async function mirror(msg, url, type) {
     let im = await jimp.read(url);
     let a = im.clone();
     let b = im.clone();
+    console.log(`mirror: type=${type}, url=${url}`);
 
     switch (type) {
         case 1:
+            console.log(`mirror: performing hooh`);
             a.crop(
                 0,
                 im.bitmap.height / 2,
@@ -108,6 +110,7 @@ async function mirror(msg, url, type) {
             im.composite(b, 0, 0);
             break;
         case 2:
+            console.log(`mirror: performing haah`);
             a.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
             b.crop(0, 0, im.bitmap.width / 2, im.bitmap.height);
             b.mirror(true, false);
@@ -116,6 +119,7 @@ async function mirror(msg, url, type) {
             im.composite(b, im.bitmap.width / 2, 0);
             break;
         case 3:
+            console.log(`mirror: performing woow`);
             a.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
             b.crop(0, 0, im.bitmap.width, im.bitmap.height / 2);
             b.mirror(false, true);
@@ -124,6 +128,7 @@ async function mirror(msg, url, type) {
             im.composite(b, 0, im.bitmap.height / 2);
             break;
         case 4:
+            console.log(`mirror: performing waaw`);
             a.crop(
                 im.bitmap.width / 2,
                 0,
@@ -146,6 +151,7 @@ async function mirror(msg, url, type) {
     }
 
     let file = await im.getBufferAsync(jimp.MIME_PNG);
+    console.log(`mirror: file=${file}`);
     return `${mirrorNames[type - 1]}.png`, file;
 }
 
