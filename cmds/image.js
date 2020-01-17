@@ -152,7 +152,7 @@ async function mirror(msg, url, type) {
 
     let file = await im.getBufferAsync(jimp.MIME_PNG);
     console.log(
-        `mirror: name=${mirrorNames[type - 1]}.png file=${file.toString}`
+        `mirror: name=${mirrorNames[type - 1]}.png file=${file.toString()}`
     );
     return `${mirrorNames[type - 1]}.png`, file;
 }
