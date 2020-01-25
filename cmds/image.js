@@ -158,11 +158,10 @@ async function mirror(msg, url, type) {
 }
 
 async function _invert(msg, url) {
-    jimp.read(url).then(async im => {
-        im.invert();
-        let file = await im.getBufferAsync(jimp.MIME_PNG);
-        return { filename: "invert.png", out: file };
-    });
+    let im = await jimp.read(url);
+    im.invert();
+    let file = await im.getBufferAsync(jimp.MIME_PNG);
+    return { filename: "invert.png", out: file };
 }
 
 async function _flip(msg, url) {

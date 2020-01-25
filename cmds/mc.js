@@ -1,4 +1,6 @@
 const fs = require("fs");
+const namemcLib = require("../utils/namemc.js");
+const jimp = require("jimp");
 
 let scol = {
     green: "<:online:493173082421461002>",
@@ -162,6 +164,58 @@ let mcserver = async function(ctx, msg, args) {
     msg.channel.createMessage({ embed: e }, img);
 };
 
+const uuidRegex = /[a-fA-F0-9]{8}\-?[a-fA-F0-9]{4}\-?[a-fA-F0-9]{4}\-?[a-fA-F0-9]{4}\-?[a-fA-F0-9]{12}/;
+
+async function namemc(ctx, msg, args) {
+    let data;
+    if (uuidRegex.test(args)) {
+        data = await namemcLib.getProfileFromUUID(args);
+    } else {
+        data = await namemcLib.getProfileFromName(args);
+    }
+
+    if (!data) {
+        msg.channel.createMessage("No data returned.");
+        return;
+    }
+
+    let nameHistory = [];
+
+    for (let i in data.nameHistory) {
+        let name = data.nameHistory[i];
+        nameHistory.push(
+            `${data.nameHistory.length - i}. ${name.name}${
+                name.date
+                    ? ` - ${name.date.getUTCDate()}/${name.date.getUTCMonth()}/${name.date.getUTCFullYear()} @ ${name.date.getUTCHours()}:${name.date.getUTCMinutes()}:${name.date.getUTCSeconds()}`
+                    : ""
+            }`
+        );
+    }
+
+    let renders = namemcLib.renderPlayerModelFromUUID(data.uuid);
+    let outImg = new jimp(1200, 800);
+    let front = await jimp.read(renders.front);
+    let back = await jimp.read(renders.front);
+    outImg.composite(front, 0, 0);
+    outImg.composite(back, 600, 0);
+    let file = await im.getBufferAsync(jimp.MIME_PNG);
+
+    let embed = {
+        color: ctx.utils.pastelize(data.uuid),
+        title: data.username,
+        fields: [
+            { name: "UUID", value: data.uuid },
+            { name: "Name History", value: nameHistory.join("\n") }
+        ],
+        image: "attachment://render.png"
+    };
+
+    msg.channel.createMessage(
+        { embed: embed },
+        { name: "render.png", file: file }
+    );
+}
+
 module.exports = [
     {
         name: "mcstatus",
@@ -175,6 +229,13 @@ module.exports = [
         desc: "Query a Minecraft server",
         func: mcserver,
         usage: "[ip]",
+        group: "minecraft"
+    },
+    {
+        name: "namemc",
+        desc: "Get a player's NameMC profile.",
+        func: namemc,
+        usage: "[username or uuid]",
         group: "minecraft"
     }
 ];
