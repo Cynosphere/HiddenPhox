@@ -195,7 +195,7 @@ async function namemc(ctx, msg, args) {
     let renders = await namemcLib.renderPlayerModelFromUUID(data.uuid);
     let outImg = new jimp(1200, 800);
     let front = await jimp.read(renders.front);
-    let back = await jimp.read(renders.front);
+    let back = await jimp.read(renders.back);
     outImg.composite(front, 0, 0);
     outImg.composite(back, 600, 0);
     let file = await outImg.getBufferAsync(jimp.MIME_PNG);
