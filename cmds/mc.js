@@ -207,7 +207,7 @@ async function namemc(ctx, msg, args) {
             { name: "UUID", value: data.uuid },
             { name: "Name History", value: nameHistory.join("\n") }
         ],
-        image: "attachment://render.png"
+        image: { url: "attachment://render.png" }
     };
 
     msg.channel.createMessage(
