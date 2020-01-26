@@ -187,8 +187,21 @@ async function namemc(ctx, msg, args) {
         nameHistory.push(
             `${parseInt(i) + 1}. ${name.name}${
                 date
-                    ? ` - ${date.getUTCDate()}/${date.getUTCMonth() +
-                          1}/${date.getUTCFullYear()} @ ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
+                    ? ` - ${date
+                          .getUTCDate()
+                          .toString()
+                          .padStart(2, "0")}/${(date.getUTCMonth() + 1)
+                          .toString()
+                          .padStart(2, "0")}/${date.getUTCFullYear()} @ ${date
+                          .getUTCHours()
+                          .toString()
+                          .padStart(2, "0")}:${date
+                          .getUTCMinutes()
+                          .toString()
+                          .padStart(2, "0")}:${date
+                          .getUTCSeconds()
+                          .toString()
+                          .padStart(2, "0")}`
                     : ""
             }`
         );
