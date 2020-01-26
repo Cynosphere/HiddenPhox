@@ -1,5 +1,4 @@
 const superagent = require("superagent");
-const cheerio = require("cheerio");
 const { drawSkin3D } = require("./namemc-renderer.js");
 
 async function getProfileFromUUID(uuid) {
