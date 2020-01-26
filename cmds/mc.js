@@ -185,7 +185,7 @@ async function namemc(ctx, msg, args) {
         let name = data.nameHistory[i];
         let date = name.changedToAt ? new Date(name.changedToAt) : null;
         nameHistory.push(
-            `${i + 1}. ${name.name}${
+            `${parseInt(i) + 1}. ${name.name}${
                 date
                     ? ` - ${date.getUTCDate()}/${date.getUTCMonth() +
                           1}/${date.getUTCFullYear()} @ ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
