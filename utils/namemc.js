@@ -1,14 +1,18 @@
 const superagent = require("superagent");
 const { drawSkin3D } = require("./namemc-renderer.js");
 
+let cache = {};
+
 async function getProfileFromUUID(uuid) {
     uuid = uuid.replace(/\-/g, "");
 
+    console.log("name history");
     let history = await superagent
         .get(`https://api.mojang.com/user/profiles/${uuid}/names`)
         .then(x => x.body);
     let username = history[history.length - 1].name;
 
+    console.log("skin data");
     let skinData = await superagent
         .get(
             `https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`
@@ -16,6 +20,8 @@ async function getProfileFromUUID(uuid) {
         .then(x =>
             JSON.parse(Buffer.from(x.body.properties[0].value, "base64"))
         );
+
+    console.log("OF cape");
     let ofCape = false;
     await superagent
         .get(`http://s.optifine.net/capes/${username}.png`)
@@ -39,24 +45,37 @@ async function getProfileFromUUID(uuid) {
         }
     };
 
+    cache[uuid] = out;
+
     return out;
 }
 
 async function getProfileFromName(name) {
+    console.log("name -> uuid");
     let uuid = await superagent
         .get(`https://api.mojang.com/users/profiles/minecraft/${name}`)
         .then(x => x.body.id);
-    if (!uuid)
+    if (!uuid) {
+        console.log("name -> uuid try 2");
         uuid = await superagent
             .get(`https://api.mojang.com/users/profiles/minecraft/${name}?at=0`)
             .then(x => x.body.id);
-    if (!uuid) return;
+    }
+    if (!uuid) {
+        console.log("no uuid");
+        return;
+    }
 
     return await getProfileFromUUID(uuid);
 }
 
 async function renderPlayerModelFromUUID(uuid) {
-    let playerData = await getProfileFromUUID(uuid);
+    let playerData;
+    if (cache[uuid]) {
+        playerData = cache[uuid];
+    } else {
+        playerData = getProfileFromUUID(uuid);
+    }
 
     let front = await drawSkin3D(
         playerData.skinData.model == "slim",
@@ -78,7 +97,7 @@ async function renderPlayerModelFromUUID(uuid) {
     };
 }
 
-async function renderPlayerModelFromName(name) {
+/*async function renderPlayerModelFromName(name) {
     let playerData = await getProfileFromName(name);
 
     let front = await drawSkin3D(
@@ -99,11 +118,10 @@ async function renderPlayerModelFromName(name) {
         front: front,
         back: back
     };
-}
+}*/
 
 module.exports = {
     getProfileFromUUID,
     getProfileFromName,
-    renderPlayerModelFromUUID,
-    renderPlayerModelFromName
+    renderPlayerModelFromUUID
 };
