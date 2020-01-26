@@ -186,7 +186,8 @@ async function namemc(ctx, msg, args) {
         nameHistory.push(
             `${data.nameHistory.length - i}. ${name.name}${
                 name.date
-                    ? ` - ${name.date.getUTCDate()}/${name.date.getUTCMonth()}/${name.date.getUTCFullYear()} @ ${name.date.getUTCHours()}:${name.date.getUTCMinutes()}:${name.date.getUTCSeconds()}`
+                    ? ` - ${name.date.getUTCDate()}/${name.date.getUTCMonth() +
+                          1}/${name.date.getUTCFullYear()} @ ${name.date.getUTCHours()}:${name.date.getUTCMinutes()}:${name.date.getUTCSeconds()}`
                     : ""
             }`
         );
