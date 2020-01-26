@@ -6,7 +6,42 @@ let cache = {};
 
 async function getProfileFromUUID(uuid) {
     uuid = uuid.replace(/\-/g, "");
-    if (cache[uuid]) return cache[uuid];
+    if (cache[uuid]) {
+        let skinData = await superagent
+            .get(
+                `https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`
+            )
+            .then(x =>
+                JSON.parse(Buffer.from(x.body.properties[0].value, "base64"))
+            );
+        let ofCape = false;
+        await superagent
+            .get(`http://s.optifine.net/capes/${username}.png`)
+            .then(x => (ofCape = true))
+            .catch(e => (ofCape = false));
+
+        let capeOut = ofCape
+            ? `http://s.optifine.net/capes/${username}.png`
+            : skinData.textures.CAPE
+            ? skinData.textures.CAPE.url
+            : null;
+
+        let model = skinData.textures.SKIN.metadata
+            ? skinData.textures.SKIN.metadata.model
+            : null;
+
+        if (cache[uuid].skinData.skin != skinData.skin) {
+            cache[uuid].skinData.skin = skinData.skin;
+        }
+        if (cache[uuid].skinData.cape != capeOut) {
+            cache[uuid].skinData.cape = capeOut;
+        }
+        if (cache[uuid].skinData.model != model) {
+            cache[uuid].skinData.model = model;
+        }
+
+        return cache[uuid];
+    }
 
     let history = await superagent
         .get(`https://api.mojang.com/user/profiles/${uuid}/names`)
