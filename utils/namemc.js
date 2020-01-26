@@ -8,32 +8,10 @@ async function getProfileFromUUID(uuid) {
     uuid = uuid.replace(/\-/g, "");
     if (cache[uuid]) return cache[uuid];
 
-    let page = await superagent
-        .get(`https://namemc.com/profile/${uuid}`)
-        .set(
-            "User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0"
-        )
-        .then(x => x.text);
-
-    if (!page) return;
-
-    $ = cheerio.load(page);
-    let username = $("main h1").text();
-
-    let history = [];
-    $($(".col-lg-8 .card")[1])
-        .find(".card-body .row")
-        .each(function(i, e) {
-            let x = $(this);
-            let username = x.find("a:not(.copy-button)").text();
-            let date = x.find("time").attr("datetime");
-            let row = { name: username };
-            if (date != null) {
-                row.date = new Date(date);
-            }
-            history.push(row);
-        });
+    let history = await superagent
+        .get(`https://api.mojang.com/user/profiles/${uuid}/names`)
+        .then(x => x.body);
+    let username = history[history.length - 1].name;
 
     let skinData = await superagent
         .get(
@@ -70,26 +48,14 @@ async function getProfileFromUUID(uuid) {
 }
 
 async function getProfileFromName(name) {
-    /*let page = await superagent
-        .get(`https://namemc.com/name/${name.toLowerCase()}`)
-        .set(
-            "User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0"
-        )
-        .then(x => x.text);
-
-    if (!page) return;
-
-    let $ = cheerio.load(page);
-
-    let uuid =
-        "https://namemc.com" +
-        $($(".col-lg-7 .card")[0])
-            .find(".card-header .row .col samp")
-            .text();*/
     let uuid = await superagent
         .get(`https://api.mojang.com/users/profiles/minecraft/${name}`)
         .then(x => x.body.id);
+    if (!uuid)
+        uuid = await superagent
+            .get(`https://api.mojang.com/users/profiles/minecraft/${name}?at=0`)
+            .then(x => x.body.id);
+    if (!uuid) return;
 
     return await getProfileFromUUID(uuid);
 }

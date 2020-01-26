@@ -183,15 +183,18 @@ async function namemc(ctx, msg, args) {
 
     for (let i in data.nameHistory) {
         let name = data.nameHistory[i];
+        let date = name.changedToAt ? new Date(name.changedToAt) : null;
         nameHistory.push(
-            `${data.nameHistory.length - i}. ${name.name}${
-                name.date
-                    ? ` - ${name.date.getUTCDate()}/${name.date.getUTCMonth() +
-                          1}/${name.date.getUTCFullYear()} @ ${name.date.getUTCHours()}:${name.date.getUTCMinutes()}:${name.date.getUTCSeconds()}`
+            `${i + 1}. ${name.name}${
+                date
+                    ? ` - ${date.getUTCDate()}/${date.getUTCMonth() +
+                          1}/${date.getUTCFullYear()} @ ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
                     : ""
             }`
         );
     }
+
+    nameHistory.reverse();
 
     let renders = await namemcLib.renderPlayerModelFromUUID(data.uuid);
     let outImg = new jimp(1200, 800);
