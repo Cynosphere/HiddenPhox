@@ -198,7 +198,7 @@ async function namemc(ctx, msg, args) {
     let back = await jimp.read(renders.front);
     outImg.composite(front, 0, 0);
     outImg.composite(back, 600, 0);
-    let file = await im.getBufferAsync(jimp.MIME_PNG);
+    let file = await outImg.getBufferAsync(jimp.MIME_PNG);
 
     let embed = {
         color: ctx.utils.pastelize(data.uuid),
