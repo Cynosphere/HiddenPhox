@@ -487,6 +487,7 @@ utils.topColor = function(ctx, msg, id, fallback = 0x7289da) {
 utils.findLastImage = function(ctx, msg, gifcheck = false) {
     return new Promise(async (resolve, reject) => {
         let msgs = await msg.channel.getMessages(20);
+        let img = "";
 
         for (let i = 0; i < msgs.length; i++) {
             let m = msgs[i];
