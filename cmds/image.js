@@ -660,7 +660,7 @@ async function color(ctx, msg, args) {
             let col = Math.floor(Math.random() * 0xffffff).toString("16");
             if (col.length < 6) {
                 let len = 6 - col.length;
-                for (i = 0; i < len; i++) {
+                for (let i = 0; i < len; i++) {
                     col += Math.floor(Math.random() * 16).toString("16");
                 }
             }
@@ -671,7 +671,7 @@ async function color(ctx, msg, args) {
         let col = Math.floor(Math.random() * 0xffffff).toString("16");
         if (col.length < 6) {
             let len = 6 - col.length;
-            for (i = 0; i < len; i++) {
+            for (let i = 0; i < len; i++) {
                 col += Math.floor(Math.random() * 16).toString("16");
             }
         }

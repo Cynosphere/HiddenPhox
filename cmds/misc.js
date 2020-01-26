@@ -298,7 +298,7 @@ let vote = function(ctx, msg, args) {
 
 let recipe = function(ctx, msg, args) {
     let randstr = "";
-    for (i = 0; i < 60; i++) {
+    for (let i = 0; i < 60; i++) {
         randstr =
             randstr + String.fromCharCode(Math.floor(Math.random() * 93) + 34);
     }

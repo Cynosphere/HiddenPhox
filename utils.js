@@ -552,7 +552,7 @@ function fmod(a, b) {
 function stringHash(str) {
     let counter = 1;
     let len = str.length;
-    for (i = 0; i < len; i = i + 3) {
+    for (let i = 0; i < len; i = i + 3) {
         counter =
             fmod(counter * 8161, 4294967279) +
             str.charCodeAt(i) * 16776193 +
