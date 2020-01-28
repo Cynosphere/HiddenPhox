@@ -5,15 +5,12 @@ const twitterurl = /(?:\s|^)https?:\/\/(www\.|mobile\.)?twitter\.com\/(.+\/statu
 
 let twimg_embeds = {};
 
-// don't complain at me, do not PR for removal
-// taken from https://gist.github.com/shobotch/5160017
-// exact key: Twitter for Android
-const twiKey = Buffer.from(
-    "3nVuSoBZnx6U4vzUxf5w:Bcs59EFbbsdF6Sl9Ng71smgStWEGwXXKSjYvPVt7qys"
-).toString("base64");
-
 async function getBearer(ctx) {
     return new Promise(async (resolve, reject) => {
+        const twiKey = Buffer.from(
+            `${ctx.apikeys.twitter.key}:${ctx.apikeys.twitter.secret}`
+        ).toString("base64");
+
         let token = await ctx.libs.superagent
             .post(
                 "https://api.twitter.com/oauth2/token?grant_type=client_credentials"
