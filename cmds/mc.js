@@ -185,7 +185,7 @@ async function namemc(ctx, msg, args) {
         let name = data.nameHistory[i];
         let date = name.changedToAt ? new Date(name.changedToAt) : null;
         nameHistory.push(
-            `${parseInt(i) + 1}. ${name.name}${
+            `${parseInt(i) + 1}. ${name.name.replace(/_/g, "\\_")}${
                 date
                     ? ` - ${date
                           .getUTCDate()
@@ -219,7 +219,7 @@ async function namemc(ctx, msg, args) {
 
     let embed = {
         color: ctx.utils.pastelize(data.uuid),
-        title: data.username,
+        title: data.username.replace(/_/g, "\\_"),
         fields: [
             { name: "UUID", value: data.uuid },
             { name: "Name History", value: nameHistory.join("\n") }
