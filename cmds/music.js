@@ -2,8 +2,8 @@ const ytdl = require("ytdl-core");
 //const scdl = require("youtube-dl");
 const probe = require("node-ffprobe");
 
-//As it's impossible to get a SC API key, stealing youtube-dl's :^)
-const scCID = "YUKXoArFcqrlQn9tfNHvvyfnDISj04zk";
+//taken from soundcloud api calls
+const scCID = "E0yZF2vk9zN70O9uT0i9NlmX89sNPAvo";
 
 const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 const plregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
