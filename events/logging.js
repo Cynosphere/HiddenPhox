@@ -306,7 +306,7 @@ let banRem = async function(guild, user, ctx) {
             .getAuditLogs(
                 1,
                 null,
-                ctx.libs.eris.Constants.AuditLogActions.MEMBER_BAN_ADD
+                ctx.libs.eris.Constants.AuditLogActions.MEMBER_BAN_REMOVE
             )
             .then(x => x.entries[0])
             .catch(x => {});
