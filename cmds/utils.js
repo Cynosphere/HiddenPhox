@@ -515,7 +515,7 @@ let uinfo = function(ctx, msg, args) {
                 let snowflake = parseInt(u.id).toString(2);
                 snowflake = "0".repeat(64 - snowflake.length) + snowflake;
                 let date = snowflake.substr(0, 42);
-                let timestamp = parseInt(date, 2) + 1420070400000;
+                let createdAt = parseInt(date, 2) + 1420070400000;
 
                 let e = {
                     color: 0x7289da,
@@ -539,7 +539,11 @@ let uinfo = function(ctx, msg, args) {
                         },
                         {
                             name: "Created At",
-                            value: new Date(timestamp).toUTCString(),
+                            value: `${new Date(
+                                createdAt
+                            ).toUTCString()} (${ctx.utils.toReadableTime(
+                                Date.now() - createdAt
+                            )} ago)`,
                             inline: true
                         },
                         {
