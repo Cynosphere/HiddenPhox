@@ -243,8 +243,10 @@ async function commandHandler(msg) {
         )
             return;
 
-        let prefix = ctx.prefix;
-        let prefix2 = ctx.bot.user.mention + " ";
+        let prefix = ctx.prefix; // config
+        let prefix2 = ctx.bot.user.mention + " "; // mention
+        let prefix22 = ctx.bot.user.mention + " "; // mention w/ nick bs
+        prefix22 = prefix22.replace("<@", "<@!");
         let prefix3 = msg.channel.guild ? sdata[0].dataValues.prefix : ""; //guild
         let prefix4 = await ctx.db.models.udata
             .findOrCreate({ where: { id: msg.author.id } })
@@ -254,6 +256,9 @@ async function commandHandler(msg) {
 
         if (content.startsWith(prefix2)) {
             content = content.replace(prefix2, prefix);
+        }
+        if (content.startsWith(prefix22)) {
+            content = content.replace(prefix22, prefix);
         }
 
         if (
