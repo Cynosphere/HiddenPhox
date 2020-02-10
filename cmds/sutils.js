@@ -542,8 +542,9 @@ let ban = function(ctx, msg, args) {
                                     msg.channel.guild.id,
                                     u.id,
                                     0,
-                                    `[${msg.author.username}#${msg.author.discriminator}] ${reason}` ||
-                                        `[${msg.author.username}#${msg.author.discriminator}] No reason given.`
+                                    `[${msg.author.username}#${
+                                        msg.author.discriminator
+                                    }] ${reason ? reason : "No reason given"}`
                                 );
                                 msg.addReaction("\uD83D\uDC4C");
                                 m.delete().catch(() => {});
@@ -580,7 +581,7 @@ let ban = function(ctx, msg, args) {
 
 let unban = function(ctx, msg, args) {
     if (!args) {
-        msg.channel.createMessage(`Usage: ${ctx.prefix}ban <user> [reason]`);
+        msg.channel.createMessage(`Usage: ${ctx.prefix}unban <user> [reason]`);
     } else {
         if (!msg.channel.permissionsOf(msg.author.id).has("banMembers")) {
             msg.channel.createMessage(
@@ -606,8 +607,9 @@ let unban = function(ctx, msg, args) {
                     ctx.bot.unbanGuildMember(
                         msg.channel.guild.id,
                         u.id,
-                        `[${msg.author.username}#${msg.author.discriminator}] ${reason}` ||
-                            `[${msg.author.username}#${msg.author.discriminator}] No reason given.`
+                        `[${msg.author.username}#${msg.author.discriminator}] ${
+                            reason ? reason : "No reason given"
+                        }`
                     );
                     msg.addReaction("\uD83D\uDC4C");
                 } catch (e) {

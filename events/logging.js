@@ -245,68 +245,114 @@ let channelUpdate = async function(channel, oldChannel, ctx) {
 
 let banAdd = async function(guild, user, ctx) {
     if ((await isLoggingEnabled(ctx, { channel: { guild: guild } })) === true) {
-        // TODO: snipe audit log reason
-        let log = await getLogChannel(ctx, { channel: { guild: guild } });
+        const logEntry = guild
+            .getAuditLogs(
+                1,
+                null,
+                ctx.libs.eris.Constants.AuditLogActions.MEMBER_BAN_ADD
+            )
+            .then(x => x.entries[0])
+            .catch(x => {});
+        const log = await getLogChannel(ctx, { channel: { guild: guild } });
+
+        let embed = {
+            title: ":hammer: User Banned",
+            color: 0xaa0000,
+            fields: [
+                {
+                    name: "User",
+                    value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
+                    inline: true
+                }
+            ],
+            thumbnail: {
+                url:
+                    user.avatar !== null
+                        ? `https://cdn.discordapp.com/avatars/${user.id}/${
+                              user.avatar
+                          }.${
+                              user.avatar.startsWith("a_")
+                                  ? "gif"
+                                  : "png?size=256"
+                          }`
+                        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
+                              5}.png`
+            },
+            timestamp: new Date().toISOString()
+        };
+
+        if (logEntry && logEntry.targetID == user.id) {
+            embed.fields.push({
+                name: "Banner",
+                value: `<@${logEntry.user.id}> (${logEntry.user.username}#${logEntry.user.discriminator} - \`${logEntry.user.id}\`)`,
+                inline: true
+            });
+            embed.fields.push({
+                name: "Reason",
+                value: logEntry.reason || "<no reason given>",
+                inline: true
+            });
+        }
+
         log.createMessage({
-            embed: {
-                title: ":hammer: User Banned",
-                color: 0xaa0000,
-                fields: [
-                    {
-                        name: "User",
-                        value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
-                        inline: true
-                    }
-                ],
-                thumbnail: {
-                    url:
-                        user.avatar !== null
-                            ? `https://cdn.discordapp.com/avatars/${user.id}/${
-                                  user.avatar
-                              }.${
-                                  user.avatar.startsWith("a_")
-                                      ? "gif"
-                                      : "png?size=256"
-                              }`
-                            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                                  5}.png`
-                },
-                timestamp: new Date().toISOString()
-            }
+            embed: embed
         });
     }
 };
 
 let banRem = async function(guild, user, ctx) {
     if ((await isLoggingEnabled(ctx, { channel: { guild: guild } })) === true) {
-        // TODO: snipe audit log reason
-        let log = await getLogChannel(ctx, { channel: { guild: guild } });
+        const logEntry = guild
+            .getAuditLogs(
+                1,
+                null,
+                ctx.libs.eris.Constants.AuditLogActions.MEMBER_BAN_ADD
+            )
+            .then(x => x.entries[0])
+            .catch(x => {});
+        const log = await getLogChannel(ctx, { channel: { guild: guild } });
+
+        let embed = {
+            title: ":hammer: User Unbanned",
+            color: 0x00aa00,
+            fields: [
+                {
+                    name: "User",
+                    value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
+                    inline: true
+                }
+            ],
+            thumbnail: {
+                url:
+                    user.avatar !== null
+                        ? `https://cdn.discordapp.com/avatars/${user.id}/${
+                              user.avatar
+                          }.${
+                              user.avatar.startsWith("a_")
+                                  ? "gif"
+                                  : "png?size=256"
+                          }`
+                        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
+                              5}.png`
+            },
+            timestamp: new Date().toISOString()
+        };
+
+        if (logEntry && logEntry.targetID == user.id) {
+            embed.fields.push({
+                name: "Banner",
+                value: `<@${logEntry.user.id}> (${logEntry.user.username}#${logEntry.user.discriminator} - \`${logEntry.user.id}\`)`,
+                inline: true
+            });
+            embed.fields.push({
+                name: "Reason",
+                value: logEntry.reason || "<no reason given>",
+                inline: true
+            });
+        }
+
         log.createMessage({
-            embed: {
-                title: ":hammer: User Unbanned",
-                color: 0x00aa00,
-                fields: [
-                    {
-                        name: "User",
-                        value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
-                        inline: true
-                    }
-                ],
-                thumbnail: {
-                    url:
-                        user.avatar !== null
-                            ? `https://cdn.discordapp.com/avatars/${user.id}/${
-                                  user.avatar
-                              }.${
-                                  user.avatar.startsWith("a_")
-                                      ? "gif"
-                                      : "png?size=256"
-                              }`
-                            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                                  5}.png`
-                },
-                timestamp: new Date().toISOString()
-            }
+            embed: embed
         });
     }
 };
