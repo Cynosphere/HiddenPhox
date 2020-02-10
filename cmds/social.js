@@ -10,10 +10,10 @@ let profile = async function(ctx, msg, args) {
             return;
         }
         u = msg.channel.guild.members.get(u.id);
-        let snowflake = parseInt(u.id).toString(2);
+        /*let snowflake = parseInt(u.id).toString(2);
         snowflake = "0".repeat(64 - snowflake.length) + snowflake;
         let date = snowflake.substr(0, 42);
-        let createdAt = parseInt(date, 2) + 1420070400000;
+        let createdAt = parseInt(date, 2) + 1420070400000;*/
 
         let e = {
             color: ctx.utils.pastelize(u.username),
@@ -28,7 +28,7 @@ let profile = async function(ctx, msg, args) {
                 },
                 {
                     name: "Account Age",
-                    value: ctx.utils.toReadableTime(Date.now() - createdAt),
+                    value: ctx.utils.toReadableTime(Date.now() - u.createdAt),
                     inline: true
                 }
             ],

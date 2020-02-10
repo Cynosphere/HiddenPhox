@@ -461,12 +461,20 @@ let uinfo = function(ctx, msg, args) {
                         },
                         {
                             name: "Created At",
-                            value: new Date(u.createdAt).toUTCString(),
+                            value: `${new Date(
+                                u.createdAt
+                            ).toUTCString()} (${ctx.utils.toReadableTime(
+                                Date.now() - u.createdAt
+                            )} ago)`,
                             inline: true
                         },
                         {
                             name: "Joined At",
-                            value: new Date(u.joinedAt).toUTCString(),
+                            value: `${new Date(
+                                u.joinedAt
+                            ).toUTCString()} (${ctx.utils.toReadableTime(
+                                Date.now() - u.joinedAt
+                            )} ago)`,
                             inline: true
                         },
                         {
