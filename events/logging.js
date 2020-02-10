@@ -326,7 +326,11 @@ let userJoin = async function(guild, user, ctx) {
                     },
                     {
                         name: "Created At",
-                        value: new Date(user.createdAt).toUTCString(),
+                        value: `${new Date(
+                            user.createdAt
+                        ).toUTCString()} (${ctx.utils.toReadableTime(
+                            Date.now() - user.createdAt
+                        )} ago)`,
                         inline: true
                     }
                 ],
@@ -364,7 +368,11 @@ let userLeft = async function(guild, user, ctx) {
                     },
                     {
                         name: "Created At",
-                        value: new Date(user.createdAt).toUTCString(),
+                        value: `${new Date(
+                            user.createdAt
+                        ).toUTCString()} (${ctx.utils.toReadableTime(
+                            Date.now() - user.createdAt
+                        )} ago)`,
                         inline: true
                     },
                     {
