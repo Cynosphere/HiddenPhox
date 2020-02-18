@@ -50,7 +50,7 @@ async function getTweetImages(ctx, snowflake, msg) {
 
             msg.channel
                 .createMessage(
-                    `Quoted Tweet: https://twitter.com/statuses/${tweet.quoted_status_id_str}`
+                    `Quoted Tweet: https://twitter.com/i/status/${tweet.quoted_status_id_str}`
                 )
                 .then(async x => {
                     x.addReaction("\u274c");
