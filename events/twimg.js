@@ -41,7 +41,10 @@ async function getTweetImages(ctx, snowflake, msg) {
             .then(x => x.body)
             .catch(e => reject(e));
         if (tweet.is_quote_status && tweet.quoted_status_id) {
-            if (quoted >= 5) return;
+            if (quoted >= 5) {
+                quoted = 0;
+                return;
+            }
             msg.channel
                 .createMessage(
                     `Quoted Tweet: https://twitter.com/statuses/${tweet.quoted_status_id_str}`
