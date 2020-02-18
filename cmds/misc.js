@@ -885,10 +885,16 @@ let rextester = async function(ctx, msg, args) {
     let out = ctx.utils.safeString(data.Result, false);
     msg.channel.createMessage(
         data.Errors != null
-            ? `:warning: Errors:\n\`\`\`\n${ctx.utils.safeString(data.Errors, true)}\`\`\``
+            ? `:warning: Errors:\n\`\`\`\n${ctx.utils.safeString(
+                  data.Errors,
+                  false
+              )}\`\`\``
             : `\`\`\`${lang}\n${out}\`\`\`${
                   data.Warnings != null
-                      ? `\n\n:warning: Warnings:\n\`\`\`\n${ctx.utils.safeString(data.Warnings, true)}\`\`\``
+                      ? `\n\n:warning: Warnings:\n\`\`\`\n${ctx.utils.safeString(
+                            data.Warnings,
+                            false
+                        )}\`\`\``
                       : ""
               }`
     );
