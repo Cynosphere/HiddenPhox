@@ -150,12 +150,12 @@ module.exports = [
         name: "pbn",
         desc: "Paint By Numbers webcam",
         func: webcam,
-        group: "Guild Specific",
-        guild: [
+        group: "Guild Specific"
+        /*guild: [
             "487633770200039426",
             "300436792916836352"
             // "423137607682228234"
-        ]
+        ]*/
     }
     /*{
         name: "alighton",
