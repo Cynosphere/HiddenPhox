@@ -1,5 +1,5 @@
 let webcam = async function(ctx, msg, args) {
-    const f = ctx.libs.superagent
+    const f = await ctx.libs.superagent
         .get(`https://homeproxy.utsuho.rocks/webcamout/out.jpg`)
         .buffer()
         .then(x => x.body);
