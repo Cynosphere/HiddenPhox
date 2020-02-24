@@ -3,8 +3,9 @@ const c2c = require("colorcolor");
 const imgfuckr = require("../utils/imgfuckr.js");
 const imgfkr = new imgfuckr();
 const superagent = require("superagent");
-const { GifUtil } = require("gifwrap");
-const { spawn } = require("child_process");
+const sharp = require("sharp");
+const { BitmapImage, GifFrame, GifCodec, GifUtil } = require("gifwrap");
+const gifEncoder = new GifCodec();
 
 const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
 
@@ -217,9 +218,18 @@ async function giffuck(msg, url) {
             });
             if (failed) return;
             let out = await i.getBufferAsync(jimp.MIME_JPEG);
-            let glitch = Buffer.from(imgfkr.processBuffer(out), "base64");
 
-            outframes.push({ data: glitch, delay: frame.delayCentisecs });
+            // stupid hack lol
+            let reprocessed = await sharp(
+                Buffer.from(imgfkr.processBuffer(out), "base64")
+            )
+                .png()
+                .toBuffer();
+            let glitch = await jimp.read(reprocessed);
+
+            outframes.push(new GifFrame(new BitmapImage(glitch.bitmap)), {
+                delayCentisecs: Math.max(frame.delayCentisecs, 15)
+            });
         }
 
         return outframes;
@@ -229,36 +239,9 @@ async function giffuck(msg, url) {
         m.edit(
             "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Creating gif)`"
         );
-        return new Promise((resolve, reject) => {
-            let opt = {
-                stdio: [0, "pipe", "ignore"]
-            };
-            //now where could my pipe be?
-            for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
 
-            let args = ["-loop", "0"];
-            for (let f in frames) {
-                args.push("-delay");
-                args.push(Math.max(frames[f].delay, 15));
-                args.push(`fd:${parseInt(f) + 3}`);
-            }
-            args.push("gif:-");
-
-            let im = spawn("convert", args, opt);
-            for (let f = 0; f < frames.length; f++)
-                im.stdio[f + 3].write(frames[f].data);
-            for (let f = 0; f < frames.length; f++) im.stdio[f + 3].end();
-
-            let out = [];
-
-            im.stdout.on("data", c => {
-                out.push(c);
-            });
-
-            im.stdout.on("end", _ => {
-                resolve(Buffer.concat(out));
-            });
-        });
+        let gif = await gifEncoder.encodeGif(frames);
+        return gif.buffer;
     }
 
     superagent.get(url).then(img => {
@@ -385,10 +368,13 @@ let i2gg = async function(msg, url, avatar = false) {
 };
 
 let _jpeg = async function(msg, url) {
-    let img = await jimp.read(url);
-    let out = await img
-        .quality(Math.floor(Math.random() * 10) + 1)
-        .getBufferAsync(jimp.MIME_JPEG);
+    let img = await superagent
+        .get(url)
+        .buffer()
+        .then(x => x.body);
+    let out = await sharp(img)
+        .jpeg({ quality: 1 })
+        .toBuffer();
 
     msg.channel.createMessage("", { file: out, name: "jpeg.jpg" });
 };

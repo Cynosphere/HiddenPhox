@@ -44,6 +44,7 @@
         "prominence": "^0.2.0",
         "require-reload": "^0.2.2",
         "sequelize": "^6.0.0-beta.3",
+        "sharp": "^0.24.1",
         "sqlite3": "^4.1.0",
         "steam-web-api2": "^2.0.3",
         "superagent": "^5.1.0",
