@@ -4,8 +4,8 @@ const imgfuckr = require("../utils/imgfuckr.js");
 const imgfkr = new imgfuckr();
 const superagent = require("superagent");
 const sharp = require("sharp");
-const { BitmapImage, GifFrame, GifCodec, GifUtil } = require("gifwrap");
-const gifEncoder = new GifCodec();
+const { GifUtil } = require("gifwrap");
+const { spawn } = require("child_process");
 
 const urlRegex = /((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+)/;
 
