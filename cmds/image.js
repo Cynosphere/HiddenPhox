@@ -218,18 +218,9 @@ async function giffuck(msg, url) {
             });
             if (failed) return;
             let out = await i.getBufferAsync(jimp.MIME_JPEG);
+            let glitch = Buffer.from(imgfkr.processBuffer(out), "base64");
 
-            // stupid hack lol
-            let reprocessed = await sharp(
-                Buffer.from(imgfkr.processBuffer(out), "base64")
-            )
-                .png()
-                .toBuffer();
-            let glitch = await jimp.read(reprocessed);
-
-            outframes.push(new GifFrame(new BitmapImage(glitch.bitmap)), {
-                delayCentisecs: Math.max(frame.delayCentisecs, 15)
-            });
+            outframes.push({ data: glitch, delay: frame.delayCentisecs });
         }
 
         return outframes;
@@ -239,9 +230,36 @@ async function giffuck(msg, url) {
         m.edit(
             "<a:typing:493087964742549515> Please wait, glitching in progress. `(Step: Creating gif)`"
         );
+        return new Promise((resolve, reject) => {
+            let opt = {
+                stdio: [0, "pipe", "ignore"]
+            };
+            //now where could my pipe be?
+            for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
 
-        let gif = await gifEncoder.encodeGif(frames);
-        return gif.buffer;
+            let args = ["-loop", "0"];
+            for (let f in frames) {
+                args.push("-delay");
+                args.push(Math.max(frames[f].delay, 15));
+                args.push(`fd:${parseInt(f) + 3}`);
+            }
+            args.push("gif:-");
+
+            let im = spawn("convert", args, opt);
+            for (let f = 0; f < frames.length; f++)
+                im.stdio[f + 3].write(frames[f].data);
+            for (let f = 0; f < frames.length; f++) im.stdio[f + 3].end();
+
+            let out = [];
+
+            im.stdout.on("data", c => {
+                out.push(c);
+            });
+
+            im.stdout.on("end", _ => {
+                resolve(Buffer.concat(out));
+            });
+        });
     }
 
     superagent.get(url).then(img => {
