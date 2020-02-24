@@ -3,7 +3,7 @@ let webcam = async function(ctx, msg, args) {
         .get(`https://homeproxy.utsuho.rocks/webcamout/out.jpg`)
         .buffer()
         .then(x => x.body);
-    msg.channel.createMessage("", { file: f, name: "pbm.jpg" });
+    msg.channel.createMessage("", { file: f, name: "pbn.jpg" });
 };
 
 /*let lighton = async function(ctx, msg, args) {
@@ -147,7 +147,7 @@ let lightcol = async function(ctx, msg, args) {
 
 module.exports = [
     {
-        name: "pbm",
+        name: "pbn",
         desc: "Paint By Numbers webcam",
         func: webcam,
         group: "Guild Specific",
