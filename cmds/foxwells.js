@@ -1,11 +1,12 @@
-/*let webcam = async function(ctx, msg, args) {
-    let data = await ctx.libs.jimp.read(`http://braixen.club:2095/out.jpg`);
-    data.getBuffer(ctx.libs.jimp.MIME_PNG, (e, f) => {
-        msg.channel.createMessage("", { file: f, name: "bricam.jpg" });
-    });
+let webcam = async function(ctx, msg, args) {
+    const f = ctx.libs.superagent
+        .get(`https://homeproxy.utsuho.rocks/webcamout/out.jpg`)
+        .buffer()
+        .then(x => x.body);
+    msg.channel.createMessage("", { file: f, name: "pbm.jpg" });
 };
 
-let lighton = async function(ctx, msg, args) {
+/*let lighton = async function(ctx, msg, args) {
     let rl = ctx.ratelimits.get(msg.author.id);
     if (rl && rl.adryd && rl.adryd > Date.now()) {
         msg.channel.createMessage(
@@ -142,23 +143,21 @@ let lightcol = async function(ctx, msg, args) {
     } else {
         ctx.ratelimits.set(msg.author.id, { adryd: Date.now() + 30000 });
     }
-};
+};*/
 
 module.exports = [
     {
-        name: "cam",
-        desc: "See the webcam behind Bri's monitor.",
+        name: "pbm",
+        desc: "Paint By Numbers webcam",
         func: webcam,
         group: "Guild Specific",
         guild: [
-            "216292020371718146",
-            "295341979800436736",
-            "314253378722988032",
-            "343947907264806912",
-            "423137607682228234"
+            "487633770200039426",
+            "300436792916836352"
+            // "423137607682228234"
         ]
-    },
-    {
+    }
+    /*{
         name: "alighton",
         desc: "Turn Adryd's lights on.",
         func: lighton,
@@ -190,6 +189,5 @@ module.exports = [
             "343947907264806912",
             "423137607682228234"
         ]
-    }
+    }*/
 ];
-*/
