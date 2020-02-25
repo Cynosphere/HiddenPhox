@@ -158,7 +158,7 @@ let stats = function(ctx, msg, args) {
                 },
                 {
                     name: "Uptime",
-                    value: ctx.utils.formatTime(uptime),
+                    value: ctx.utils.formatTime(ctx.bot.uptime),
                     inline: true
                 }
             ],
