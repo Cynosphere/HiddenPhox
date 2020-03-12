@@ -1,9 +1,10 @@
 const ytdl = require("ytdl-core");
 //const scdl = require("youtube-dl");
 const probe = require("node-ffprobe");
+const superagent = require("superagent");
 
 //taken from soundcloud api calls
-const scCID = "E0yZF2vk9zN70O9uT0i9NlmX89sNPAvo";
+const scCID = "t0h1jzYMsaZXy6ggnZO71gHK3Ms6CFwE";
 
 const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 const plregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
@@ -13,7 +14,7 @@ const scregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/.+$/;
 const scplregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/(sets\/.+|likes|tracks)$/;
 
 /*async function grabYTVideoURL(ctx, url) {
-    let vid = await ctx.libs.superagent.get(url).then(x => x.text);
+    let vid = await superagent.get(url).then(x => x.text);
     let data = JSON.parse(
         vid
             .match(
@@ -94,7 +95,7 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
         (url.match(plregex2) && url.match(plregex2)[0]);
 
     const baseURL = `https://www.googleapis.com/youtube/v3/playlistItems?key=${ctx.apikeys.google}&part=snippet&playlistId=${plid}&maxResults=50`;
-    let req = await ctx.libs.superagent
+    let req = await superagent
         .get(baseURL)
         .catch(e =>
             msg.channel
@@ -111,7 +112,7 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
     let pages = Math.round(req.body.pageInfo.totalResults / 50);
     if (pageToken) {
         for (let i = 0; i < pages; i++) {
-            let page = await ctx.libs.superagent
+            let page = await superagent
                 .get(`${baseURL}&pageToken=${pageToken}`)
                 .catch(e =>
                     msg.channel
@@ -164,13 +165,13 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
 }
 
 async function doSCPlaylistThingsOk(ctx, msg, url) {
-    let playlistURL = await ctx.libs.superagent
+    let playlistURL = await superagent
         .get(
             `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
         )
         .then(x => x.redirects[0]);
 
-    const tracks = await ctx.libs.superagent
+    const tracks = await superagent
         .get(`${playlistURL}&limit=5000`)
         .then(x => (Array.isArray(x.body) ? x.body : x.body.tracks));
 
@@ -446,7 +447,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
         if (ctx.vc.get(id)) {
             let conn = ctx.vc.get(id);
             if (conn.playing) {
-                let info = await ctx.libs.superagent
+                let info = await superagent
                     .get(
                         `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                     )
@@ -462,7 +463,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 let formatURL = info.media.transcodings
                     .filter(x => !x.snipped)
                     .filter(x => x.format.protocol == "progressive")[0].url;
-                let streamURL = await ctx.libs.superagent
+                let streamURL = await superagent
                     .get(`${formatURL}?client_id=${scCID}`)
                     .then(x => x.body.url)
                     .catch(e =>
@@ -521,7 +522,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     })
                     .then(x => setTimeout(() => x.delete(), 10000));
             } else {
-                let info = await ctx.libs.superagent
+                let info = await superagent
                     .get(
                         `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                     )
@@ -536,7 +537,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 let formatURL = info.media.transcodings
                     .filter(x => !x.snipped)
                     .filter(x => x.format.protocol == "progressive")[0].url;
-                let streamURL = await ctx.libs.superagent
+                let streamURL = await superagent
                     .get(`${formatURL}?client_id=${scCID}`)
                     .then(x => x.body.url)
                     .catch(e =>
@@ -602,7 +603,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 .then(async conn => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    let info = await ctx.libs.superagent
+                    let info = await superagent
                         .get(
                             `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                         )
@@ -617,7 +618,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     let formatURL = info.media.transcodings
                         .filter(x => !x.snipped)
                         .filter(x => x.format.protocol == "progressive")[0].url;
-                    let streamURL = await ctx.libs.superagent
+                    let streamURL = await superagent
                         .get(`${formatURL}?client_id=${scCID}`)
                         .then(x => x.body.url)
                         .catch(e =>
@@ -983,7 +984,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
 }
 
 let doSearchThingsOk = async function(id, str, msg, ctx) {
-    let req = await ctx.libs.superagent.get(
+    let req = await superagent.get(
         `https://www.googleapis.com/youtube/v3/search?key=${
             ctx.apikeys.google
         }&maxResults=5&part=snippet&type=video&q=${encodeURIComponent(str)}`
