@@ -341,7 +341,7 @@ let daily = async function(ctx, msg, args) {
                 { where: { id: msg.author.id } }
             );
             msg.channel.createMessage(
-                `**${msg.author.username}#${msg.author.discriminator}** claimed their daily reward and recieved **${value}FC**.`
+                `**${msg.author.username}#${msg.author.discriminator}** claimed their daily reward and received **${value}FC**.`
             );
         } else {
             msg.channel.createMessage(
