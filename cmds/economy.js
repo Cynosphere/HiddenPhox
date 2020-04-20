@@ -1,3 +1,6 @@
+const superagent = require("superagent");
+const sequelize = require("sequelize");
+
 let account = async function(ctx, msg, args) {
     if (msg.author.bot) {
         msg.channel.createMessage(`Bots cannot create accounts.`);
@@ -341,7 +344,7 @@ let daily = async function(ctx, msg, args) {
                 { where: { id: msg.author.id } }
             );
             msg.channel.createMessage(
-                `**${msg.author.username}#${msg.author.discriminator}** claimed their daily reward and recieved **${value}FC**.`
+                `**${msg.author.username}#${msg.author.discriminator}** claimed their daily reward and received **${value}FC**.`
             );
         } else {
             msg.channel.createMessage(
@@ -366,7 +369,7 @@ let votereward = async function(ctx, msg, args) {
     if (acc) {
         let now = new Date().getTime();
         if (now >= acc.lastvote) {
-            let voted = await ctx.libs.superagent
+            let voted = await superagent
                 .get(
                     `https://discordbots.org/api/bots/${ctx.bot.user.id}/check?userId=${msg.author.id}`
                 )
@@ -586,7 +589,7 @@ let takepoint = async function(ctx, user) {
     let data = await ctx.db.models.econ.findOne({ where: { id: user.id } });
 
     await ctx.db.models.econ.update(
-        { points: ctx.libs.sequelize.literal(`points-1`) },
+        { points: sequelize.literal(`points-1`) },
         { where: { id: user.id } }
     );
     ctx.utils.logInfo(
@@ -703,11 +706,11 @@ let steal = async function(ctx, msg, args) {
 
             if (res < chance) {
                 await ctx.db.models.econ.update(
-                    { currency: ctx.libs.sequelize.literal(`currency+${amt}`) },
+                    { currency: sequelize.literal(`currency+${amt}`) },
                     { where: { id: msg.author.id } }
                 );
                 await ctx.db.models.econ.update(
-                    { currency: ctx.libs.sequelize.literal(`currency-${amt}`) },
+                    { currency: sequelize.literal(`currency-${amt}`) },
                     { where: { id: u.id } }
                 );
 
@@ -721,8 +724,8 @@ let steal = async function(ctx, msg, args) {
 
                 await ctx.db.models.econ.update(
                     {
-                        steals: ctx.libs.sequelize.literal(`steals+1`),
-                        steal_succ: ctx.libs.sequelize.literal(`steal_succ+1`)
+                        steals: sequelize.literal(`steals+1`),
+                        steal_succ: sequelize.literal(`steal_succ+1`)
                     },
                     { where: { id: msg.author.id } }
                 );
@@ -733,7 +736,7 @@ let steal = async function(ctx, msg, args) {
             } else {
                 let oof = Math.round(amt / 2) < 1 ? amt : Math.round(amt / 2);
                 await ctx.db.models.econ.update(
-                    { currency: ctx.libs.sequelize.literal(`currency-${oof}`) },
+                    { currency: sequelize.literal(`currency-${oof}`) },
                     { where: { id: msg.author.id } }
                 );
 
@@ -741,7 +744,7 @@ let steal = async function(ctx, msg, args) {
                     where: { id: msg.channel.guild.id }
                 });
                 await ctx.db.models.taxbanks.update(
-                    { currency: ctx.libs.sequelize.literal(`currency+${oof}`) },
+                    { currency: sequelize.literal(`currency+${oof}`) },
                     { where: { id: msg.channel.guild.id } }
                 );
 
@@ -750,8 +753,8 @@ let steal = async function(ctx, msg, args) {
 
                 await ctx.db.models.econ.update(
                     {
-                        steals: ctx.libs.sequelize.literal(`steals+1`),
-                        steal_fail: ctx.libs.sequelize.literal(`steal_fail+1`)
+                        steals: sequelize.literal(`steals+1`),
+                        steal_fail: sequelize.literal(`steal_fail+1`)
                     },
                     { where: { id: msg.author.id } }
                 );
