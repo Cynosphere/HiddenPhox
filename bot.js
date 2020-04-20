@@ -2,8 +2,8 @@ const Eris = require("eris");
 const config = require("./config.json");
 const client = new Eris(config.token, {
     defaultImageFormat: "png",
-    defaultImageSize: 1024,
-    intents: [
+    defaultImageSize: 1024
+    /*intents: [
         "GUILDS",
         //"GUILD_MEMBERS",
         "GUILD_BANS",
@@ -14,7 +14,7 @@ const client = new Eris(config.token, {
         "GUILD_MESSAGE_REACTIONS",
         "DIRECT_MESSAGES",
         "DIRECT_MESSAGE_REACTIONS"
-    ]
+    ]*/
 });
 
 const fs = require("fs");
