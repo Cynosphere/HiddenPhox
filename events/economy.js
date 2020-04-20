@@ -1,4 +1,4 @@
-let messageCreate = async function(msg, ctx) {
+async function giveMoney(msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
     if (msg.author.bot) return;
@@ -22,9 +22,7 @@ let messageCreate = async function(msg, ctx) {
             );
             ctx.utils.logInfo(
                 ctx,
-                `[ECON] Gave ${msg.author.username}#${
-                    msg.author.discriminator
-                } ${amount}FC.`
+                `[ECON] Gave ${msg.author.username}#${msg.author.discriminator} ${amount}FC.`
             );
             if (
                 msg.channel
@@ -36,9 +34,9 @@ let messageCreate = async function(msg, ctx) {
                 msg.addReaction("\uD83D\uDCB8");
         }
     }
-};
+}
 
-let pointRegen = async function(ctx) {
+async function pointRegen(ctx) {
     let list = await ctx.db.models.econ.findAll();
 
     let now = new Date().getTime();
@@ -55,17 +53,17 @@ let pointRegen = async function(ctx) {
             );
         }
     }
-};
+}
 
 module.exports = [
     {
         event: "messageCreate",
-        name: "economy",
-        func: messageCreate
+        name: "GiveMoney",
+        func: giveMoney
     },
     {
         event: "timer",
-        name: "pointregen",
+        name: "PointRegen",
         interval: 5000,
         func: pointRegen
     }

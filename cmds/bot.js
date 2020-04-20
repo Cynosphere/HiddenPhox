@@ -1,6 +1,10 @@
+const reqreload = require("require-reload")(require);
+const fs = require("fs");
+const superagent = require("superagent");
+
 const hasteRegex = /^(https?:\/\/)?(www\.)?(hastebin\.com|mystb\.in)\/(raw\/)?([a-z]+)(\.[a-z]+)?$/;
 
-let _eval = async function(ctx, msg, args) {
+async function _eval(ctx, msg, args) {
     if (msg.author.id === ctx.ownerid || ctx.elevated.includes(msg.author.id)) {
         let errored = false;
         let out;
@@ -13,21 +17,21 @@ let _eval = async function(ctx, msg, args) {
         }
 
         if (isURL) {
-            let toRun = await ctx.libs.superagent.get(args).then(x => x.text);
+            let toRun = await superagent.get(args).then(x => x.text);
 
             try {
                 out = eval(toRun);
                 if (out && out.then) out = await out;
-            } catch (e) {
-                out = e.message ? e.message : e;
+            } catch (err) {
+                out = err.message ? err.message : err;
                 errored = true;
             }
         } else {
             try {
                 out = eval(args);
                 if (out && out.then) out = await out;
-            } catch (e) {
-                out = e.message ? e.message : e;
+            } catch (err) {
+                out = err.message ? err.message : err;
                 errored = true;
             }
         }
@@ -65,37 +69,37 @@ let _eval = async function(ctx, msg, args) {
     } else {
         msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
-};
+}
 
-let restart = function(ctx, msg, args) {
+function restart(ctx, msg, args) {
     if (msg.author.id === ctx.ownerid) {
-        msg.channel.createMessage(`Restarting ${ctx.bot.user.username}...`);
+        msg.addReaction("\uD83D\uDD04");
         setTimeout(process.exit, 500);
     } else {
         msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
-};
+}
 
-let reload = function(ctx, msg, args) {
+function reload(ctx, msg, args) {
     if (msg.author.id === ctx.ownerid) {
-        if (ctx.libs.fs.existsSync(__dirname + "/" + args + ".js")) {
+        if (fs.existsSync(`${__dirname}/${args}.js`)) {
             try {
-                let c = ctx.libs.reload(__dirname + "/" + args + ".js");
+                const oldCmd = reqreload(`${__dirname}/${args}.js`);
 
-                if (c.name && c.func) {
-                    ctx.cmds.set(c.name, c);
-                } else if (c.length) {
-                    for (let i = 0; i < c.length; i++) {
-                        let a = c[i];
-                        if (a.func && a.name) {
-                            ctx.cmds.set(a.name, a);
+                if (oldCmd.name && oldCmd.func) {
+                    ctx.cmds.set(oldCmd.name, oldCmd);
+                } else if (oldCmd.length) {
+                    for (const i = 0; i < oldCmd.length; i++) {
+                        const subCmd = oldCmd[i];
+                        if (subCmd.func && subCmd.name) {
+                            ctx.cmds.set(subCmd.name, subCmd);
                         }
                     }
                 }
                 msg.addReaction("\uD83D\uDC4C");
-            } catch (e) {
+            } catch (err) {
                 msg.channel.createMessage(
-                    `:warning: Error reloading: \`\`\`${e.stack}\`\`\``
+                    `:warning: Error reloading: \`\`\`\n${err.stack}\n\`\`\``
                 );
             }
         } else {
@@ -104,65 +108,59 @@ let reload = function(ctx, msg, args) {
     } else {
         msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
-};
+}
 
-let ereload = function(ctx, msg, args) {
-    if (msg.author.id === ctx.ownerid) {
-        if (ctx.libs.fs.existsSync(__dirname + "/../events/" + args + ".js")) {
-            try {
-                let e = ctx.libs.reload(
-                    __dirname + "/../events/" + args + ".js"
-                );
-
-                if (e.event && e.func && e.name) {
-                    let _e = ctx.events.get(e.event + "|" + e.name);
-                    if (_e) ctx.bot.removeListener(_e.event, _e.func);
-                    ctx.events.set(e.event + "|" + e.name, e);
-                    ctx.utils.createEvent(ctx.bot, e.event, e.func, ctx);
-                    ctx.utils.logInfo(
-                        ctx,
-                        `Reloaded event: ${e.event}|${e.name} (${args})`
-                    );
-                } else if (e.length) {
-                    for (let i = 0; i < e.length; i++) {
-                        let a = e[i];
-                        if (a.event && a.func && a.name) {
-                            let _e = ctx.events.get(a.event + "|" + a.name);
-                            if (_e) ctx.bot.removeListener(a.event, _e.func);
-                            ctx.events.set(a.event + "|" + a.name, a);
-                            ctx.utils.createEvent(
-                                ctx.bot,
-                                a.event,
-                                a.func,
-                                ctx
-                            );
-                            ctx.utils.logInfo(
-                                ctx,
-                                `Reloaded event: ${a.event}|${a.name} (${args})`
-                            );
-                        }
-                    }
-                }
-                msg.addReaction("\uD83D\uDC4C");
-            } catch (e) {
-                msg.channel.createMessage(
-                    `:warning: Error reloading: \`${e.message}\``
-                );
-            }
-        } else {
-            msg.channel.createMessage("Event not found.");
-        }
-    } else {
+function ereload(ctx, msg, args) {
+    if (msg.author.id !== ctx.ownerid) {
         msg.channel.createMessage("No\n\nSent from my iPhone.");
+        return;
     }
-};
 
-let exec = function(ctx, msg, args) {
+    if (!fs.existsSync(`${__dirname}/../events/${args}.js`)) {
+        msg.channel.createMessage("Event not found.");
+        return;
+    }
+
+    function reloadEvent(event) {
+        const eventName = event.event + "|" + event.name;
+        const oldEvent = ctx.events.get(eventName);
+        if (oldEvent) {
+            if (oldEvent.event == "timer") {
+                clearInterval(oldEvent.timer);
+            } else {
+                ctx.bot.removeListener(oldEvent.event, oldEvent.func);
+            }
+        }
+
+        ctx.events.set(eventName, event);
+        ctx.utils.createEvent(ctx.bot, event.event, event.func, ctx);
+        ctx.utils.logInfo(ctx, `Reloaded event: ${eventName} (${args})`);
+    }
+
+    try {
+        const newEvent = reqreload(`${__dirname}/../events/${args}.js`);
+
+        if (newEvent.event && newEvent.func && newEvent.name) {
+            reloadEvent(newEvent);
+        } else if (newEvent.length > 0) {
+            for (const subEvent of newEvent) {
+                reloadEvent(subEvent);
+            }
+        }
+        msg.addReaction("\uD83D\uDC4C");
+    } catch (err) {
+        msg.channel.createMessage(
+            `:warning: Error reloading: \`\`\`\n${err.message}\n\`\`\``
+        );
+    }
+}
+
+function exec(ctx, msg, args) {
     if (msg.author.id === ctx.ownerid || ctx.elevated.includes(msg.author.id)) {
         args = args.replace(/rm \-rf/g, "echo");
         require("child_process").exec(args, (e, out, err) => {
-            if (e) {
-                msg.channel.createMessage("Error\n```" + e + "```");
+            if (err) {
+                msg.channel.createMessage(`Error\n\`\`\`\n${err}\n\`\`\``);
             } else {
                 if (out.toString().length > 1980) {
                     let output = out.toString();
@@ -174,7 +172,7 @@ let exec = function(ctx, msg, args) {
                     );
                 } else {
                     msg.channel.createMessage(
-                        "\u2705 Output:\n```bash\n" + out + "\n```"
+                        `\u2705 Output:\n\`\`\`bash\n${out}\n\`\`\``
                     );
                 }
             }
@@ -182,9 +180,9 @@ let exec = function(ctx, msg, args) {
     } else {
         msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
-};
+}
 
-let setav = async function(ctx, msg, args) {
+async function setav(ctx, msg, args) {
     if (msg.author.id === ctx.ownerid) {
         let url;
         if (args && args.indexOf("http") > -1) {
@@ -198,22 +196,22 @@ let setav = async function(ctx, msg, args) {
             return;
         }
 
-        let req = await ctx.libs.superagent.get(url);
+        let req = await superagent.get(url);
 
         let data = `data:${req.type};base64${Buffer.from(req.body).toString(
             "base64"
         )}`;
         ctx.bot.editSelf({ avatar: data }).then(() => {
             msg.channel.createMessage(
-                emoji.get("<:ms_tick:503341995348066313>") + " Avatar set."
+                "<:ms_tick:503341995348066313> Avatar set."
             );
         });
     } else {
         msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
-};
+}
 
-let pprefix = async function(ctx, msg, args) {
+async function pprefix(ctx, msg, args) {
     args = ctx.utils.formatArgs(args);
     if (args && args[0] == "set") {
         let pre = args[1];
@@ -249,9 +247,9 @@ let pprefix = async function(ctx, msg, args) {
                     : `Your personal prefix is \`${out}\``)
         );
     }
-};
+}
 
-let funmode = async function(ctx, msg, args) {
+async function funmode(ctx, msg, args) {
     if (msg.author.id === ctx.ownerid) {
         if (!msg.channel.guild) {
             msg.channel.createMessage("Not in guild.");
@@ -276,7 +274,7 @@ let funmode = async function(ctx, msg, args) {
     } else {
         msg.channel.createMessage("No\n\nSent from my iPhone.");
     }
-};
+}
 
 module.exports = [
     {

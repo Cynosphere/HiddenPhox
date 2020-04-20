@@ -1,6 +1,7 @@
 const fs = require("fs");
 const namemcLib = require("../utils/namemc.js");
 const jimp = require("jimp");
+const superagent = require("superagent");
 
 let scol = {
     green: "<:online:493173082421461002>",
@@ -14,8 +15,8 @@ let stxt = {
     red: "**Offline/Unavaliable**"
 };
 
-let mcstatus = async function(ctx, msg, args) {
-    let req = await ctx.libs.superagent.get("https://status.mojang.com/check");
+async function mcstatus(ctx, msg, args) {
+    let req = await superagent.get("https://status.mojang.com/check");
     let status = req.body;
     let tmp = {};
     for (let i = 0; i < status.length; i++) {
@@ -87,11 +88,11 @@ let mcstatus = async function(ctx, msg, args) {
             ]
         }
     });
-};
+}
 
 let mcserver = async function(ctx, msg, args) {
     args = args.split(" ")[0]; //ignore all other inputs
-    let data = await ctx.libs.superagent
+    let data = await superagent
         .get(`https://api.mcsrvstat.us/1/${args}`)
         .then(x => x.body);
 

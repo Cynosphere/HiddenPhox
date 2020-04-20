@@ -1,10 +1,12 @@
-let webcam = async function(ctx, msg, args) {
-    const f = await ctx.libs.superagent
+const superagent = require("superagent");
+
+async function webcam(ctx, msg, args) {
+    const f = await superagent
         .get(`https://homeproxy.utsuho.rocks/webcamout/out.jpg`)
         .buffer()
         .then(x => x.body);
     msg.channel.createMessage("", { file: f, name: "pbn.jpg" });
-};
+}
 
 /*let lighton = async function(ctx, msg, args) {
     let rl = ctx.ratelimits.get(msg.author.id);
@@ -17,7 +19,7 @@ let webcam = async function(ctx, msg, args) {
         return;
     }
 
-    ctx.libs.superagent
+    superagent
         .post(
             "https://maker.ifttt.com/trigger/dab/with/key/dCaeTmnYoY-y6d7-lqZAam"
         )
@@ -60,7 +62,7 @@ let lightoff = async function(ctx, msg, args) {
         return;
     }
 
-    ctx.libs.superagent
+    superagent
         .post(
             "https://maker.ifttt.com/trigger/dab/with/key/dCaeTmnYoY-y6d7-lqZAam"
         )
@@ -113,7 +115,7 @@ let lightcol = async function(ctx, msg, args) {
         return;
     }
 
-    ctx.libs.superagent
+    superagent
         .post(
             "https://maker.ifttt.com/trigger/dab/with/key/dCaeTmnYoY-y6d7-lqZAam"
         )

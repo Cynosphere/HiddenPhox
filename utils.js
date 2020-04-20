@@ -1,3 +1,5 @@
+const superagent = require("superagent");
+
 let utils = {};
 
 utils.awaitMessage = function(ctx, msg, display, callback, timeout) {
@@ -453,7 +455,9 @@ utils.remainingTime = function(inp) {
 utils.formatTime = utils.remainingTime;
 
 utils.createEvent = function(client, type, func, ctx) {
-    client.on(type, (...args) => func(...args, ctx));
+    const _func = func;
+    func = (...args) => _func(...args, ctx);
+    client.on(type, func);
 };
 
 utils.formatArgs = function(str) {
@@ -494,9 +498,7 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
             if (m.attachments.length > 0) {
                 img = m.attachments[0].url;
                 if (gifcheck) {
-                    let type = await ctx.libs.superagent
-                        .get(img)
-                        .then(x => x.type);
+                    let type = await superagent.get(img).then(x => x.type);
                     if (type == "image/gif") {
                         break;
                     }
@@ -512,9 +514,7 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
                     ? m.embeds[0].thumbnail.url
                     : m.embeds[0].image && m.embeds[0].image.url;
                 if (gifcheck) {
-                    let type = await ctx.libs.superagent
-                        .get(img)
-                        .then(x => x.type);
+                    let type = await superagent.get(img).then(x => x.type);
                     if (type == "image/gif") {
                         break;
                     }
@@ -533,7 +533,7 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
 };
 
 utils.makeHaste = async function(ctx, msg, content, txt) {
-    ctx.libs.superagent
+    superagent
         .post("https://mystb.in/documents")
         .send(content)
         .then(res => {

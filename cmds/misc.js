@@ -1,12 +1,14 @@
 const DuckDuckScrape = require("duck-duck-scrape");
 const ddg = new DuckDuckScrape();
+const expreval = require("expr-eval").Parser;
+const superagent = require("superagent");
 
 let calc = function(ctx, msg, args) {
     let a = args.split("|");
     let exp = a[0];
     let _x = a[1];
     _x = _x ? _x : 1;
-    let parser = new ctx.libs.math();
+    let parser = new expreval();
     let result = parser.parse(exp).evaluate({ x: _x });
     msg.channel.createMessage(
         `Result: ${result} ${result == 69 ? "(nice)" : ""}`
@@ -17,7 +19,7 @@ let yt = async function(ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage("Arguments are required!");
     } else {
-        let req = await ctx.libs.superagent
+        let req = await superagent
             .get(
                 `https://www.googleapis.com/youtube/v3/search?key=${
                     ctx.apikeys.google
@@ -53,7 +55,7 @@ let fyt = async function(ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage("Arguments are required!");
     } else {
-        let req = await ctx.libs.superagent
+        let req = await superagent
             .get(
                 `https://www.googleapis.com/youtube/v3/search?key=${
                     ctx.apikeys.google
@@ -115,7 +117,7 @@ let search = async function(ctx, msg, args) {
             });
         } else {
             //Assume a DDG bang was used.
-            const redir = await ctx.libs.superagent
+            const redir = await superagent
                 .get(
                     `https://api.duckduckgo.com/?q=${encodeURIComponent(
                         args
@@ -199,7 +201,7 @@ let fgimg = function(ctx, msg, args) {
 };
 
 let me_irl = async function(ctx, msg, args) {
-    let req = await ctx.libs.superagent.get(
+    let req = await superagent.get(
         "http://www.reddit.com/r/me_irl/top.json?sort=default&count=50"
     );
 
@@ -297,15 +299,14 @@ let vote = function(ctx, msg, args) {
 };
 
 let recipe = function(ctx, msg, args) {
-    let randstr = "";
+    /*let randstr = "";
     for (let i = 0; i < 60; i++) {
         randstr =
             randstr + String.fromCharCode(Math.floor(Math.random() * 93) + 34);
-    }
+    }*/
     msg.channel.createMessage("", {
         file: new Buffer(
-            "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*" +
-                randstr
+            "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
         ),
         name: "recipe.png"
     });
@@ -329,7 +330,7 @@ let currency = async function(ctx, msg, args) {
 
         if (amt == NaN) amt = 1;
 
-        let data = await ctx.libs.superagent
+        let data = await superagent
             .get(
                 url
                     .replace("$IN", inp.toUpperCase())
@@ -371,7 +372,7 @@ let rave = async function(ctx, msg, args) {
     let id1 = vid1.match(ytregex)[4].replace("watch?v=", "");
     let id2 = vid2.match(ytregex)[4].replace("watch?v=", "");
 
-    let token = await ctx.libs.superagent
+    let token = await superagent
         .post(
             "https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyCB24TzTgYXl4sXwLyeY8y-XXgm0RX_eRQ"
         )
@@ -384,7 +385,7 @@ let rave = async function(ctx, msg, args) {
         .send({ returnSecureToken: true })
         .then(x => x.body.idToken);
 
-    let rdjid = await await ctx.libs.superagent
+    let rdjid = await await superagent
         .post("https://api.red.wemesh.ca/ravedj")
         .set({
             "User-Agent":
@@ -418,7 +419,7 @@ let wolfram = async function(ctx, msg, args) {
         verbose = true;
     }
     //not my key, not telling where i got it from tho
-    let data = await ctx.libs.superagent
+    let data = await superagent
         .get(
             `http://api.wolframalpha.com/v2/query?input=${encodeURIComponent(
                 args
@@ -494,7 +495,7 @@ async function getBearer(ctx) {
             `${ctx.apikeys.twitter.key}:${ctx.apikeys.twitter.secret}`
         ).toString("base64");
 
-        let token = await ctx.libs.superagent
+        let token = await superagent
             .post(
                 "https://api.twitter.com/oauth2/token?grant_type=client_credentials"
             )
@@ -511,7 +512,7 @@ async function getTweetVideo(ctx, snowflake) {
 
         let vid = false;
 
-        let tweet = await ctx.libs.superagent
+        let tweet = await superagent
             .get(
                 `https://api.twitter.com/1.1/statuses/show.json?id=${snowflake}&include_entities=true`
             )
@@ -592,7 +593,7 @@ let twdl = async function(ctx, msg, args) {
         if (giveURL) {
             msg.channel.createMessage(data.video);
         } else {
-            let vid = await ctx.libs.superagent.get(data.video);
+            let vid = await superagent.get(data.video);
             if (vid) {
                 if (vid.body.byteLength > UPLOAD_LIMIT) {
                     msg.channel.createMessage(data.video);
@@ -629,9 +630,7 @@ const getRedditVideo = async function(ctx, link) {
             let match = link.match(reddit2);
             url = `https://reddit.com/comments/${match[1]}.json`;
         } else if (vreddit.test(link)) {
-            let redirs = await ctx.libs.superagent
-                .get(link)
-                .then(x => x.redirects);
+            let redirs = await superagent.get(link).then(x => x.redirects);
             if (redirs.length > 0 && redirs[1]) {
                 let match = redirs[1].match(reddit1);
                 url = `https://reddit.com/comments/${match[4]}.json`;
@@ -675,7 +674,7 @@ let redditdl = async function(ctx, msg, args) {
         }
     });
     if (!url) return;
-    let data = await ctx.libs.superagent
+    let data = await superagent
         .get(url)
         .then(
             x =>
@@ -700,7 +699,7 @@ let redditdl = async function(ctx, msg, args) {
                 return;
             }
         }
-        let code = await ctx.libs.superagent
+        let code = await superagent
             .post("https://lew.la/reddit/download")
             .type("form")
             .send({
@@ -716,7 +715,7 @@ let redditdl = async function(ctx, msg, args) {
             if (giveURL) {
                 msg.channel.createMessage(vidurl);
             } else {
-                let vid = await ctx.libs.superagent.get(vidurl);
+                let vid = await superagent.get(vidurl);
                 if (vid.body.byteLength > UPLOAD_LIMIT) {
                     msg.channel.createMessage(vidurl);
                     return;
@@ -868,7 +867,7 @@ let rextester = async function(ctx, msg, args) {
         if (use27) langcode = 5;
     }
 
-    let data = await ctx.libs.superagent
+    let data = await superagent
         .post("https://rextester.com/rundotnet/api")
         .query({ LanguageChoice: langcode })
         .query({ Program: code })
@@ -906,7 +905,7 @@ let speedrun = async function(ctx, msg, args) {
         return;
     }
 
-    let searchResults = await ctx.libs.superagent
+    let searchResults = await superagent
         .get(
             `https://www.speedrun.com/api/v1/games?name=${encodeURIComponent(
                 args
@@ -950,7 +949,7 @@ let speedrun = async function(ctx, msg, args) {
                     ctx.awaitMsgs.get(msg.channel.id)[msg.id].func
                 );
 
-                let gameInfo = await ctx.libs.superagent
+                let gameInfo = await superagent
                     .get(`https://www.speedrun.com/api/v1/games/${gameID}`)
                     .set(
                         "User-Agent",
@@ -965,7 +964,7 @@ let speedrun = async function(ctx, msg, args) {
                     return;
                 }
 
-                let categories = await ctx.libs.superagent
+                let categories = await superagent
                     .get(
                         `https://www.speedrun.com/api/v1/games/${gameID}/categories`
                     )
@@ -982,7 +981,7 @@ let speedrun = async function(ctx, msg, args) {
                     return;
                 }
 
-                let records = await ctx.libs.superagent
+                let records = await superagent
                     .get(
                         `https://www.speedrun.com/api/v1/games/${gameID}/records`
                     )
@@ -1022,7 +1021,7 @@ let speedrun = async function(ctx, msg, args) {
 
                     for (let r = 0; r < records[c].runs.length; r++) {
                         let run = records[c].runs[r].run;
-                        let runner = await ctx.libs.superagent
+                        let runner = await superagent
                             .get(run.players[0].uri)
                             .set(
                                 "User-Agent",

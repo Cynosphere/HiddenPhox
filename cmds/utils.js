@@ -1,5 +1,6 @@
 const jimp = require("jimp");
 const path = require("path");
+const superagent = require("superagent");
 
 const statusIcons = {
     online: "<:online:493173082421461002>",
@@ -73,7 +74,7 @@ let linvite = async function(ctx, msg, args) {
         msg.channel.createMessage("No invite code passed.");
         return;
     }
-    let data = await ctx.libs.superagent
+    let data = await superagent
         .get(`https://discordapp.com/api/v7/invites/${args}?with_counts=1`)
         .set("User-Agent", "HiddenPhox (v9, Eris)")
         .set("Content-Type", "application/json")
@@ -244,7 +245,7 @@ let mods = function(ctx, msg, args) {
     }
 };
 
-let binfo = async function(ctx, msg, args) {
+/*async function binfo(ctx, msg, args) {
     let u = await ctx.utils
         .lookupUser(ctx, msg, args || msg.author.mention)
         .catch(m => {
@@ -254,7 +255,7 @@ let binfo = async function(ctx, msg, args) {
         });
 
     if (u.bot) {
-        let req = await ctx.libs.superagent
+        let req = await superagent
             .get(`https://bots.discord.pw/api/bots/${u.id}`)
             .set("Authorization", ctx.apikeys.dbots);
         let data = req.body;
@@ -329,7 +330,7 @@ let binfo = async function(ctx, msg, args) {
             embed: edata
         });
     } else {
-        let req = await ctx.libs.superagent
+        let req = await superagent
             .get(`https://bots.discord.pw/api/users/${u.id}`)
             .set("Authorization", ctx.apikeys.dbots);
         let data = req.body;
@@ -373,9 +374,9 @@ let binfo = async function(ctx, msg, args) {
             embed: edata
         });
     }
-};
+};*/
 
-let ptypes = [
+const status_types = [
     "Playing",
     "Streaming",
     "Listening to",
@@ -383,205 +384,9 @@ let ptypes = [
     "Custom Status"
 ];
 
-let uinfo = function(ctx, msg, args) {
-    ctx.utils
+async function uinfo(ctx, msg, args) {
+    let user = await ctx.utils
         .lookupUser(ctx, msg, args || msg.author.id)
-        .then(async u => {
-            if (msg.channel.guild && msg.channel.guild.members.get(u.id)) {
-                u = msg.channel.guild.members.get(u.id);
-                let e = {
-                    color: ctx.utils.topColor(ctx, msg, u.id),
-                    title: `User Info: \`${u.username}#${u.discriminator}\` ${
-                        u.bot ? "<:boat:546212361472835584>" : ""
-                    }`,
-                    fields: [
-                        {
-                            name: "ID",
-                            value: u.id,
-                            inline: true
-                        },
-                        {
-                            name: "Nickname",
-                            value: u.nick ? u.nick : "None",
-                            inline: true
-                        },
-                        {
-                            name: "Status",
-                            value: u.game
-                                ? u.game.url
-                                    ? "<:streaming:493173082308083722> [Streaming](" +
-                                      u.game.url +
-                                      ")"
-                                    : statusIcons[u.status] + " " + u.status
-                                : statusIcons[u.status] + " " + u.status,
-                            inline: true
-                        },
-                        {
-                            name: ptypes[(u.game && u.game.type) || 0],
-                            value: `${
-                                u.game && u.game.emoji
-                                    ? u.game.emoji.id &&
-                                      ctx.emotes.get(u.game.emoji.id)
-                                        ? `<${
-                                              u.game.emoji.animated ? "a" : ""
-                                          }:_:${u.game.emoji.id}> `
-                                        : u.game.emoji.id
-                                        ? ""
-                                        : u.game.emoji.name + " "
-                                    : ""
-                            }${
-                                u.game
-                                    ? u.game.type == 4
-                                        ? u.game.state
-                                            ? u.game.state
-                                            : ctx.emotes.get(u.game.emoji.id)
-                                            ? ""
-                                            : "<bot doesnt have emote> "
-                                        : u.game.name
-                                    : "Nothing"
-                            }`,
-                            inline: true
-                        },
-                        {
-                            name: "Roles",
-                            value: u.guild
-                                ? u.roles.length > 0
-                                    ? u.roles.map(r => `<@&${r}>`).join(", ")
-                                    : "No roles"
-                                : "No roles",
-                            inline: true
-                        },
-                        {
-                            name: "Shared Servers",
-                            value: `${
-                                ctx.bot.guilds.filter(a => a.members.get(u.id))
-                                    .length
-                            } servers`,
-                            inline: true
-                        },
-                        {
-                            name: "Created At",
-                            value: `${new Date(
-                                u.createdAt
-                            ).toUTCString()} (${ctx.utils.toReadableTime(
-                                Date.now() - u.createdAt
-                            )} ago)`,
-                            inline: true
-                        },
-                        {
-                            name: "Joined At",
-                            value: `${new Date(
-                                u.joinedAt
-                            ).toUTCString()} (${ctx.utils.toReadableTime(
-                                Date.now() - u.joinedAt
-                            )} ago)`,
-                            inline: true
-                        },
-                        {
-                            name: "Avatar",
-                            value:
-                                u.avatar !== null
-                                    ? `[Full Size](https://cdn.discordapp.com/avatars/${
-                                          u.id
-                                      }/${u.avatar}.${
-                                          u.avatar.startsWith("a_")
-                                              ? "gif"
-                                              : "png"
-                                      }?size=1024)`
-                                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                                          5}.png)`,
-                            inline: true
-                        }
-                    ],
-                    thumbnail: {
-                        url:
-                            u.avatar !== null
-                                ? `https://cdn.discordapp.com/avatars/${u.id}/${
-                                      u.avatar
-                                  }.${
-                                      u.avatar.startsWith("a_")
-                                          ? "gif"
-                                          : "png?size=256"
-                                  }`
-                                : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                                      5}.png`
-                    }
-                };
-
-                msg.channel.createMessage({
-                    embed: e
-                });
-            } else {
-                let snowflake = parseInt(u.id).toString(2);
-                snowflake = "0".repeat(64 - snowflake.length) + snowflake;
-                let date = snowflake.substr(0, 42);
-                let createdAt = parseInt(date, 2) + 1420070400000;
-
-                let e = {
-                    color: 0x7289da,
-
-                    title: `User Info: \`${u.username}#${u.discriminator}\` ${
-                        u.bot ? "<:boat:546212361472835584>" : ""
-                    }`,
-                    fields: [
-                        {
-                            name: "ID",
-                            value: u.id,
-                            inline: true
-                        },
-                        {
-                            name: "Shared Servers",
-                            value: `${
-                                ctx.bot.guilds.filter(a => a.members.get(u.id))
-                                    .length
-                            } servers`,
-                            inline: true
-                        },
-                        {
-                            name: "Created At",
-                            value: `${new Date(
-                                createdAt
-                            ).toUTCString()} (${ctx.utils.toReadableTime(
-                                Date.now() - createdAt
-                            )} ago)`,
-                            inline: true
-                        },
-                        {
-                            name: "Avatar",
-                            value:
-                                u.avatar !== null
-                                    ? `[Full Size](https://cdn.discordapp.com/avatars/${
-                                          u.id
-                                      }/${u.avatar}.${
-                                          u.avatar.startsWith("a_")
-                                              ? "gif"
-                                              : "png?size=1024"
-                                      })`
-                                    : `[Full Size](https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                                          5}.png)`,
-                            inline: true
-                        }
-                    ],
-                    thumbnail: {
-                        url:
-                            u.avatar !== null
-                                ? `https://cdn.discordapp.com/avatars/${u.id}/${
-                                      u.avatar
-                                  }.${
-                                      u.avatar.startsWith("a_")
-                                          ? "gif"
-                                          : "png?size=256"
-                                  }`
-                                : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                                      5}.png`
-                    }
-                };
-
-                msg.channel.createMessage({
-                    embed: e
-                });
-            }
-        })
         .catch(m => {
             if (m == "No results." || m == "Canceled") {
                 msg.channel.createMessage(m);
@@ -589,227 +394,424 @@ let uinfo = function(ctx, msg, args) {
                 ctx.utils.logWarn(ctx, "Exception in command: " + m);
             }
         });
-};
 
-let sinfo = async function(ctx, msg, args) {
-    const flags = {
-        "eu-central": ":flag_eu:",
-        london: ":flag_gb:",
-        amsterdam: ":flag_nl:",
-        japan: ":flag_jp:",
-        brazil: "<:lunahahayes:383962711274291200>",
-        "us-west": ":hamburger:",
-        hongkong: ":flag_hk:",
-        sydney: ":flag_au:",
-        singapore: ":flag_sg:",
-        "us-central": ":hamburger:",
-        "eu-west": ":flag_eu:",
-        "us-south": ":hamburger:",
-        "us-east": ":hamburger:",
-        frankfurt: ":flag_de:",
-        russia: ":flag_ru:"
-    };
+    if (!user) return;
 
-    const levels = [
-        "None",
-        "Low",
-        "Medium",
-        "(╯°□°）╯︵ ┻━┻ (High)",
-        "┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻ (Very High/Phone)"
-    ];
-    const notifs = ["All Messages", "Mentions Only"];
-    const emojiTiers = [100, 200, 300, 500]; //double the count because each category has the limit
-    const boostTiers = [2, 10, 20, 20];
-
-    if (msg.channel.guild) {
-        let g = msg.channel.guild;
-
-        let bots = g.members.filter(u => u.bot).length;
-
-        let everyone = g.roles.filter(x => x.name == "@everyone")[0];
-
-        let info = {
-            color: ctx.utils.topColor(ctx, msg, ctx.bot.user.id),
-            title: `Server Info for \`${g.name}\``,
+    if (msg.channel.guild && msg.channel.guild.members.get(user.id)) {
+        user = msg.channel.guild.members.get(user.id);
+        const embed = {
+            color: ctx.utils.topColor(ctx, msg, user.id),
+            title: `User Info: \`${user.username}#${user.discriminator}\` ${
+                user.bot ? "<:boat:546212361472835584>" : ""
+            }`,
             fields: [
                 {
                     name: "ID",
-                    value: g.id,
+                    value: user.id,
                     inline: true
                 },
                 {
-                    name: "Owner",
-                    value: `<@${g.ownerID}>`,
+                    name: "Nickname",
+                    value: user.nick ? user.nick : "None",
                     inline: true
                 },
                 {
-                    name: "Total Members",
-                    value: g.memberCount,
+                    name: "Status",
+                    value: user.game
+                        ? user.game.url
+                            ? "<:streaming:493173082308083722> [Streaming](" +
+                              user.game.url +
+                              ")"
+                            : statusIcons[user.status] + " " + user.status
+                        : statusIcons[user.status] + " " + user.status,
                     inline: true
                 },
                 {
-                    name: "Humans",
-                    value: `${g.memberCount - bots} (${Math.round(
-                        ((g.memberCount - bots) / g.memberCount) * 100
-                    )}% of members)`,
-                    inline: true
-                },
-                {
-                    name: "Bots",
-                    value: `${bots} (${Math.round(
-                        (bots / g.memberCount) * 100
-                    )}% of members)`,
-                    inline: true
-                },
-                {
-                    name: "Channels",
-                    value: `${g.channels.size}/500 (${
-                        g.channels.filter(x => x.type == 0).length
-                    } text, ${
-                        g.channels.filter(x => x.type == 2).length
-                    } voice, ${
-                        g.channels.filter(x => x.type == 4).length
-                    } categories, ${
-                        g.channels.filter(
-                            x =>
-                                x.permissionOverwrites &&
-                                x.permissionOverwrites.get(everyone.id) &&
-                                x.permissionOverwrites.get(everyone.id).json
-                                    .readMessages == false
-                        ).length
-                    } hidden, ${g.channels.filter(x => x.nsfw).length} NSFW)`,
-                    inline: true
-                },
-                {
-                    name: "Region",
-                    value:
-                        (flags[g.region] || ":flag_black:") +
-                        " " +
-                        (g.region || "Unknown Region???"),
-                    inline: true
-                },
-                {
-                    name: "Shard",
-                    value: g.shard.id,
+                    name: status_types[(user.game && user.game.type) || 0],
+                    value: `${
+                        user.game && user.game.emoji
+                            ? user.game.emoji.id &&
+                              ctx.emotes.get(user.game.emoji.id)
+                                ? `<${user.game.emoji.animated ? "a" : ""}:_:${
+                                      user.game.emoji.id
+                                  }> `
+                                : user.game.emoji.id
+                                ? ""
+                                : user.game.emoji.name + " "
+                            : ""
+                    }${
+                        user.game
+                            ? user.game.type == 4
+                                ? user.game.state
+                                    ? user.game.state
+                                    : ctx.emotes.get(user.game.emoji.id)
+                                    ? ""
+                                    : "<bot doesnt have emote> "
+                                : user.game.name
+                            : "Nothing"
+                    }`,
                     inline: true
                 },
                 {
                     name: "Roles",
-                    value: `${g.roles.size}/250 (${
-                        g.roles.filter(x => x.managed).length
-                    } managed)`,
+                    value: user.guild
+                        ? user.roles.length > 0
+                            ? user.roles.map(r => `<@&${r}>`).join(", ")
+                            : "No roles"
+                        : "No roles",
                     inline: true
                 },
                 {
-                    name: "Emoji Count",
-                    value: `${g.emojis.length}/${emojiTiers[g.premiumTier]} (${
-                        g.emojis.filter(x => x.animated).length
-                    } animated, ${
-                        g.emojis.filter(x => x.managed).length
-                    } managed)`,
+                    name: "Shared Servers",
+                    value: `${
+                        ctx.bot.guilds.filter(a => a.members.get(user.id))
+                            .length
+                    } servers`,
                     inline: true
                 },
                 {
                     name: "Created At",
-                    value: new Date(g.createdAt).toUTCString(),
+                    value: `${new Date(
+                        user.createdAt
+                    ).toUTCString()} (${ctx.utils.toReadableTime(
+                        Date.now() - user.createdAt
+                    )} ago)`,
                     inline: true
                 },
                 {
-                    name: "Verification Level",
-                    value: levels[g.verificationLevel],
+                    name: "Joined At",
+                    value: `${new Date(
+                        user.joinedAt
+                    ).toUTCString()} (${ctx.utils.toReadableTime(
+                        Date.now() - user.joinedAt
+                    )} ago)`,
                     inline: true
                 },
                 {
-                    name: "Voice AFK",
-                    value: `Timeout: ${g.afkTimeout}s\nChannel: ${
-                        g.afkChannelID == null ? "None" : `<#${g.afkChannelID}>`
-                    }`,
-                    inline: true
-                },
-                {
-                    name: "Default Notifications",
-                    value: notifs[g.defaultNotifications],
-                    inline: true
-                },
-                {
-                    name: "MFA For Perms",
-                    value: g.mfaLevel == 0 ? "False" : "True",
-                    inline: true
-                },
-                {
-                    name: 'Considered "Large"',
-                    value: g.large,
-                    inline: true
-                },
-                {
-                    name: "Nitro Boost Tier",
-                    value: `Tier ${g.premiumTier} with ${
-                        g.premiumSubscriptionCount
-                    }/${boostTiers[g.premiumTier]} boosters.`,
-                    inline: true
-                },
-                {
-                    name: `Icon${g.splash ? "/Splash" : ""}${
-                        g.banner ? "/Banner" : ""
-                    }`,
+                    name: "Avatar",
                     value:
-                        `[Full Size](https://cdn.discordapp.com/icons/${g.id}/${
-                            g.icon
-                        }.${
-                            g.icon.startsWith("a_")
-                                ? "gif?size=1024&_=.gif"
-                                : "png?size=1024"
-                        })` +
-                        (g.splash
-                            ? ` | [Invite Splash](https://cdn.discordapp.com/splashes/${g.id}/${g.splash}.png?size=2048)`
-                            : "") +
-                        (g.banner
-                            ? ` | [Banner](https://cdn.discordapp.com/banners/${g.id}/${g.banner}.png?size=2048)`
-                            : ""),
+                        user.avatar !== null
+                            ? `[Full Size](https://cdn.discordapp.com/avatars/${
+                                  user.id
+                              }/${user.avatar}.${
+                                  user.avatar.startsWith("a_") ? "gif" : "png"
+                              }?size=1024)`
+                            : `[Full Size](https://cdn.discordapp.com/embed/avatars/${user.discriminator %
+                                  5}.png)`,
                     inline: true
                 }
             ],
             thumbnail: {
-                url: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${
-                    g.icon.startsWith("a_")
-                        ? "gif?size=256&_=.gif"
-                        : "png?size=256"
-                }`
+                url:
+                    user.avatar !== null
+                        ? `https://cdn.discordapp.com/avatars/${user.id}/${
+                              user.avatar
+                          }.${
+                              user.avatar.startsWith("a_")
+                                  ? "gif"
+                                  : "png?size=256"
+                          }`
+                        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
+                              5}.png`
             }
         };
 
-        if (g.features && g.features.length > 0) {
-            info.fields.push({
-                name: "Features",
-                value: `${g.features
-                    .map(feature =>
-                        feature
-                            .split("_")
-                            .map(x => x[0] + x.substring(1).toLowerCase())
-                            .join(" ")
-                    )
-                    .join(", ")}`,
-                inline: true
-            });
-        }
-
-        if (g.vanityURL) {
-            info.fields.push({
-                name: "Vanity URL",
-                value: `\`discord.gg/${g.vanityURL}\``,
-                inline: true
-            });
-        }
-
         msg.channel.createMessage({
-            embed: info
+            embed: embed
         });
     } else {
-        msg.channel.createMessage("This command can only be used in servers.");
+        const snowflake = parseInt(user.id).toString(2);
+        snowflake = "0".repeat(64 - snowflake.length) + snowflake;
+        const date = snowflake.substr(0, 42);
+        const createdAt = parseInt(date, 2) + 1420070400000;
+
+        const embed = {
+            color: 0x7289da,
+
+            title: `User Info: \`${user.username}#${user.discriminator}\` ${
+                user.bot ? "<:boat:546212361472835584>" : ""
+            }`,
+            fields: [
+                {
+                    name: "ID",
+                    value: user.id,
+                    inline: true
+                },
+                {
+                    name: "Shared Servers",
+                    value: `${
+                        ctx.bot.guilds.filter(a => a.members.get(user.id))
+                            .length
+                    } servers`,
+                    inline: true
+                },
+                {
+                    name: "Created At",
+                    value: `${new Date(
+                        createdAt
+                    ).toUTCString()} (${ctx.utils.toReadableTime(
+                        Date.now() - createdAt
+                    )} ago)`,
+                    inline: true
+                },
+                {
+                    name: "Avatar",
+                    value:
+                        user.avatar !== null
+                            ? `[Full Size](https://cdn.discordapp.com/avatars/${
+                                  user.id
+                              }/${user.avatar}.${
+                                  user.avatar.startsWith("a_")
+                                      ? "gif"
+                                      : "png?size=1024"
+                              })`
+                            : `[Full Size](https://cdn.discordapp.com/embed/avatars/${user.discriminator %
+                                  5}.png)`,
+                    inline: true
+                }
+            ],
+            thumbnail: {
+                url:
+                    user.avatar !== null
+                        ? `https://cdn.discordapp.com/avatars/${user.id}/${
+                              user.avatar
+                          }.${
+                              user.avatar.startsWith("a_")
+                                  ? "gif"
+                                  : "png?size=256"
+                          }`
+                        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
+                              5}.png`
+            }
+        };
+
+        msg.channel.createMessage({
+            embed: embed
+        });
     }
+}
+
+const region_flags = {
+    "eu-central": ":flag_eu:",
+    london: ":flag_gb:",
+    amsterdam: ":flag_nl:",
+    japan: ":flag_jp:",
+    brazil: "<:lunahahayes:383962711274291200>",
+    "us-west": ":hamburger:",
+    hongkong: ":flag_hk:",
+    sydney: ":flag_au:",
+    singapore: ":flag_sg:",
+    "us-central": ":hamburger:",
+    "eu-west": ":flag_eu:",
+    "us-south": ":hamburger:",
+    "us-east": ":hamburger:",
+    frankfurt: ":flag_de:",
+    russia: ":flag_ru:"
 };
 
-let emotes = async function(ctx, msg, args) {
+const verification_levels = [
+    "None",
+    "Low",
+    "Medium",
+    "(╯°□°）╯︵ ┻━┻ (High)",
+    "┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻ (Very High/Phone)"
+];
+const notification_types = ["All Messages", "Mentions Only"];
+const emoji_tiers = [100, 200, 300, 500]; //double the count because each category has the limit
+const boost_tiers = [2, 10, 20, 20];
+
+async function sinfo(ctx, msg, args) {
+    if (!msg.channel.guild) {
+        msg.channel.createMessage("This command can only be used in servers.");
+        return;
+    }
+
+    const guild = msg.channel.guild;
+
+    const bots = g.members.filter(u => u.bot).length;
+    const everyone = g.roles.filter(x => x.name == "@everyone")[0];
+
+    const info = {
+        color: ctx.utils.topColor(ctx, msg, ctx.bot.user.id),
+        title: `Server Info for \`${guild.name}\``,
+        fields: [
+            {
+                name: "ID",
+                value: guild.id,
+                inline: true
+            },
+            {
+                name: "Owner",
+                value: `<@${guild.ownerID}>`,
+                inline: true
+            },
+            {
+                name: "Total Members",
+                value: guild.memberCount,
+                inline: true
+            },
+            {
+                name: "Humans",
+                value: `${guild.memberCount - bots} (${Math.round(
+                    ((guild.memberCount - bots) / guild.memberCount) * 100
+                )}% of members)`,
+                inline: true
+            },
+            {
+                name: "Bots",
+                value: `${bots} (${Math.round(
+                    (bots / guild.memberCount) * 100
+                )}% of members)`,
+                inline: true
+            },
+            {
+                name: "Channels",
+                value: `${guild.channels.size}/500 (${
+                    guild.channels.filter(x => x.type == 0).length
+                } text, ${
+                    guild.channels.filter(x => x.type == 2).length
+                } voice, ${
+                    guild.channels.filter(x => x.type == 4).length
+                } categories, ${
+                    guild.channels.filter(
+                        x =>
+                            x.permissionOverwrites &&
+                            x.permissionOverwrites.get(everyone.id) &&
+                            x.permissionOverwrites.get(everyone.id).json
+                                .readMessages == false
+                    ).length
+                } hidden, ${guild.channels.filter(x => x.nsfw).length} NSFW)`,
+                inline: true
+            },
+            {
+                name: "Region",
+                value:
+                    (flags[guild.region] || ":flag_black:") +
+                    " " +
+                    (guild.region || "Unknown Region???"),
+                inline: true
+            },
+            {
+                name: "Shard",
+                value: guild.shard.id,
+                inline: true
+            },
+            {
+                name: "Roles",
+                value: `${guild.roles.size}/250 (${
+                    guild.roles.filter(x => x.managed).length
+                } managed)`,
+                inline: true
+            },
+            {
+                name: "Emoji Count",
+                value: `${guild.emojis.length}/${
+                    emojiTiers[guild.premiumTier]
+                } (${guild.emojis.filter(x => x.animated).length} animated, ${
+                    guild.emojis.filter(x => x.managed).length
+                } managed)`,
+                inline: true
+            },
+            {
+                name: "Created At",
+                value: new Date(guild.createdAt).toUTCString(),
+                inline: true
+            },
+            {
+                name: "Verification Level",
+                value: verification_levels[guild.verificationLevel],
+                inline: true
+            },
+            {
+                name: "Voice AFK",
+                value: `Timeout: ${guild.afkTimeout}s\nChannel: ${
+                    guild.afkChannelID == null
+                        ? "None"
+                        : `<#${guild.afkChannelID}>`
+                }`,
+                inline: true
+            },
+            {
+                name: "Default Notifications",
+                value: notification_types[guild.defaultNotifications],
+                inline: true
+            },
+            {
+                name: "MFA For Perms",
+                value: guild.mfaLevel == 0 ? "False" : "True",
+                inline: true
+            },
+            {
+                name: 'Considered "Large"',
+                value: guild.large,
+                inline: true
+            },
+            {
+                name: "Nitro Boost Tier",
+                value: `Tier ${guild.premiumTier} with ${
+                    guild.premiumSubscriptionCount
+                }/${boost_tiers[guild.premiumTier]} boosters.`,
+                inline: true
+            },
+            {
+                name: `Icon${guild.splash ? "/Splash" : ""}${
+                    guild.banner ? "/Banner" : ""
+                }`,
+                value:
+                    `[Full Size](https://cdn.discordapp.com/icons/${guild.id}/${
+                        guild.icon
+                    }.${
+                        guild.icon.startsWith("a_")
+                            ? "gif?size=1024&_=.gif"
+                            : "png?size=1024"
+                    })` +
+                    (guild.splash
+                        ? ` | [Invite Splash](https://cdn.discordapp.com/splashes/${guild.id}/${guild.splash}.png?size=2048)`
+                        : "") +
+                    (guild.banner
+                        ? ` | [Banner](https://cdn.discordapp.com/banners/${guild.id}/${guild.banner}.png?size=2048)`
+                        : ""),
+                inline: true
+            }
+        ],
+        thumbnail: {
+            url: `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.${
+                guild.icon.startsWith("a_")
+                    ? "gif?size=256&_=.gif"
+                    : "png?size=256"
+            }`
+        }
+    };
+
+    if (guild.features && guild.features.length > 0) {
+        info.fields.push({
+            name: "Features",
+            value: `${guild.features
+                .map(feature =>
+                    feature
+                        .split("_")
+                        .map(x => x[0] + x.substring(1).toLowerCase())
+                        .join(" ")
+                )
+                .join(", ")}`,
+            inline: true
+        });
+    }
+
+    if (guild.vanityURL) {
+        info.fields.push({
+            name: "Vanity URL",
+            value: `\`discord.gg/${guild.vanityURL}\``,
+            inline: true
+        });
+    }
+
+    msg.channel.createMessage({
+        embed: info
+    });
+}
+
+async function emotes(ctx, msg, args) {
     if (!msg.channel.guild) {
         msg.channel.createMessage("This command can only be used in servers.");
         return;
@@ -820,25 +822,27 @@ let emotes = async function(ctx, msg, args) {
         return;
     }
 
-    let embed = {
+    const embed = {
         color: ctx.utils.topColor(ctx, msg, ctx.bot.user.id),
         title: `Emojis for \`${msg.channel.guild.name}\``,
         fields: []
     };
 
-    let emojis = [];
-    for (const e of msg.channel.guild.emojis.values()) {
-        let hasRole = false;
+    const emojis = [];
+    for (const emote of msg.channel.guild.emojis.values()) {
+        const hasRole = false;
 
-        for (const x of e.roles.values()) {
+        for (const role of emote.roles.values()) {
             if (
-                msg.channel.guild.members.get(ctx.bot.user.id).roles.includes(x)
+                msg.channel.guild.members
+                    .get(ctx.bot.user.id)
+                    .roles.includes(role)
             )
                 hasRole = true;
         }
 
-        if (e.managed && hasRole == false) return;
-        emojis.push(`<${e.animated ? "a" : ""}:${e.name}:${e.id}>`);
+        if (emote.managed && hasRole == false) return;
+        emojis.push(`<${emote.animated ? "a" : ""}:${emote.name}:${emote.id}>`);
     }
 
     emojis = emojis.sort(function(a, b) {
@@ -847,15 +851,15 @@ let emotes = async function(ctx, msg, args) {
         return a < b ? 1 : a > b ? -1 : 0;
     });
 
-    let tmp = [];
-    for (const e of emojis.values()) {
-        tmp.push(e.replace(/:(.*?):/, ":_:"));
+    const tmp = [];
+    for (const emote of emojis.values()) {
+        tmp.push(emote.replace(/:(.*?):/, ":_:"));
     }
     emojis = tmp;
     delete tmp;
 
-    let index = 0;
-    for (let i = 0; i < emojis.length; i += 25) {
+    const index = 0;
+    for (const i = 0; i < emojis.length; i += 25) {
         embed.fields.push({
             name: `${25 * index + 1} - ${25 * (index + 1)}`,
             value: emojis.slice(25 * index, 25 * (index + 1)).join(" "),
@@ -867,9 +871,9 @@ let emotes = async function(ctx, msg, args) {
     msg.channel.createMessage({
         embed: embed
     });
-};
+}
 
-let rinfo = function(ctx, msg, args) {
+function rinfo(ctx, msg, args) {
     ctx.utils
         .lookupRole(ctx, msg, args || "")
         .then(r => {
@@ -956,7 +960,7 @@ let rinfo = function(ctx, msg, args) {
                 msg.channel.createMessage(m);
             }
         });
-};
+}
 
 let slist = function(ctx, msg, args) {
     let servers = [];
@@ -1031,7 +1035,7 @@ let presence = function(ctx, msg, args) {
                         inline: true
                     },
                     {
-                        name: ptypes[(u.game && u.game.type) || 0],
+                        name: status_types[(u.game && u.game.type) || 0],
                         value: u.game ? u.game.name : "Nothing",
                         inline: true
                     },
@@ -1236,23 +1240,23 @@ let presence = function(ctx, msg, args) {
 const emojiSets = {
     blobs: {
         url:
-            "https://cdn.jsdelivr.net/gh/googlei18n/noto-emoji@e456654119cc3a5f9bebb7bbd00512456f983d2d/svg/emoji_u",
+            "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@e456654119cc3a5f9bebb7bbd00512456f983d2d/svg/emoji_u",
         joiner: "_",
         ext: ".svg"
     },
     noto: {
-        url: "https://gitcdn.xyz/repo/googlei18n/noto-emoji/master/svg/emoji_u",
+        url: "gitcdn.xyz/repo/googlefonts/noto-emoji/master/svg/emoji_u",
         joiner: "_",
         ext: ".svg"
     },
     twemoji: {
-        url: "https://twitter.github.io/twemoji/2/svg/",
+        url: "https://twemoji.maxcdn.com/v/latest/svg/",
         joiner: "-",
         ext: ".svg"
     },
     mustd: {
         url:
-            "https://cdn.jsdelivr.net/gh/mstrodl/mutant-standard-mirror/emoji/",
+            "https://cdn.jsdelivr.net/gh/Mstrodl/mutant-standard-mirror@eb06c291bb13eea305d92bcebbb308fc87a84d09/emoji/",
         joiner: "-",
         ext: ".svg"
     },
@@ -1277,7 +1281,7 @@ emojiSets.fb = emojiSets.facebook;
 const svg2png = require("svg2png");
 
 let jumbo = async function(ctx, msg, args) {
-    let emojiNames = await ctx.libs.superagent
+    let emojiNames = await superagent
         .get("https://unpkg.com/emoji.json/emoji.json")
         .then(x => x.body);
     let temp = [];
@@ -1311,7 +1315,7 @@ let jumbo = async function(ctx, msg, args) {
             .map(x => x.codePointAt().toString(16))
             .join(emojiSets[pack].joiner);
         let emojiurl = emojiSets[pack].url + emoji + emojiSets[pack].ext;
-        ctx.libs.superagent
+        superagent
             .get(emojiurl)
             .buffer(1)
             .then(x => {
@@ -1607,7 +1611,7 @@ let translate = async function(ctx, msg, args) {
     let lang1 = args.length == 3 ? args[0] : "auto";
     let lang2 = args.length == 3 ? args[1] : args[0];
 
-    let out = await ctx.libs.superagent
+    let out = await superagent
         .get(
             `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${turkey}&lang=${encodeURIComponent(
                 lang1 != "auto" ? lang1 + "-" + lang2 : lang2
@@ -1797,7 +1801,7 @@ let readtxt = async function(ctx, msg, args) {
         let m = await msg.channel.getMessage(args);
         if (m) {
             if (m.attachments && m.attachments[0]) {
-                let req = await ctx.libs.superagent.get(m.attachments[0].url);
+                let req = await superagent.get(m.attachments[0].url);
                 if (req.type == "text/plain") {
                     ctx.utils.makeHaste(ctx, msg, req.text, "");
                 } else {

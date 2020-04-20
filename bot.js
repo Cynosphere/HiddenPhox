@@ -2,25 +2,37 @@ const Eris = require("eris");
 const config = require("./config.json");
 const client = new Eris(config.token, {
     defaultImageFormat: "png",
-    defaultImageSize: 1024
+    defaultImageSize: 1024,
+    intents: [
+        "GUILDS",
+        "GUILD_MEMBERS",
+        "GUILD_BANS",
+        "GUILD_VOICE_STATES",
+        "GUILD_PRESENCES",
+        "GUILD_MESSAGES",
+        "GUILD_MESSAGE_REACTIONS",
+        "DIRECT_MESSAGES",
+        "DIRECT_MESSAGE_REACTIONS"
+    ]
 });
+
+const fs = require("fs");
+const sequelize = require("sequelize");
+const superagent = require("superagent");
 
 const ctx = {};
 ctx.client = client;
 ctx.bot = client;
-const libs = {
+
+ctx.libs = {
     eris: Eris,
-    jimp: require("jimp"),
-    fs: require("fs"),
-    reload: require("require-reload")(require),
-    math: require("expr-eval").Parser,
-    sequelize: require("sequelize"),
-    superagent: require("superagent")
+    sequelize: sequelize,
+    superagent: superagent
 };
 
 ctx.utils = require("./utils.js");
 
-ctx.db = new libs.sequelize("database", "username", "password", {
+ctx.db = new sequelize("database", "username", "password", {
     host: "localhost",
     dialect: "sqlite",
     logging: false,
@@ -43,7 +55,7 @@ ctx.awaitMsgs = new Eris.Collection();
 ctx.ratelimits = new Eris.Collection();
 
 ctx.prefix = config.prefix;
-
+ctx.clientid = config.clientid;
 ctx.logid = config.logid;
 ctx.ownerid = config.ownerid;
 ctx.elevated = config.elevated;
@@ -59,7 +71,7 @@ client.on("ready", () => {
     });
 
     /*if (ctx.apikeys.dbots)
-        libs.superagent
+        superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
             .set("Authorization", ctx.apikeys.dbots)
             .send({ server_count: ctx.bot.guilds.size })
@@ -71,7 +83,7 @@ client.on("ready", () => {
             });
 
     if (ctx.apikeys.dbl)
-        libs.superagent
+        superagent
             .post(`https://discordbots.org/api/bots/stats`)
             .set("Authorization", ctx.apikeys.dbl)
             .send({ server_count: ctx.bot.guilds.size })
@@ -95,7 +107,7 @@ client.on("guildCreate", function(guild) {
     for (const m of guild.members.values()) if (m.bot) ++bots;
 
     /*if (ctx.apikeys.dbots)
-        libs.superagent
+        superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
             .set("Authorization", ctx.apikeys.dbots)
             .send({ server_count: ctx.bot.guilds.size })
@@ -107,7 +119,7 @@ client.on("guildCreate", function(guild) {
             });
 
     if (ctx.apikeys.dbl)
-        libs.superagent
+        superagent
             .post(`https://discordbots.org/api/bots/stats`)
             .set("Authorization", ctx.apikeys.dbl)
             .send({ server_count: ctx.bot.guilds.size })
@@ -138,7 +150,7 @@ client.on("guildCreate", function(guild) {
 
 client.on("guildDelete", function(guild) {
     /*if (ctx.apikeys.dbots)
-        libs.superagent
+        superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
             .set("Authorization", ctx.apikeys.dbots)
             .send({ server_count: ctx.bot.guilds.size })
@@ -150,7 +162,7 @@ client.on("guildDelete", function(guild) {
             });
 
     if (ctx.apikeys.dbl)
-        libs.superagent
+        superagent
             .post(`https://discordbots.org/api/bots/stats`)
             .set("Authorization", ctx.apikeys.dbl)
             .send({ server_count: ctx.bot.guilds.size })
@@ -167,66 +179,70 @@ client.on("guildDelete", function(guild) {
     );
 });
 
-var files = libs.fs.readdirSync(__dirname + "/cmds");
-for (let f of files) {
-    let c = require(__dirname + "/cmds/" + f);
+const cmdDir = fs.readdirSync(__dirname + "/cmds");
+for (const file of cmdDir) {
+    const newCmd = require(`${__dirname}/cmds/${file}`);
 
-    if (c.name && c.func) {
-        ctx.cmds.set(c.name, c);
-        console.log(`Loaded Command: ${c.name}`);
-    } else if (c.length) {
-        for (let i = 0; i < c.length; i++) {
-            let a = c[i];
-            if (a.func && a.name) {
-                ctx.cmds.set(a.name, a);
-                console.log(`Loaded Command: ${a.name} (${f})`);
+    function loadCommand(cmd) {
+        ctx.cmds.set(cmd.name, cmd);
+        console.log(`Loaded Command: ${cmd.name}`);
+    }
+
+    if (newCmd.name && newCmd.func) {
+        loadCommand(newCmd);
+    } else if (newCmd.length > 0) {
+        for (const subCmd of newCmd) {
+            if (subCmd.func && subCmd.name) {
+                loadCommand(subCmd);
             }
         }
     }
 }
 
-let createEvent = function(client, e, ctx) {
-    if (e.event == "timer") {
-        if (!e.interval) {
+let createEvent = function(client, event, ctx) {
+    const eventName = event.event + "|" + event.name;
+
+    if (event.event == "timer") {
+        if (!event.interval) {
             console.log(
-                `No interval for event: ${e.event +
-                    "|" +
-                    e.name}, not setting up interval.`
+                `No interval for event: ${eventName}, not setting up interval.`
             );
             return;
         }
-        ctx.events.get(e.event + "|" + e.name).timer = setInterval(
-            e.func,
-            e.interval,
+        ctx.events.get(eventName).timer = setInterval(
+            event.func,
+            event.interval,
             ctx
         );
     } else {
-        client.on(e.event, (...args) => e.func(...args, ctx));
+        event._func = event.func;
+        event.func = (...args) => event._func(...args, ctx);
+        client.on(event.event, event.func);
     }
 };
 
-var files = libs.fs.readdirSync(__dirname + "/events");
-for (let f of files) {
-    ctx.libs = libs;
-    let e = require(__dirname + "/events/" + f);
-    if (e.event && e.func && e.name) {
-        ctx.events.set(e.event + "|" + e.name, e);
-        createEvent(client, e, ctx);
-        console.log(`Loaded event: ${e.event}|${e.name} (${f})`);
-    } else if (e.length) {
-        for (let i = 0; i < e.length; i++) {
-            let a = e[i];
-            if (a.event && a.func && a.name) {
-                ctx.events.set(a.event + "|" + a.name, a);
-                createEvent(client, a, ctx);
-                console.log(`Loaded event: ${a.event}|${a.name} (${f})`);
-            }
+var eventDir = fs.readdirSync(__dirname + "/events");
+for (const file of eventDir) {
+    let newEvent = require(__dirname + "/events/" + file);
+
+    function loadEvent(event) {
+        const eventName = event.event + "|" + event.name;
+
+        ctx.events.set(eventName, event);
+        createEvent(client, event, ctx);
+        console.log(`Loaded event: ${eventName} (${file})`);
+    }
+
+    if (newEvent.event && newEvent.func && newEvent.name) {
+        loadEvent(newEvent);
+    } else if (newEvent.length) {
+        for (const subEvent of newEvent) {
+            loadEvent(subEvent);
         }
     }
 }
 
 async function commandHandler(msg) {
-    ctx.libs = libs;
     if (msg.author) {
         if (msg.author.id == ctx.bot.user.id) return;
         let sdata = {};
@@ -416,31 +432,31 @@ client.on("messageUpdate", msg => {
     }
 });
 
-process.on("unhandledRejection", (e, p) => {
-    //console.log("Uncaught rejection: "+e.message);
-    if (e.length > 1900) {
+process.on("unhandledRejection", (err, origin) => {
+    //console.log("Uncaught rejection: " + err.message);
+    if (err.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
             msg,
-            `${e} (${p})`,
+            `${err} (${origin})`,
             "Uncaught rejection: Output too long to send in a message: "
         );
     } else {
-        ctx.utils.logWarn(ctx, `Uncaught rejection: '${e}'`);
+        ctx.utils.logWarn(ctx, `Uncaught rejection: '${err}'`);
     }
 });
 
-client.on("error", e => {
-    //console.log("Bot error: "+e.message);
+client.on("error", err => {
+    //console.log("Bot error: " + err.message);
     if (e.message.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
             msg,
-            e.message,
+            err.message,
             "Error: Output too long to send in a message: "
         );
     } else {
-        ctx.utils.logWarn(ctx, `Error: '${e.message}'`);
+        ctx.utils.logWarn(ctx, `Error: '${err.message}'`);
     }
 });
 

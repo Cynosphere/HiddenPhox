@@ -1,5 +1,6 @@
 const Entities = require("html-entities").AllHtmlEntities;
 const entities = new Entities();
+const superagent = require("superagent");
 
 const twitterurl = /(?:\s|^)https?:\/\/(www\.|mobile\.)?twitter\.com\/(.+\/status\/|statuses\/)([0-9]{17,21})/g;
 
@@ -11,7 +12,7 @@ async function getBearer(ctx) {
             `${ctx.apikeys.twitter.key}:${ctx.apikeys.twitter.secret}`
         ).toString("base64");
 
-        let token = await ctx.libs.superagent
+        let token = await superagent
             .post(
                 "https://api.twitter.com/oauth2/token?grant_type=client_credentials"
             )
@@ -29,7 +30,7 @@ async function getTweetImages(ctx, snowflake, msg) {
 
         let imgs = [];
 
-        let tweet = await ctx.libs.superagent
+        let tweet = await superagent
             .get(
                 `https://api.twitter.com/1.1/statuses/show.json?id=${snowflake}&trim_user=1&include_entities=1`
             )
@@ -145,7 +146,7 @@ async function getMastoImages(ctx, url, msg) {
     return new Promise(async (resolve, reject) => {
         let imgs = [];
 
-        let post = await ctx.libs.superagent
+        let post = await superagent
             .get(url)
             .set("Accept", "application/activity+json")
             .then(x => x.body)
@@ -256,18 +257,18 @@ let plembed = async function(msg, ctx) {
     url = url[0];
     url = url.startsWith(" ") ? url.substring(1) : url;
 
-    let post = await ctx.libs.superagent
+    let post = await superagent
         .get(url)
         .set("Accept", "application/activity+json")
         .then(x => x.body);
 
-    let authorData = await ctx.libs.superagent
+    let authorData = await superagent
         .get(post.attributedTo)
         .set("Accept", "application/activity+json")
         .then(x => x.body);
 
     if (post.object && (post.object.id || post.object.url)) {
-        post = await ctx.libs.superagent
+        post = await superagent
             .get(post.object.id ? post.object.id : post.object.url)
             .set("Accept", "application/activity+json")
             .then(x => x.body);

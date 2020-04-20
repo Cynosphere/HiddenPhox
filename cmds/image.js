@@ -297,7 +297,7 @@ async function giffuck(msg, url) {
     return { filename: null, out: null };
 }
 
-let i2gg = async function(msg, url, avatar = false) {
+async function i2gg(msg, url, avatar = false) {
     let failed = false;
 
     async function glitchImageXTimes(m, inp) {
@@ -383,9 +383,9 @@ let i2gg = async function(msg, url, avatar = false) {
         .then(_ => m.delete());
 
     return { filename: null, out: null };
-};
+}
 
-let _jpeg = async function(msg, url) {
+async function _jpeg(msg, url) {
     let img = await superagent
         .get(url)
         .buffer()
@@ -395,19 +395,19 @@ let _jpeg = async function(msg, url) {
         .toBuffer();
 
     msg.channel.createMessage("", { file: out, name: "jpeg.jpg" });
-};
+}
 
-let hooh = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 1);
-let haah = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 2);
-let woow = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 3);
-let waaw = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 4);
-let invert = (ctx, msg, args) => imageCallback(ctx, msg, args, _invert);
-let flip = (ctx, msg, args) => imageCallback(ctx, msg, args, _flip);
-let flop = (ctx, msg, args) => imageCallback(ctx, msg, args, _flop);
-let jpeg = (ctx, msg, args) => imageCallback(ctx, msg, args, _jpeg);
-let glitch = (ctx, msg, args) => imageCallback(ctx, msg, args, imgfuck);
-let gglitch = (ctx, msg, args) => imageCallback(ctx, msg, args, giffuck);
-let img2glitch = function(ctx, msg, args) {
+const hooh = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 1);
+const haah = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 2);
+const woow = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 3);
+const waaw = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 4);
+const invert = (ctx, msg, args) => imageCallback(ctx, msg, args, _invert);
+const flip = (ctx, msg, args) => imageCallback(ctx, msg, args, _flip);
+const flop = (ctx, msg, args) => imageCallback(ctx, msg, args, _flop);
+const jpeg = (ctx, msg, args) => imageCallback(ctx, msg, args, _jpeg);
+const glitch = (ctx, msg, args) => imageCallback(ctx, msg, args, imgfuck);
+const gglitch = (ctx, msg, args) => imageCallback(ctx, msg, args, giffuck);
+function img2glitch(ctx, msg, args) {
     let avatar = false;
 
     if (args.startsWith("--avatar")) {
@@ -416,47 +416,51 @@ let img2glitch = function(ctx, msg, args) {
     }
 
     imageCallback(ctx, msg, args, i2gg, avatar);
-};
+}
 
 // templates
-let _rover = async function(msg, url) {
-    let template = await jimp.read(`${__dirname}/../img/rover.png`);
-    let img = await jimp.read(url);
-    let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
+async function _rover(msg, url) {
+    const template = await jimp.read(`${__dirname}/../img/rover.png`);
+    const img = await jimp.read(url);
+    const out = new jimp(template.bitmap.width, template.bitmap.height, 0);
     img.resize(192, 102);
     img.rotate(-2.4, false);
     out.composite(img, 60, 125);
     out.composite(template, 0, 0);
 
-    let toSend = await out.getBufferAsync(jimp.MIME_PNG);
+    const toSend = await out.getBufferAsync(jimp.MIME_PNG);
     return { filename: "rover.png", out: toSend };
-};
+}
 
-let _carson = async function(msg, url) {
-    let template = await jimp.read(`${__dirname}/../img/carson_reacts.png`);
-    let img = await jimp.read(url);
-    let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
+async function _carson(msg, url) {
+    const template = await jimp.read(`${__dirname}/../img/carson_reacts.png`);
+    const img = await jimp.read(url);
+    const out = new jimp(template.bitmap.width, template.bitmap.height, 0);
     img.resize(301, 157);
     out.composite(img, 315, 20);
     out.composite(template, 0, 0);
 
-    let toSend = await out.getBufferAsync(jimp.MIME_PNG);
+    const toSend = await out.getBufferAsync(jimp.MIME_PNG);
     return { filename: "carson.png", out: toSend };
-};
+}
 
-let _watermark = async function(msg, url) {
-    let template = await jimp.read(`${__dirname}/../img/watermark.png`);
-    let via9gag = await jimp.read(`${__dirname}/../img/via9gag.png`);
-    let img = await jimp.read(url);
+async function _watermark(msg, url) {
+    const template = await jimp.read(`${__dirname}/../img/watermark.png`);
+    const via9gag = await jimp.read(`${__dirname}/../img/via9gag.png`);
+    const img = await jimp.read(url);
 
-    let ratio = img.bitmap.width / img.bitmap.height;
-    let newH = getHeight(640, ratio);
+    const ratio = img.bitmap.width / img.bitmap.height;
+    const newH = getHeight(640, ratio);
 
     //9gag watermark percentages
-    let nineX = 0.074;
-    let nineY = 0.076;
+    const nineX = 0.074;
+    const nineY = 0.076;
 
-    let out = new jimp(template.bitmap.width, newH + template.bitmap.height, 0);
+    const out = new jimp(
+        template.bitmap.width,
+        newH + template.bitmap.height,
+        0
+    );
     img.resize(640, newH);
     out.composite(img, 0, 0);
     out.composite(
@@ -466,30 +470,30 @@ let _watermark = async function(msg, url) {
     );
     out.composite(template, 0, newH);
 
-    let toSend = await out.getBufferAsync(jimp.MIME_PNG);
+    const toSend = await out.getBufferAsync(jimp.MIME_PNG);
     return { filename: "watermarked.png", out: toSend };
-};
+}
 
-let _toolbars = async function(msg, url) {
-    let template = await jimp.read(`${__dirname}/../img/toolbars.png`);
-    let img = await jimp.read(url);
+async function _toolbars(msg, url) {
+    const template = await jimp.read(`${__dirname}/../img/toolbars.png`);
+    const img = await jimp.read(url);
 
-    let ratio = img.bitmap.width / img.bitmap.height;
-    let newH = getHeight(1008, ratio);
+    const ratio = img.bitmap.width / img.bitmap.height;
+    const newH = getHeight(1008, ratio);
 
-    let out = new jimp(template.bitmap.width, template.bitmap.height, 0);
+    const out = new jimp(template.bitmap.width, template.bitmap.height, 0);
     img.resize(1008, newH);
     out.composite(img, 0, 592);
     out.composite(template, 0, 0);
 
-    let toSend = await out.getBufferAsync(jimp.MIME_PNG);
+    const toSend = await out.getBufferAsync(jimp.MIME_PNG);
     return { filename: "toolbars.png", out: toSend };
-};
+}
 
-let rover = (ctx, msg, args) => imageCallback(ctx, msg, args, _rover);
-let carson = (ctx, msg, args) => imageCallback(ctx, msg, args, _carson);
-let watermark = (ctx, msg, args) => imageCallback(ctx, msg, args, _watermark);
-let toolbars = (ctx, msg, args) => imageCallback(ctx, msg, args, _toolbars);
+const rover = (ctx, msg, args) => imageCallback(ctx, msg, args, _rover);
+const carson = (ctx, msg, args) => imageCallback(ctx, msg, args, _carson);
+const watermark = (ctx, msg, args) => imageCallback(ctx, msg, args, _watermark);
+const toolbars = (ctx, msg, args) => imageCallback(ctx, msg, args, _toolbars);
 
 // one off commands
 function orly(ctx, msg, args) {

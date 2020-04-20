@@ -1,3 +1,5 @@
+const superagent = require("superagent");
+
 //Util functions
 let isLoggingEnabled = async function(ctx, msg) {
     if (!msg.channel.guild) return false;
@@ -456,7 +458,7 @@ let msgDelBulk = async function(msgs, ctx) {
             );
         }
 
-        let req = await ctx.libs.superagent
+        let req = await superagent
             .post("https://mystb.in/documents")
             .send(messages.join("\n"));
 

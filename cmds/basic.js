@@ -1,4 +1,4 @@
-let help = async function(ctx, msg, args) {
+async function help(ctx, msg, args) {
     const sorted = {};
     for (const cmd of ctx.cmds.values()) {
         if (sorted[cmd.group.toLowerCase()] === undefined) {
@@ -111,9 +111,9 @@ let help = async function(ctx, msg, args) {
         }
         msg.channel.createMessage(embed);
     }
-};
+}
 
-let ping = function(ctx, msg, args) {
+function ping(ctx, msg, args) {
     msg.channel.createMessage("Pong.").then(m => {
         m.edit(
             `Pong. RTT: \`${Math.floor(
@@ -127,9 +127,9 @@ let ping = function(ctx, msg, args) {
             }ms\``
         );
     });
-};
+}
 
-let stats = function(ctx, msg, args) {
+function stats(ctx, msg, args) {
     msg.channel.createMessage({
         embed: {
             title: `${ctx.bot.user.username} Stats`,
@@ -165,13 +165,13 @@ let stats = function(ctx, msg, args) {
             color: 0x50596d
         }
     });
-};
+}
 
-let invite = function(ctx, msg, args) {
+function invite(ctx, msg, args) {
     msg.channel.createMessage(
-        "<https://discordapp.com/oauth2/authorize?client_id=173441062243663872&scope=bot>"
+        `<https://discordapp.com/oauth2/authorize?client_id=${ctx.clientid}&scope=bot>`
     );
-};
+}
 
 // To anyone who actually forks my bot for their own use
 // For the love of god
