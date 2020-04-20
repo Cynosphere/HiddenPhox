@@ -5,11 +5,11 @@ const client = new Eris(config.token, {
     defaultImageSize: 1024,
     intents: [
         "GUILDS",
-        "GUILD_MEMBERS",
+        //"GUILD_MEMBERS",
         "GUILD_BANS",
         "GUILD_EMOJIS",
         "GUILD_VOICE_STATES",
-        "GUILD_PRESENCES",
+        //"GUILD_PRESENCES",
         "GUILD_MESSAGES",
         "GUILD_MESSAGE_REACTIONS",
         "DIRECT_MESSAGES",
