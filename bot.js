@@ -2,7 +2,7 @@ const Eris = require("eris");
 const config = require("./config.json");
 const client = new Eris(config.token, {
     defaultImageFormat: "png",
-    defaultImageSize: 1024
+    defaultImageSize: 1024,
     intents: [
         "GUILDS",
         //"GUILD_MEMBERS",
