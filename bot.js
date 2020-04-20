@@ -2,19 +2,19 @@ const Eris = require("eris");
 const config = require("./config.json");
 const client = new Eris(config.token, {
     defaultImageFormat: "png",
-    defaultImageSize: 1024,
-    intents: [
+    defaultImageSize: 1024
+    /*intents: [
         "GUILDS",
-        "GUILD_MEMBERS",
+        //"GUILD_MEMBERS",
         "GUILD_BANS",
         "GUILD_EMOJIS",
         "GUILD_VOICE_STATES",
-        "GUILD_PRESENCES",
+        //"GUILD_PRESENCES",
         "GUILD_MESSAGES",
         "GUILD_MESSAGE_REACTIONS",
         "DIRECT_MESSAGES",
         "DIRECT_MESSAGE_REACTIONS"
-    ]
+    ]*/
 });
 
 const fs = require("fs");
@@ -434,12 +434,12 @@ client.on("messageUpdate", msg => {
 });
 
 process.on("unhandledRejection", (err, origin) => {
-    console.log("Uncaught rejection: " + err.message);
+    console.log(`Uncaught rejection: ${err} (${origin.then(x => x)})`);
     if (err.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
             msg,
-            `${err} (${origin})`,
+            `${err} (${origin.then(x => x)})`,
             "Uncaught rejection: Output too long to send in a message: "
         );
     } else {
@@ -448,7 +448,7 @@ process.on("unhandledRejection", (err, origin) => {
 });
 
 client.on("error", err => {
-    console.log("Bot error: " + err.message);
+    console.log(`Error: '${err.message}'`);
     if (e.message.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
@@ -462,3 +462,14 @@ client.on("error", err => {
 });
 
 client.connect();
+
+var readline = require("readline");
+var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false
+});
+
+rl.on("line", function(line) {
+    console.log(eval(line));
+});
