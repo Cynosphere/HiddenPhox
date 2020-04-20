@@ -5,11 +5,11 @@ const client = new Eris(config.token, {
     defaultImageSize: 1024,
     intents: [
         "GUILDS",
-        //"GUILD_MEMBERS",
+        "GUILD_MEMBERS",
         "GUILD_BANS",
         "GUILD_EMOJIS",
         "GUILD_VOICE_STATES",
-        //"GUILD_PRESENCES",
+        "GUILD_PRESENCES",
         "GUILD_MESSAGES",
         "GUILD_MESSAGE_REACTIONS",
         "DIRECT_MESSAGES",
@@ -435,7 +435,7 @@ client.on("messageUpdate", msg => {
 
 process.on("unhandledRejection", (err, origin) => {
     console.log("Uncaught rejection: " + err.message);
-    /*if (err.length > 1900) {
+    if (err.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
             msg,
@@ -444,12 +444,12 @@ process.on("unhandledRejection", (err, origin) => {
         );
     } else {
         ctx.utils.logWarn(ctx, `Uncaught rejection: '${err}'`);
-    }*/
+    }
 });
 
 client.on("error", err => {
     console.log("Bot error: " + err.message);
-    /*if (e.message.length > 1900) {
+    if (e.message.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
             msg,
@@ -458,7 +458,7 @@ client.on("error", err => {
         );
     } else {
         ctx.utils.logWarn(ctx, `Error: '${err.message}'`);
-    }*/
+    }
 });
 
 client.connect();
