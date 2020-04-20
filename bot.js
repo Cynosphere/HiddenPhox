@@ -7,6 +7,7 @@ const client = new Eris(config.token, {
         "GUILDS",
         "GUILD_MEMBERS",
         "GUILD_BANS",
+        "GUILD_EMOJIS",
         "GUILD_VOICE_STATES",
         "GUILD_PRESENCES",
         "GUILD_MESSAGES",
@@ -433,7 +434,7 @@ client.on("messageUpdate", msg => {
 });
 
 process.on("unhandledRejection", (err, origin) => {
-    //console.log("Uncaught rejection: " + err.message);
+    console.log("Uncaught rejection: " + err.message);
     if (err.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
@@ -447,7 +448,7 @@ process.on("unhandledRejection", (err, origin) => {
 });
 
 client.on("error", err => {
-    //console.log("Bot error: " + err.message);
+    console.log("Bot error: " + err.message);
     if (e.message.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
