@@ -434,12 +434,12 @@ client.on("messageUpdate", msg => {
 });
 
 process.on("unhandledRejection", (err, origin) => {
-    console.log(`Uncaught rejection: ${err} (${origin.then(x => x)})`);
+    console.log(`Uncaught rejection: ${err}`);
     if (err.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
             msg,
-            `${err} (${origin.then(x => x)})`,
+            `${err} (${origin})`,
             "Uncaught rejection: Output too long to send in a message: "
         );
     } else {
