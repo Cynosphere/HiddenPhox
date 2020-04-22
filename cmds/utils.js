@@ -9,44 +9,58 @@ const statusIcons = {
     offline: "<:offline:493173082253426688>"
 };
 
-let avatar = function(ctx, msg, args) {
+async function avatar(ctx, msg, args) {
     if (args && (args == "--server" || args == "--guild")) {
+        if (!msg.channel.guild) {
+            msg.channel.createMessage(
+                "`--server/--guild` can only be used in guilds."
+            );
+        } else {
+            msg.channel.createMessage({
+                embed: {
+                    title: `Server Icon:`,
+                    image: {
+                        url: `https://cdn.discordapp.com/icons/${
+                            msg.channel.guild.id
+                        }/${msg.channel.guild.icon}.${
+                            msg.channel.guild.icon.startsWith("a_")
+                                ? "gif?size=1024&_=.gif"
+                                : "png?size=1024"
+                        }`
+                    }
+                }
+            });
+        }
+    } else {
+        const user = await ctx.utils
+            .lookupUser(ctx, msg, args ? args : msg.author.mention)
+            .catch(m => {
+                if (m == "No results." || m == "Canceled") {
+                    msg.channel.createMessage(m);
+                } else {
+                    ctx.utils.logWarn(ctx, "Exception in command: " + m);
+                }
+            });
+
+        if (!user) return;
+
+        const av = `https://cdn.discordapp.com/avatars/${user.id}/${
+            user.avatar
+        }.${
+            user.avatar.startsWith("a_")
+                ? "gif?size=1024&_=.gif"
+                : "png?size=1024"
+        }`;
         msg.channel.createMessage({
             embed: {
-                title: `Server Icon:`,
+                title: `Avatar for **${user.username}#${user.discriminator}**:`,
                 image: {
-                    url: `https://cdn.discordapp.com/icons/${
-                        msg.channel.guild.id
-                    }/${msg.channel.guild.icon}.${
-                        msg.channel.guild.icon.startsWith("a_")
-                            ? "gif?size=1024&_=.gif"
-                            : "png?size=1024"
-                    }`
+                    url: av
                 }
             }
         });
-    } else {
-        ctx.utils
-            .lookupUser(ctx, msg, args ? args : msg.author.mention)
-            .then(u => {
-                let av = `https://cdn.discordapp.com/avatars/${u.id}/${
-                    u.avatar
-                }.${
-                    u.avatar.startsWith("a_")
-                        ? "gif?size=1024&_=.gif"
-                        : "png?size=1024"
-                }`;
-                msg.channel.createMessage({
-                    embed: {
-                        title: `Avatar for **${u.username}#${u.discriminator}**:`,
-                        image: {
-                            url: av
-                        }
-                    }
-                });
-            });
     }
-};
+}
 
 let cflake = function(ctx, msg, args) {
     let twitter = false;
@@ -873,93 +887,88 @@ async function emotes(ctx, msg, args) {
     });
 }
 
-function rinfo(ctx, msg, args) {
-    ctx.utils
-        .lookupRole(ctx, msg, args || "")
-        .then(r => {
-            let users = 0;
-            let bots = 0;
-            for (const m of msg.channel.guild.members.values()) {
-                if (m.roles.indexOf(r.id) > -1) {
-                    if (m.bot) bots++;
-                    users++;
+async function rinfo(ctx, msg, args) {
+    const role = await ctx.utils.lookupRole(ctx, msg, args || "").catch(m => {
+        if (m == "No results." || m == "Canceled") {
+            msg.channel.createMessage(m);
+        }
+    });
+
+    if (!role) return;
+
+    let users = 0;
+    let bots = 0;
+    for (const m of msg.channel.guild.members.values()) {
+        if (m.roles.indexOf(role.id) > -1) {
+            if (m.bot) bots++;
+            users++;
+        }
+    }
+
+    let perms = [];
+    for (const k in role.permissions.json) {
+        perms.push(
+            `${role.permissions.json[k] == true ? "\u2705" : "\u274C"} ${k}`
+        );
+    }
+
+    if (perms.length == 0) {
+        perms.push("None");
+    }
+    msg.channel.createMessage({
+        embed: {
+            color: role.color,
+
+            title: `Role Info: \`${role.name}\``,
+            fields: [
+                {
+                    name: "ID",
+                    value: role.id,
+                    inline: true
+                },
+                {
+                    name: "Color",
+                    value: role.color
+                        ? "#" +
+                          (role.color.toString(16).length < 6
+                              ? "0".repeat(6 - role.color.toString(16).length)
+                              : "") +
+                          role.color.toString(16).toUpperCase()
+                        : "None",
+                    inline: true
+                },
+                {
+                    name: "Users in role",
+                    value: users,
+                    inline: true
+                },
+                {
+                    name: "Bots in role",
+                    value: bots,
+                    inline: true
+                },
+                {
+                    name: "Mentionable",
+                    value: role.mentionable ? role.mentionable : "false",
+                    inline: true
+                },
+                {
+                    name: "Managed",
+                    value: role.managed ? role.managed : "false",
+                    inline: true
+                },
+                {
+                    name: "Position",
+                    value: role.position,
+                    inline: true
+                },
+                {
+                    name: "Permissions",
+                    value: perms.join(", ")
                 }
-            }
-
-            let perms = [];
-            for (const k in r.permissions.json) {
-                perms.push(
-                    `${
-                        r.permissions.json[k] == true ? "\u2705" : "\u274C"
-                    } ${k}`
-                );
-            }
-
-            if (perms.length == 0) {
-                perms.push("None");
-            }
-            msg.channel.createMessage({
-                embed: {
-                    color: r.color,
-
-                    title: `Role Info: \`${r.name}\``,
-                    fields: [
-                        {
-                            name: "ID",
-                            value: r.id,
-                            inline: true
-                        },
-                        {
-                            name: "Color",
-                            value: r.color
-                                ? "#" +
-                                  (r.color.toString(16).length < 6
-                                      ? "0".repeat(
-                                            6 - r.color.toString(16).length
-                                        )
-                                      : "") +
-                                  r.color.toString(16).toUpperCase()
-                                : "None",
-                            inline: true
-                        },
-                        {
-                            name: "Users in role",
-                            value: users,
-                            inline: true
-                        },
-                        {
-                            name: "Bots in role",
-                            value: bots,
-                            inline: true
-                        },
-                        {
-                            name: "Mentionable",
-                            value: r.mentionable ? r.mentionable : "false",
-                            inline: true
-                        },
-                        {
-                            name: "Managed",
-                            value: r.managed ? r.managed : "false",
-                            inline: true
-                        },
-                        {
-                            name: "Position",
-                            value: r.position,
-                            inline: true
-                        },
-                        {
-                            name: "Permissions",
-                            value: perms.join(", ")
-                        }
-                    ]
-                }
-            });
-        })
-        .catch(m => {
-            if (m == "No results." || m == "Canceled") {
-                msg.channel.createMessage(m);
-            }
-        });
+            ]
+        }
+    });
 }
 
 let slist = function(ctx, msg, args) {

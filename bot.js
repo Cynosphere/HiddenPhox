@@ -449,7 +449,7 @@ process.on("unhandledRejection", (err, origin) => {
 
 client.on("error", err => {
     console.log(`Error: '${err.message}'`);
-    if (e.message.length > 1900) {
+    if (err.message.length > 1900) {
         ctx.utils.makeHaste(
             ctx,
             msg,
