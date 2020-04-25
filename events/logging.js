@@ -1,18 +1,18 @@
 const superagent = require("superagent");
 
 //Util functions
-let isLoggingEnabled = async function(ctx, msg) {
+let isLoggingEnabled = async function (ctx, msg) {
     if (!msg.channel.guild) return false;
     let data = await ctx.db.models.sdata.findOne({
-        where: { id: msg.channel.guild.id }
+        where: { id: msg.channel.guild.id },
     });
 
     return data ? data.logging : false;
 };
 
-let getLogChannel = async function(ctx, msg) {
+let getLogChannel = async function (ctx, msg) {
     let data = await ctx.db.models.sdata.findOne({
-        where: { id: msg.channel.guild.id }
+        where: { id: msg.channel.guild.id },
     });
     let channel = data.logchan;
 
@@ -20,10 +20,11 @@ let getLogChannel = async function(ctx, msg) {
 };
 
 //Events
-let messageUpdate = async function(msg, oldMsg, ctx) {
+let messageUpdate = async function (msg, oldMsg, ctx) {
     if (!msg.channel.guild) return;
     if ((await isLoggingEnabled(ctx, msg)) === true) {
-        if (msg.content === oldMsg.content) return;
+        if (msg.content && oldMsg.content && msg.content === oldMsg.content)
+            return;
         let log = await getLogChannel(ctx, msg);
         log.createMessage({
             embed: {
@@ -33,44 +34,44 @@ let messageUpdate = async function(msg, oldMsg, ctx) {
                     {
                         name: "ID",
                         value: msg.id ? msg.id : "<no id given>",
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Old Message",
                         value:
-                            oldMsg.content.length > 0
+                            oldMsg.content && oldMsg.content.length > 0
                                 ? oldMsg.content.substring(0, 128) +
                                   (oldMsg.content.length > 128 ? "..." : "")
                                 : "<no content>",
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "New Message",
                         value:
-                            msg.content.length > 0
+                            msg.content && msg.content.length > 0
                                 ? msg.content.substring(0, 128) +
                                   (msg.content.length > 128 ? "..." : "")
                                 : "<no content???>",
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "User",
                         value: `<@${msg.author.id}>`,
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Channel",
                         value: `<#${msg.channel.id}>`,
-                        inline: true
-                    }
+                        inline: true,
+                    },
                 ],
-                timestamp: new Date().toISOString()
-            }
+                timestamp: new Date().toISOString(),
+            },
         });
     }
 };
 
-let reactionAdd = async function(msg, emoji, uid, ctx) {
+let reactionAdd = async function (msg, emoji, uid, ctx) {
     if (!msg.channel.guild) return;
     if ((await isLoggingEnabled(ctx, msg)) === true) {
         let log = await getLogChannel(ctx, msg);
@@ -87,22 +88,22 @@ let reactionAdd = async function(msg, emoji, uid, ctx) {
                                   emoji.name
                               }:${emoji.id}>`
                             : emoji.name,
-                        inline: true
+                        inline: true,
                     },
-                    { name: "User", value: `<@${uid}>`, inline: true }
+                    { name: "User", value: `<@${uid}>`, inline: true },
                 ],
                 thumbnail: {
                     url: emoji.id
                         ? `https://cdn.discordapp.com/emojis/${emoji.id}.png?v=1`
-                        : ""
+                        : "",
                 },
-                timestamp: new Date().toISOString()
-            }
+                timestamp: new Date().toISOString(),
+            },
         });
     }
 };
 
-let reactionDelete = async function(msg, emoji, uid, ctx) {
+let reactionDelete = async function (msg, emoji, uid, ctx) {
     if (!msg.channel.guild) return;
     if ((await isLoggingEnabled(ctx, msg)) === true) {
         let log = await getLogChannel(ctx, msg);
@@ -119,29 +120,29 @@ let reactionDelete = async function(msg, emoji, uid, ctx) {
                                   emoji.name
                               }:${emoji.id}>`
                             : emoji.name,
-                        inline: true
+                        inline: true,
                     },
-                    { name: "User", value: `<@${uid}>`, inline: true }
+                    { name: "User", value: `<@${uid}>`, inline: true },
                 ],
                 thumbnail: {
                     url: emoji.id
                         ? `https://cdn.discordapp.com/emojis/${emoji.id}.png?v=1`
-                        : ""
+                        : "",
                 },
-                timestamp: new Date().toISOString()
-            }
+                timestamp: new Date().toISOString(),
+            },
         });
     }
 };
 
-let messageDelete = async function(msg, ctx) {
+let messageDelete = async function (msg, ctx) {
     if (!msg.channel.guild) return;
     if ((await isLoggingEnabled(ctx, msg)) === true) {
         let fields = [
             {
                 name: "ID",
                 value: msg.id ? msg.id : "<no id given>",
-                inline: true
+                inline: true,
             },
             {
                 name: "Message",
@@ -150,14 +151,16 @@ let messageDelete = async function(msg, ctx) {
                         ? msg.content.substring(0, 128) +
                           (msg.content.length > 128 ? "..." : "")
                         : "<no content>",
-                inline: true
+                inline: true,
             },
             {
                 name: "Attachments/Embeds",
-                value: `${msg.attachments.length} attachments, ${msg.embeds.length} embeds.`
+                value: `${
+                    msg.attachments ? msg.attachments.length : 0
+                } attachments, ${msg.embeds ? msg.embeds.length : 0} embeds.`,
             },
             { name: "Sender", value: `<@${msg.author.id}>`, inline: true },
-            { name: "Channel", value: `<#${msg.channel.id}>`, inline: true }
+            { name: "Channel", value: `<#${msg.channel.id}>`, inline: true },
         ];
 
         let log = await getLogChannel(ctx, msg);
@@ -166,8 +169,8 @@ let messageDelete = async function(msg, ctx) {
                 title: ":x: Message Delete",
                 color: 0xaa0000,
                 fields: fields,
-                timestamp: new Date().toISOString()
-            }
+                timestamp: new Date().toISOString(),
+            },
         });
     }
 };
@@ -177,10 +180,10 @@ let types = {
     2: "Voice",
     4: "Category",
     5: "News",
-    6: "Commerce"
+    6: "Commerce",
 };
 
-let channelUpdate = async function(channel, oldChannel, ctx) {
+let channelUpdate = async function (channel, oldChannel, ctx) {
     if (!channel.guild) return;
     if (channel.positions != oldChannel.position) return;
     if ((await isLoggingEnabled(ctx, { channel: channel })) === true) {
@@ -188,24 +191,24 @@ let channelUpdate = async function(channel, oldChannel, ctx) {
             {
                 name: "ID",
                 value: channel.id ? channel.id : "<no id given>",
-                inline: true
+                inline: true,
             },
             { name: "Name", value: channel.name, inline: true },
-            { name: "Type", value: types[channel.type], inline: true }
+            { name: "Type", value: types[channel.type], inline: true },
         ];
 
         if (channel.name != oldChannel.name) {
             fields.push({
                 name: "Name",
                 value: `${channel.name} (was ${oldChannel.name})`,
-                inline: true
+                inline: true,
             });
         }
         if (channel.bitrate != oldChannel.bitrate) {
             fields.push({
                 name: "Bitrate",
                 value: `${channel.bitrate} (was ${oldChannel.bitrate})`,
-                inline: true
+                inline: true,
             });
         }
         if (
@@ -215,21 +218,21 @@ let channelUpdate = async function(channel, oldChannel, ctx) {
             fields.push({
                 name: "Permissions Size",
                 value: `${channel.permissionOverwrites.size} (was ${oldChannel.permissionOverwrites.size})`,
-                inline: true
+                inline: true,
             });
         }
         if (channel.nsfw != oldChannel.nsfw) {
             fields.push({
                 name: "NSFW Flag",
                 value: `${channel.nsfw} (was ${oldChannel.nsfw})`,
-                inline: true
+                inline: true,
             });
         }
         if (channel.topic != oldChannel.topic) {
             fields.push({
                 name: "Topic",
                 value: `${channel.topic} (was ${oldChannel.topic})`,
-                inline: true
+                inline: true,
             });
         }
 
@@ -239,13 +242,13 @@ let channelUpdate = async function(channel, oldChannel, ctx) {
                 title: ":pencil2: Channel Update",
                 color: 0xffaa00,
                 fields: fields,
-                timestamp: new Date().toISOString()
-            }
+                timestamp: new Date().toISOString(),
+            },
         });
     }
 };
 
-let banAdd = async function(guild, user, ctx) {
+let banAdd = async function (guild, user, ctx) {
     if ((await isLoggingEnabled(ctx, { channel: { guild: guild } })) === true) {
         const logEntry = guild
             .getAuditLogs(
@@ -253,8 +256,8 @@ let banAdd = async function(guild, user, ctx) {
                 null,
                 ctx.libs.eris.Constants.AuditLogActions.MEMBER_BAN_ADD
             )
-            .then(x => x.entries[0])
-            .catch(x => {});
+            .then((x) => x.entries[0])
+            .catch((x) => {});
         const log = await getLogChannel(ctx, { channel: { guild: guild } });
 
         let embed = {
@@ -264,8 +267,8 @@ let banAdd = async function(guild, user, ctx) {
                 {
                     name: "User",
                     value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
-                    inline: true
-                }
+                    inline: true,
+                },
             ],
             thumbnail: {
                 url:
@@ -277,32 +280,33 @@ let banAdd = async function(guild, user, ctx) {
                                   ? "gif"
                                   : "png?size=256"
                           }`
-                        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                              5}.png`
+                        : `https://cdn.discordapp.com/embed/avatars/${
+                              user.discriminator % 5
+                          }.png`,
             },
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         };
 
         if (logEntry && logEntry.targetID == user.id) {
             embed.fields.push({
                 name: "Banner",
                 value: `<@${logEntry.user.id}> (${logEntry.user.username}#${logEntry.user.discriminator} - \`${logEntry.user.id}\`)`,
-                inline: true
+                inline: true,
             });
             embed.fields.push({
                 name: "Reason",
                 value: logEntry.reason || "<no reason given>",
-                inline: true
+                inline: true,
             });
         }
 
         log.createMessage({
-            embed: embed
+            embed: embed,
         });
     }
 };
 
-let banRem = async function(guild, user, ctx) {
+let banRem = async function (guild, user, ctx) {
     if ((await isLoggingEnabled(ctx, { channel: { guild: guild } })) === true) {
         const logEntry = guild
             .getAuditLogs(
@@ -310,8 +314,8 @@ let banRem = async function(guild, user, ctx) {
                 null,
                 ctx.libs.eris.Constants.AuditLogActions.MEMBER_BAN_REMOVE
             )
-            .then(x => x.entries[0])
-            .catch(x => {});
+            .then((x) => x.entries[0])
+            .catch((x) => {});
         const log = await getLogChannel(ctx, { channel: { guild: guild } });
 
         let embed = {
@@ -321,8 +325,8 @@ let banRem = async function(guild, user, ctx) {
                 {
                     name: "User",
                     value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
-                    inline: true
-                }
+                    inline: true,
+                },
             ],
             thumbnail: {
                 url:
@@ -334,32 +338,33 @@ let banRem = async function(guild, user, ctx) {
                                   ? "gif"
                                   : "png?size=256"
                           }`
-                        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                              5}.png`
+                        : `https://cdn.discordapp.com/embed/avatars/${
+                              user.discriminator % 5
+                          }.png`,
             },
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         };
 
         if (logEntry && logEntry.targetID == user.id) {
             embed.fields.push({
                 name: "Banner",
                 value: `<@${logEntry.user.id}> (${logEntry.user.username}#${logEntry.user.discriminator} - \`${logEntry.user.id}\`)`,
-                inline: true
+                inline: true,
             });
             embed.fields.push({
                 name: "Reason",
                 value: logEntry.reason || "<no reason given>",
-                inline: true
+                inline: true,
             });
         }
 
         log.createMessage({
-            embed: embed
+            embed: embed,
         });
     }
 };
 
-let userJoin = async function(guild, user, ctx) {
+let userJoin = async function (guild, user, ctx) {
     if ((await isLoggingEnabled(ctx, { channel: { guild: guild } })) === true) {
         let log = await getLogChannel(ctx, { channel: { guild: guild } });
         log.createMessage({
@@ -370,7 +375,7 @@ let userJoin = async function(guild, user, ctx) {
                     {
                         name: "User",
                         value: `<@${user.id}> (${user.username}#${user.discriminator} - \`${user.id}\`)`,
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Created At",
@@ -379,8 +384,8 @@ let userJoin = async function(guild, user, ctx) {
                         ).toUTCString()} (${ctx.utils.toReadableTime(
                             Date.now() - user.createdAt
                         )} ago)`,
-                        inline: true
-                    }
+                        inline: true,
+                    },
                 ],
                 thumbnail: {
                     url:
@@ -392,16 +397,17 @@ let userJoin = async function(guild, user, ctx) {
                                       ? "gif"
                                       : "png?size=256"
                               }`
-                            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                                  5}.png`
+                            : `https://cdn.discordapp.com/embed/avatars/${
+                                  user.discriminator % 5
+                              }.png`,
                 },
-                timestamp: new Date().toISOString()
-            }
+                timestamp: new Date().toISOString(),
+            },
         });
     }
 };
 
-let userLeft = async function(guild, user, ctx) {
+let userLeft = async function (guild, user, ctx) {
     if ((await isLoggingEnabled(ctx, { channel: { guild: guild } })) === true) {
         let log = await getLogChannel(ctx, { channel: { guild: guild } });
         log.createMessage({
@@ -412,7 +418,7 @@ let userLeft = async function(guild, user, ctx) {
                     {
                         name: "User",
                         value: `<@${user.id}> (${user.user.username}#${user.user.discriminator} - \`${user.user.id}\`)`,
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Created At",
@@ -421,29 +427,29 @@ let userLeft = async function(guild, user, ctx) {
                         ).toUTCString()} (${ctx.utils.toReadableTime(
                             Date.now() - user.createdAt
                         )} ago)`,
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Roles",
                         value:
                             user.roles && user.roles.length > 0
-                                ? user.roles.map(r => `<@&${r}>`).join(" ")
+                                ? user.roles.map((r) => `<@&${r}>`).join(" ")
                                 : "None",
-                        inline: true
-                    }
+                        inline: true,
+                    },
                 ],
                 thumbnail: {
                     url: `https://cdn.discordapp.com/avatars/${user.id}/${
                         user.user.avatar
-                    }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`
+                    }.${user.avatar.startsWith("a_") ? "gif" : "png?size=256"}`,
                 },
-                timestamp: new Date().toISOString()
-            }
+                timestamp: new Date().toISOString(),
+            },
         });
     }
 };
 
-let msgDelBulk = async function(msgs, ctx) {
+let msgDelBulk = async function (msgs, ctx) {
     if ((await isLoggingEnabled(ctx, { channel: { guild: guild } })) === true) {
         let messages = [];
 
@@ -468,13 +474,13 @@ let msgDelBulk = async function(msgs, ctx) {
                 title: ":trashcan: Bulk Message Delete",
                 color: 0xaa0000,
                 description: `[${msgs.length} Deleted Messages](https://mystb.in/${req.body.key})`,
-                timestamp: new Date().toISOString()
-            }
+                timestamp: new Date().toISOString(),
+            },
         });
     }
 };
 
-let userUpdate = async function(user, oldUser, ctx) {
+let userUpdate = async function (user, oldUser, ctx) {
     for (const g of ctx.bot.guilds.values()) {
         if (!g.members.get(user.id)) return;
         if (
@@ -493,8 +499,8 @@ let userUpdate = async function(user, oldUser, ctx) {
                     {
                         name: "User",
                         value: `<@${user.id}> (${user.username}#${user.discriminator})`,
-                        inline: true
-                    }
+                        inline: true,
+                    },
                 ],
                 thumbnail: {
                     url:
@@ -506,31 +512,32 @@ let userUpdate = async function(user, oldUser, ctx) {
                                       ? "gif"
                                       : "png?size=256"
                               }`
-                            : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                                  5}.png`
+                            : `https://cdn.discordapp.com/embed/avatars/${
+                                  user.discriminator % 5
+                              }.png`,
                 },
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
             };
 
             if (user.username != oldUser.username) {
                 e.fields.push({
                     name: "Name",
                     value: `${user.username} (was ${oldUser.name})`,
-                    inline: true
+                    inline: true,
                 });
             }
             if (user.discriminator != oldUser.discriminator) {
                 e.fields.push({
                     name: "Discrim",
                     value: `#${user.discriminator} (was #${oldUser.discriminator})`,
-                    inline: true
+                    inline: true,
                 });
             }
             if (user.avatar != oldUser.avatar) {
                 e.fields.push({
                     name: "Avatar Updated",
                     value: `${user.avatar} (was ${oldUser.avatar})`,
-                    inline: true
+                    inline: true,
                 });
             }
 
@@ -544,51 +551,51 @@ module.exports = [
     {
         event: "messageUpdate",
         name: "ServerLogging-MsgUpd",
-        func: messageUpdate
+        func: messageUpdate,
     },
     {
         event: "messageDelete",
         name: "ServerLogging-MsgDel",
-        func: messageDelete
+        func: messageDelete,
     },
     {
         event: "messageReactionAdd",
         name: "ServerLogging-ReactAdd",
-        func: reactionAdd
+        func: reactionAdd,
     },
     {
         event: "messageReactionRemove",
         name: "ServerLogging-ReactRem",
-        func: reactionDelete
+        func: reactionDelete,
     },
     {
         event: "channelUpdate",
         name: "ServerLogging-ChanUpd",
-        func: channelUpdate
+        func: channelUpdate,
     },
     {
         event: "guildBanAdd",
         name: "ServerLogging-BanAdd",
-        func: banAdd
+        func: banAdd,
     },
     {
         event: "guildBanRemove",
         name: "ServerLogging-BanRem",
-        func: banRem
+        func: banRem,
     },
     {
         event: "guildMemberAdd",
         name: "ServerLogging-UserJoin",
-        func: userJoin
+        func: userJoin,
     },
     {
         event: "guildMemberRemove",
         name: "ServerLogging-UserLeft",
-        func: userLeft
+        func: userLeft,
     },
     {
         event: "userUpdate",
         name: "ServerLogging-UserUpdated",
-        func: userUpdate
-    }
+        func: userUpdate,
+    },
 ];
