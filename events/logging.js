@@ -23,8 +23,8 @@ let getLogChannel = async function (ctx, msg) {
 let messageUpdate = async function (msg, oldMsg, ctx) {
     if (!msg.channel.guild) return;
     if ((await isLoggingEnabled(ctx, msg)) === true) {
-        if (msg.content && oldMsg.content && msg.content === oldMsg.content)
-            return;
+        if (!msg.content || !oldMsg.content) return;
+        if (msg.content === oldMsg.content) return;
         let log = await getLogChannel(ctx, msg);
         log.createMessage({
             embed: {
