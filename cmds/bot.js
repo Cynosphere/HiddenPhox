@@ -89,7 +89,7 @@ function reload(ctx, msg, args) {
                 if (oldCmd.name && oldCmd.func) {
                     ctx.cmds.set(oldCmd.name, oldCmd);
                 } else if (oldCmd.length) {
-                    for (const i = 0; i < oldCmd.length; i++) {
+                    for (let i = 0; i < oldCmd.length; i++) {
                         const subCmd = oldCmd[i];
                         if (subCmd.func && subCmd.name) {
                             ctx.cmds.set(subCmd.name, subCmd);
