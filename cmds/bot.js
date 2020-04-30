@@ -17,7 +17,7 @@ async function _eval(ctx, msg, args) {
         }
 
         if (isURL) {
-            let toRun = await superagent.get(args).then(x => x.text);
+            let toRun = await superagent.get(args).then((x) => x.text);
 
             try {
                 out = eval(toRun);
@@ -159,8 +159,18 @@ function exec(ctx, msg, args) {
     if (msg.author.id === ctx.ownerid || ctx.elevated.includes(msg.author.id)) {
         args = args.replace(/rm \-rf/g, "echo");
         require("child_process").exec(args, (e, out, err) => {
-            if (err) {
-                msg.channel.createMessage(`Error\n\`\`\`\n${err}\n\`\`\``);
+            if (e) {
+                if (err.toString().length > 1980) {
+                    let output = err.toString();
+                    ctx.utils.makeHaste(
+                        ctx,
+                        msg,
+                        output,
+                        "\u2705 Output too long to send in a message: "
+                    );
+                } else {
+                    msg.channel.createMessage(`Error:\n\`\`\`\n${err}\n\`\`\``);
+                }
             } else {
                 if (out.toString().length > 1980) {
                     let output = out.toString();
@@ -217,13 +227,13 @@ async function pprefix(ctx, msg, args) {
         let pre = args[1];
         try {
             let find = await ctx.db.models.udata.findOrCreate({
-                where: { id: msg.author.id }
+                where: { id: msg.author.id },
             });
             if (find) {
                 await ctx.db.models.udata.update(
                     { prefix: pre },
                     {
-                        where: { id: msg.author.id }
+                        where: { id: msg.author.id },
                     }
                 );
                 msg.channel.createMessage(
@@ -239,7 +249,7 @@ async function pprefix(ctx, msg, args) {
     } else {
         let out = await ctx.db.models.udata
             .findOrCreate({ where: { id: msg.author.id } })
-            .then(x => x[0].dataValues.prefix);
+            .then((x) => x[0].dataValues.prefix);
         msg.channel.createMessage(
             `<@${msg.author.id}>, ` +
                 (out == ""
@@ -257,16 +267,16 @@ async function funmode(ctx, msg, args) {
         }
 
         let data = await ctx.db.models.sdata.findOrCreate({
-            where: { id: msg.channel.guild.id }
+            where: { id: msg.channel.guild.id },
         });
         if (data) {
             let state = !data[0].dataValues.funallowed;
             await ctx.db.models.sdata.update(
                 {
-                    funallowed: state
+                    funallowed: state,
                 },
                 {
-                    where: { id: msg.channel.guild.id }
+                    where: { id: msg.channel.guild.id },
                 }
             );
             msg.channel.createMessage(state == true ? ":)" : ":(");
@@ -283,53 +293,53 @@ module.exports = [
         fulldesc: "Evaluate JavaScript code at runtime",
         func: _eval,
         usage: "<string>",
-        group: "bot"
+        group: "bot",
     },
     {
         name: "restart",
         desc: "Restarts bot",
         func: restart,
-        group: "bot"
+        group: "bot",
     },
     {
         name: "reload",
         desc: "Reloads a command",
         func: reload,
         usage: "<command>",
-        group: "bot"
+        group: "bot",
     },
     {
         name: "ereload",
         desc: "Reloads a set of events",
         func: ereload,
         usage: "<event>",
-        group: "bot"
+        group: "bot",
     },
     {
         name: "exec",
         desc: "Bash.",
         func: exec,
         usage: "<command>",
-        group: "bot"
+        group: "bot",
     },
     {
         name: "setavatar",
         desc: "Sets bot's avatar.",
         func: setav,
         usage: "<url/attachment>",
-        group: "bot"
+        group: "bot",
     },
     {
         name: "pprefix",
         desc: "Sets your personal prefix to use with the bot.",
         func: pprefix,
         usage: "[set] [prefix]",
-        group: "bot"
+        group: "bot",
     },
     {
         name: "funmode",
         desc: "its a secret",
         func: funmode,
-        group: "bot"
-    }
+        group: "bot",
+    },
 ];
