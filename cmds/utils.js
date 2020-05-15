@@ -6,7 +6,7 @@ const statusIcons = {
     online: "<:online:493173082421461002>",
     idle: "<:idle:493173082006093836>",
     dnd: "<:dnd:493173082261815307>",
-    offline: "<:offline:493173082253426688>"
+    offline: "<:offline:493173082253426688>",
 };
 
 async function avatar(ctx, msg, args) {
@@ -26,15 +26,15 @@ async function avatar(ctx, msg, args) {
                             msg.channel.guild.icon.startsWith("a_")
                                 ? "gif?size=1024&_=.gif"
                                 : "png?size=1024"
-                        }`
-                    }
-                }
+                        }`,
+                    },
+                },
             });
         }
     } else {
         const user = await ctx.utils
             .lookupUser(ctx, msg, args ? args : msg.author.mention)
-            .catch(m => {
+            .catch((m) => {
                 if (m == "No results." || m == "Canceled") {
                     msg.channel.createMessage(m);
                 } else {
@@ -55,14 +55,14 @@ async function avatar(ctx, msg, args) {
             embed: {
                 title: `Avatar for **${user.username}#${user.discriminator}**:`,
                 image: {
-                    url: av
-                }
-            }
+                    url: av,
+                },
+            },
         });
     }
 }
 
-let cflake = function(ctx, msg, args) {
+let cflake = function (ctx, msg, args) {
     let twitter = false;
     if (args.startsWith("--twitter")) {
         twitter = true;
@@ -83,7 +83,7 @@ let cflake = function(ctx, msg, args) {
     }
 };
 
-let linvite = async function(ctx, msg, args) {
+let linvite = async function (ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage("No invite code passed.");
         return;
@@ -93,7 +93,7 @@ let linvite = async function(ctx, msg, args) {
         .set("User-Agent", "HiddenPhox (v9, Eris)")
         .set("Content-Type", "application/json")
         .set("Authorization", ctx.bot.token)
-        .catch(x => {
+        .catch((x) => {
             msg.channel.createMessage("Invite provided is not valid.");
             return;
         });
@@ -109,28 +109,28 @@ let linvite = async function(ctx, msg, args) {
                 {
                     name: "Guild",
                     value: `**${inv.guild.name}** (${inv.guild.id})`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Channel",
                     value: `**#${inv.channel.name}** (${inv.channel.id})`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Member Count",
                     value: `${statusIcons["online"]}${inv.approximate_presence_count} online\t\t${statusIcons["offline"]} ${inv.approximate_member_count} members`,
-                    inline: false
+                    inline: false,
                 },
                 {
                     name: "Features",
                     value:
                         inv.guild.features && inv.guild.features.length > 0
                             ? `${inv.guild.features
-                                  .map(feature =>
+                                  .map((feature) =>
                                       feature
                                           .split("_")
                                           .map(
-                                              x =>
+                                              (x) =>
                                                   x[0] +
                                                   x.substring(1).toLowerCase()
                                           )
@@ -138,8 +138,8 @@ let linvite = async function(ctx, msg, args) {
                                   )
                                   .join(", ")}`
                             : "None",
-                    inline: false
-                }
+                    inline: false,
+                },
             ],
             thumbnail: {
                 url:
@@ -151,15 +151,15 @@ let linvite = async function(ctx, msg, args) {
                                   ? "gif?size=1024&_=.gif"
                                   : "png?size=1024"
                           }`
-                        : null
-            }
+                        : null,
+            },
         };
 
         if (inv.inviter) {
             edata.fields.push({
                 name: "Inviter",
                 value: `**${inv.inviter.username}#${inv.inviter.discriminator}** (${inv.inviter.id})`,
-                inline: true
+                inline: true,
             });
         }
 
@@ -181,23 +181,23 @@ let linvite = async function(ctx, msg, args) {
                         ? ` | [Splash](https://cdn.discordapp.com/splashes/${inv.guild.id}/${inv.guild.splash}.png?size=2048)`
                         : ""
                 }`,
-                inline: false
+                inline: false,
             });
         }
 
         if (inv.guild.splash !== null) {
             edata.image = {
-                url: `https://cdn.discordapp.com/splashes/${inv.guild.id}/${inv.guild.splash}.png?size=256`
+                url: `https://cdn.discordapp.com/splashes/${inv.guild.id}/${inv.guild.splash}.png?size=256`,
             };
         }
 
         msg.channel.createMessage({
-            embed: edata
+            embed: edata,
         });
     }
 };
 
-let mods = function(ctx, msg, args) {
+let mods = function (ctx, msg, args) {
     if (msg.channel.guild) {
         if (!args) {
             let res = "Moderators for **" + msg.channel.guild.name + "**:";
@@ -206,7 +206,7 @@ let mods = function(ctx, msg, args) {
                 online: "",
                 idle: "",
                 dnd: "",
-                offline: ""
+                offline: "",
             };
 
             for (const u of msg.channel.guild.members.values()) {
@@ -395,13 +395,13 @@ const status_types = [
     "Streaming",
     "Listening to",
     "Watching",
-    "Custom Status"
+    "Custom Status",
 ];
 
 async function uinfo(ctx, msg, args) {
     let user = await ctx.utils
         .lookupUser(ctx, msg, args || msg.author.id)
-        .catch(m => {
+        .catch((m) => {
             if (m == "No results." || m == "Canceled") {
                 msg.channel.createMessage(m);
             } else {
@@ -422,12 +422,12 @@ async function uinfo(ctx, msg, args) {
                 {
                     name: "ID",
                     value: user.id,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Nickname",
                     value: user.nick ? user.nick : "None",
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Status",
@@ -438,7 +438,7 @@ async function uinfo(ctx, msg, args) {
                               ")"
                             : statusIcons[user.status] + " " + user.status
                         : statusIcons[user.status] + " " + user.status,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: status_types[(user.game && user.game.type) || 0],
@@ -464,24 +464,24 @@ async function uinfo(ctx, msg, args) {
                                 : user.game.name
                             : "Nothing"
                     }`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Roles",
                     value: user.guild
                         ? user.roles.length > 0
-                            ? user.roles.map(r => `<@&${r}>`).join(", ")
+                            ? user.roles.map((r) => `<@&${r}>`).join(", ")
                             : "No roles"
                         : "No roles",
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Shared Servers",
                     value: `${
-                        ctx.bot.guilds.filter(a => a.members.get(user.id))
+                        ctx.bot.guilds.filter((a) => a.members.get(user.id))
                             .length
                     } servers`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Created At",
@@ -490,7 +490,7 @@ async function uinfo(ctx, msg, args) {
                     ).toUTCString()} (${ctx.utils.toReadableTime(
                         Date.now() - user.createdAt
                     )} ago)`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Joined At",
@@ -499,7 +499,7 @@ async function uinfo(ctx, msg, args) {
                     ).toUTCString()} (${ctx.utils.toReadableTime(
                         Date.now() - user.joinedAt
                     )} ago)`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Avatar",
@@ -510,10 +510,11 @@ async function uinfo(ctx, msg, args) {
                               }/${user.avatar}.${
                                   user.avatar.startsWith("a_") ? "gif" : "png"
                               }?size=1024)`
-                            : `[Full Size](https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                                  5}.png)`,
-                    inline: true
-                }
+                            : `[Full Size](https://cdn.discordapp.com/embed/avatars/${
+                                  user.discriminator % 5
+                              }.png)`,
+                    inline: true,
+                },
             ],
             thumbnail: {
                 url:
@@ -525,16 +526,17 @@ async function uinfo(ctx, msg, args) {
                                   ? "gif"
                                   : "png?size=256"
                           }`
-                        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                              5}.png`
-            }
+                        : `https://cdn.discordapp.com/embed/avatars/${
+                              user.discriminator % 5
+                          }.png`,
+            },
         };
 
         msg.channel.createMessage({
-            embed: embed
+            embed: embed,
         });
     } else {
-        const snowflake = parseInt(user.id).toString(2);
+        let snowflake = parseInt(user.id).toString(2);
         snowflake = "0".repeat(64 - snowflake.length) + snowflake;
         const date = snowflake.substr(0, 42);
         const createdAt = parseInt(date, 2) + 1420070400000;
@@ -549,15 +551,15 @@ async function uinfo(ctx, msg, args) {
                 {
                     name: "ID",
                     value: user.id,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Shared Servers",
                     value: `${
-                        ctx.bot.guilds.filter(a => a.members.get(user.id))
+                        ctx.bot.guilds.filter((a) => a.members.get(user.id))
                             .length
                     } servers`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Created At",
@@ -566,7 +568,7 @@ async function uinfo(ctx, msg, args) {
                     ).toUTCString()} (${ctx.utils.toReadableTime(
                         Date.now() - createdAt
                     )} ago)`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Avatar",
@@ -579,10 +581,11 @@ async function uinfo(ctx, msg, args) {
                                       ? "gif"
                                       : "png?size=1024"
                               })`
-                            : `[Full Size](https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                                  5}.png)`,
-                    inline: true
-                }
+                            : `[Full Size](https://cdn.discordapp.com/embed/avatars/${
+                                  user.discriminator % 5
+                              }.png)`,
+                    inline: true,
+                },
             ],
             thumbnail: {
                 url:
@@ -594,13 +597,14 @@ async function uinfo(ctx, msg, args) {
                                   ? "gif"
                                   : "png?size=256"
                           }`
-                        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator %
-                              5}.png`
-            }
+                        : `https://cdn.discordapp.com/embed/avatars/${
+                              user.discriminator % 5
+                          }.png`,
+            },
         };
 
         msg.channel.createMessage({
-            embed: embed
+            embed: embed,
         });
     }
 }
@@ -620,7 +624,7 @@ const region_flags = {
     "us-south": ":hamburger:",
     "us-east": ":hamburger:",
     frankfurt: ":flag_de:",
-    russia: ":flag_ru:"
+    russia: ":flag_ru:",
 };
 
 const verification_levels = [
@@ -628,7 +632,7 @@ const verification_levels = [
     "Low",
     "Medium",
     "(╯°□°）╯︵ ┻━┻ (High)",
-    "┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻ (Very High/Phone)"
+    "┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻ (Very High/Phone)",
 ];
 const notification_types = ["All Messages", "Mentions Only"];
 const emoji_tiers = [100, 200, 300, 500]; //double the count because each category has the limit
@@ -642,8 +646,8 @@ async function sinfo(ctx, msg, args) {
 
     const guild = msg.channel.guild;
 
-    const bots = g.members.filter(u => u.bot).length;
-    const everyone = g.roles.filter(x => x.name == "@everyone")[0];
+    const bots = g.members.filter((u) => u.bot).length;
+    const everyone = g.roles.filter((x) => x.name == "@everyone")[0];
 
     const info = {
         color: ctx.utils.topColor(ctx, msg, ctx.bot.user.id),
@@ -652,50 +656,50 @@ async function sinfo(ctx, msg, args) {
             {
                 name: "ID",
                 value: guild.id,
-                inline: true
+                inline: true,
             },
             {
                 name: "Owner",
                 value: `<@${guild.ownerID}>`,
-                inline: true
+                inline: true,
             },
             {
                 name: "Total Members",
                 value: guild.memberCount,
-                inline: true
+                inline: true,
             },
             {
                 name: "Humans",
                 value: `${guild.memberCount - bots} (${Math.round(
                     ((guild.memberCount - bots) / guild.memberCount) * 100
                 )}% of members)`,
-                inline: true
+                inline: true,
             },
             {
                 name: "Bots",
                 value: `${bots} (${Math.round(
                     (bots / guild.memberCount) * 100
                 )}% of members)`,
-                inline: true
+                inline: true,
             },
             {
                 name: "Channels",
                 value: `${guild.channels.size}/500 (${
-                    guild.channels.filter(x => x.type == 0).length
+                    guild.channels.filter((x) => x.type == 0).length
                 } text, ${
-                    guild.channels.filter(x => x.type == 2).length
+                    guild.channels.filter((x) => x.type == 2).length
                 } voice, ${
-                    guild.channels.filter(x => x.type == 4).length
+                    guild.channels.filter((x) => x.type == 4).length
                 } categories, ${
                     guild.channels.filter(
-                        x =>
+                        (x) =>
                             x.permissionOverwrites &&
                             x.permissionOverwrites.get(everyone.id) &&
                             x.permissionOverwrites.get(everyone.id).json
                                 .readMessages == false
                     ).length
-                } hidden, ${guild.channels.filter(x => x.nsfw).length} NSFW)`,
-                inline: true
+                } hidden, ${guild.channels.filter((x) => x.nsfw).length} NSFW)`,
+                inline: true,
             },
             {
                 name: "Region",
@@ -703,38 +707,38 @@ async function sinfo(ctx, msg, args) {
                     (flags[guild.region] || ":flag_black:") +
                     " " +
                     (guild.region || "Unknown Region???"),
-                inline: true
+                inline: true,
             },
             {
                 name: "Shard",
                 value: guild.shard.id,
-                inline: true
+                inline: true,
             },
             {
                 name: "Roles",
                 value: `${guild.roles.size}/250 (${
-                    guild.roles.filter(x => x.managed).length
+                    guild.roles.filter((x) => x.managed).length
                 } managed)`,
-                inline: true
+                inline: true,
             },
             {
                 name: "Emoji Count",
                 value: `${guild.emojis.length}/${
                     emojiTiers[guild.premiumTier]
-                } (${guild.emojis.filter(x => x.animated).length} animated, ${
-                    guild.emojis.filter(x => x.managed).length
+                } (${guild.emojis.filter((x) => x.animated).length} animated, ${
+                    guild.emojis.filter((x) => x.managed).length
                 } managed)`,
-                inline: true
+                inline: true,
             },
             {
                 name: "Created At",
                 value: new Date(guild.createdAt).toUTCString(),
-                inline: true
+                inline: true,
             },
             {
                 name: "Verification Level",
                 value: verification_levels[guild.verificationLevel],
-                inline: true
+                inline: true,
             },
             {
                 name: "Voice AFK",
@@ -743,29 +747,29 @@ async function sinfo(ctx, msg, args) {
                         ? "None"
                         : `<#${guild.afkChannelID}>`
                 }`,
-                inline: true
+                inline: true,
             },
             {
                 name: "Default Notifications",
                 value: notification_types[guild.defaultNotifications],
-                inline: true
+                inline: true,
             },
             {
                 name: "MFA For Perms",
                 value: guild.mfaLevel == 0 ? "False" : "True",
-                inline: true
+                inline: true,
             },
             {
                 name: 'Considered "Large"',
                 value: guild.large,
-                inline: true
+                inline: true,
             },
             {
                 name: "Nitro Boost Tier",
                 value: `Tier ${guild.premiumTier} with ${
                     guild.premiumSubscriptionCount
                 }/${boost_tiers[guild.premiumTier]} boosters.`,
-                inline: true
+                inline: true,
             },
             {
                 name: `Icon${guild.splash ? "/Splash" : ""}${
@@ -785,30 +789,30 @@ async function sinfo(ctx, msg, args) {
                     (guild.banner
                         ? ` | [Banner](https://cdn.discordapp.com/banners/${guild.id}/${guild.banner}.png?size=2048)`
                         : ""),
-                inline: true
-            }
+                inline: true,
+            },
         ],
         thumbnail: {
             url: `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.${
                 guild.icon.startsWith("a_")
                     ? "gif?size=256&_=.gif"
                     : "png?size=256"
-            }`
-        }
+            }`,
+        },
     };
 
     if (guild.features && guild.features.length > 0) {
         info.fields.push({
             name: "Features",
             value: `${guild.features
-                .map(feature =>
+                .map((feature) =>
                     feature
                         .split("_")
-                        .map(x => x[0] + x.substring(1).toLowerCase())
+                        .map((x) => x[0] + x.substring(1).toLowerCase())
                         .join(" ")
                 )
                 .join(", ")}`,
-            inline: true
+            inline: true,
         });
     }
 
@@ -816,12 +820,12 @@ async function sinfo(ctx, msg, args) {
         info.fields.push({
             name: "Vanity URL",
             value: `\`discord.gg/${guild.vanityURL}\``,
-            inline: true
+            inline: true,
         });
     }
 
     msg.channel.createMessage({
-        embed: info
+        embed: info,
     });
 }
 
@@ -839,7 +843,7 @@ async function emotes(ctx, msg, args) {
     const embed = {
         color: ctx.utils.topColor(ctx, msg, ctx.bot.user.id),
         title: `Emojis for \`${msg.channel.guild.name}\``,
-        fields: []
+        fields: [],
     };
 
     const emojis = [];
@@ -859,7 +863,7 @@ async function emotes(ctx, msg, args) {
         emojis.push(`<${emote.animated ? "a" : ""}:${emote.name}:${emote.id}>`);
     }
 
-    emojis = emojis.sort(function(a, b) {
+    emojis = emojis.sort(function (a, b) {
         a = a.toLowerCase().replace(/<(a)?:(.+):(.+)>/, "$2");
         b = b.toLowerCase().replace(/<(a)?:(.+):(.+)>/, "$2");
         return a < b ? 1 : a > b ? -1 : 0;
@@ -877,18 +881,18 @@ async function emotes(ctx, msg, args) {
         embed.fields.push({
             name: `${25 * index + 1} - ${25 * (index + 1)}`,
             value: emojis.slice(25 * index, 25 * (index + 1)).join(" "),
-            inline: true
+            inline: true,
         });
         index++;
     }
 
     msg.channel.createMessage({
-        embed: embed
+        embed: embed,
     });
 }
 
 async function rinfo(ctx, msg, args) {
-    const role = await ctx.utils.lookupRole(ctx, msg, args || "").catch(m => {
+    const role = await ctx.utils.lookupRole(ctx, msg, args || "").catch((m) => {
         if (m == "No results." || m == "Canceled") {
             msg.channel.createMessage(m);
         }
@@ -924,7 +928,7 @@ async function rinfo(ctx, msg, args) {
                 {
                     name: "ID",
                     value: role.id,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Color",
@@ -935,43 +939,43 @@ async function rinfo(ctx, msg, args) {
                               : "") +
                           role.color.toString(16).toUpperCase()
                         : "None",
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Users in role",
                     value: users,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Bots in role",
                     value: bots,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Mentionable",
                     value: role.mentionable ? role.mentionable : "false",
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Managed",
                     value: role.managed ? role.managed : "false",
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Position",
                     value: role.position,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Permissions",
-                    value: perms.join(", ")
-                }
-            ]
-        }
+                    value: perms.join(", "),
+                },
+            ],
+        },
     });
 }
 
-let slist = function(ctx, msg, args) {
+let slist = function (ctx, msg, args) {
     let servers = [];
 
     for (const s of ctx.bot.guilds.values()) {
@@ -991,7 +995,7 @@ let slist = function(ctx, msg, args) {
     let page = servers.slice((index - 1) * 10, index * 10);
 
     page.map((s, i) => {
-        let bots = s.members.filter(u => u.bot).length;
+        let bots = s.members.filter((u) => u.bot).length;
         let owner = ctx.bot.users.get(s.ownerID);
         list.push({
             name: i + 1 + (index - 1) * 10 + ". " + s.name,
@@ -1000,7 +1004,7 @@ let slist = function(ctx, msg, args) {
             )}%)\n${s.channels.size} channels, ${s.roles.size} roles\nOwner: ${
                 owner.username
             }#${owner.discriminator} (${s.ownerID})`,
-            inline: true
+            inline: true,
         });
     });
 
@@ -1011,13 +1015,13 @@ let slist = function(ctx, msg, args) {
             footer: {
                 text: `Page ${index} of ${Math.floor(
                     ctx.bot.guilds.size / 10
-                )} | ${ctx.bot.guilds.size} total servers`
-            }
-        }
+                )} | ${ctx.bot.guilds.size} total servers`,
+            },
+        },
     });
 };
 
-let presence = function(ctx, msg, args) {
+let presence = function (ctx, msg, args) {
     if (!msg.channel.guild) {
         msg.channel.createMessage(
             "Can only be used in guilds due to API limitations."
@@ -1025,7 +1029,7 @@ let presence = function(ctx, msg, args) {
         return;
     }
 
-    ctx.utils.lookupUser(ctx, msg, args || msg.member.mention).then(u => {
+    ctx.utils.lookupUser(ctx, msg, args || msg.member.mention).then((u) => {
         u = msg.channel.guild.members.get(u.id);
 
         if (u.game && u.game.type != 4) {
@@ -1041,37 +1045,35 @@ let presence = function(ctx, msg, args) {
                                   ")"
                                 : statusIcons[u.status] + " " + u.status
                             : statusIcons[u.status] + " " + u.status,
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: status_types[(u.game && u.game.type) || 0],
                         value: u.game ? u.game.name : "Nothing",
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Extended Statuses",
-                        value: `\uD83C\uDF10 **Web:** ${statusIcons[
+                        value: `\uD83C\uDF10 **Web:** ${
+                            statusIcons[u.clientStatus.web] +
+                            " " +
                             u.clientStatus.web
-                        ] +
+                        }\n\uD83D\uDDA5 **Desktop:** ${
+                            statusIcons[u.clientStatus.desktop] +
                             " " +
-                            u.clientStatus
-                                .web}\n\uD83D\uDDA5 **Desktop:** ${statusIcons[
                             u.clientStatus.desktop
-                        ] +
+                        }\n\uD83D\uDCF1 **Mobile:** ${
+                            statusIcons[u.clientStatus.mobile] +
                             " " +
-                            u.clientStatus
-                                .desktop}\n\uD83D\uDCF1 **Mobile:** ${statusIcons[
                             u.clientStatus.mobile
-                        ] +
-                            " " +
-                            u.clientStatus.mobile}`,
-                        inline: true
-                    }
+                        }`,
+                        inline: true,
+                    },
                 ],
                 color:
                     u.game.name == "Spotify"
                         ? 0x1db954
-                        : ctx.utils.topColor(ctx, msg, u.id)
+                        : ctx.utils.topColor(ctx, msg, u.id),
             };
 
             if (u.game.application_id || u.game.flags == 48) {
@@ -1079,38 +1081,38 @@ let presence = function(ctx, msg, args) {
                     embed.fields.push({
                         name: "Details",
                         value: u.game.details,
-                        inline: true
+                        inline: true,
                     });
                 if (u.game.state)
                     embed.fields.push({
                         name: "State",
                         value: u.game.state,
-                        inline: true
+                        inline: true,
                     });
                 if (u.game.party && u.game.party.size)
                     embed.fields.push({
                         name: "Party Size",
                         value: `${u.game.party.size[0]} of ${u.game.party.size[1]}`,
-                        inline: true
+                        inline: true,
                     });
                 if (u.game.assets && u.game.assets.large_text)
                     embed.fields.push({
                         name: "Large Icon Text",
                         value: u.game.assets.large_text,
-                        inline: true
+                        inline: true,
                     });
                 if (u.game.assets && u.game.assets.small_text)
                     embed.fields.push({
                         name: "Small Icon Text",
                         value: u.game.assets.small_text,
-                        inline: true
+                        inline: true,
                     });
 
                 embed.thumbnail = {
                     url:
                         u.game.assets && u.game.assets.large_image
                             ? "attachment://rpcicon.png"
-                            : "https://cdn.discordapp.com/emojis/543598700639813653.png"
+                            : "https://cdn.discordapp.com/emojis/543598700639813653.png",
                 };
             }
 
@@ -1121,7 +1123,7 @@ let presence = function(ctx, msg, args) {
                         ctx.utils.remainingTime(
                             new Date().getTime() - u.game.timestamps.start
                         ) + " elapsed",
-                    inline: true
+                    inline: true,
                 });
             if (u.game.timestamps && u.game.timestamps.end)
                 embed.fields.push({
@@ -1130,13 +1132,13 @@ let presence = function(ctx, msg, args) {
                         ctx.utils.remainingTime(
                             u.game.timestamps.end - u.game.created_at
                         ) + " remaining",
-                    inline: true
+                    inline: true,
                 });
 
             if (u.game.created_at) {
                 embed.timestamp = new Date(u.game.created_at).toISOString();
                 embed.footer = {
-                    text: "Started at "
+                    text: "Started at ",
                 };
             }
 
@@ -1150,7 +1152,7 @@ let presence = function(ctx, msg, args) {
                         : `https://cdn.discordapp.com/${path.normalize(
                               `app-assets/${u.game.application_id}/${u.game.assets.large_image}.png?size=128`
                           )}`
-                ).then(async i => {
+                ).then(async (i) => {
                     let a = i.clone().resize(96, jimp.AUTO);
                     let b =
                         u.game.assets && u.game.assets.small_image
@@ -1168,18 +1170,18 @@ let presence = function(ctx, msg, args) {
                     a.getBuffer(jimp.MIME_PNG, (e, f) => {
                         msg.channel.createMessage(
                             {
-                                embed: embed
+                                embed: embed,
                             },
                             {
                                 name: "rpcicon.png",
-                                file: f
+                                file: f,
                             }
                         );
                     });
                 });
             } else {
                 msg.channel.createMessage({
-                    embed: embed
+                    embed: embed,
                 });
             }
         } else if (
@@ -1198,49 +1200,37 @@ let presence = function(ctx, msg, args) {
                             ? ""
                             : u.game.emoji.name + " "
                         : ""
-                }${u.game.state ? u.game.state : ""}\n**Status:** ${statusIcons[
-                    u.status
-                ] +
+                }${u.game.state ? u.game.state : ""}\n**Status:** ${
+                    statusIcons[u.status] + " " + u.status
+                }\n\n__**Extended Status**__\n\uD83C\uDF10 **Web:** ${
+                    statusIcons[u.clientStatus.web] + " " + u.clientStatus.web
+                }\n\uD83D\uDDA5 **Desktop:** ${
+                    statusIcons[u.clientStatus.desktop] +
                     " " +
-                    u.status}\n\n__**Extended Status**__\n\uD83C\uDF10 **Web:** ${statusIcons[
-                    u.clientStatus.web
-                ] +
-                    " " +
-                    u.clientStatus
-                        .web}\n\uD83D\uDDA5 **Desktop:** ${statusIcons[
                     u.clientStatus.desktop
-                ] +
+                }\n\uD83D\uDCF1 **Mobile:** ${
+                    statusIcons[u.clientStatus.mobile] +
                     " " +
-                    u.clientStatus
-                        .desktop}\n\uD83D\uDCF1 **Mobile:** ${statusIcons[
                     u.clientStatus.mobile
-                ] +
-                    " " +
-                    u.clientStatus.mobile}`
+                }`
             );
         } else {
             msg.channel.createMessage(
                 `**${u.username}#${
                     u.discriminator
-                }** is not playing a game.\n**Status:** ${statusIcons[
-                    u.status
-                ] +
+                }** is not playing a game.\n**Status:** ${
+                    statusIcons[u.status] + " " + u.status
+                }\n\n__**Extended Status**__\n\uD83C\uDF10 **Web:** ${
+                    statusIcons[u.clientStatus.web] + " " + u.clientStatus.web
+                }\n\uD83D\uDDA5 **Desktop:** ${
+                    statusIcons[u.clientStatus.desktop] +
                     " " +
-                    u.status}\n\n__**Extended Status**__\n\uD83C\uDF10 **Web:** ${statusIcons[
-                    u.clientStatus.web
-                ] +
-                    " " +
-                    u.clientStatus
-                        .web}\n\uD83D\uDDA5 **Desktop:** ${statusIcons[
                     u.clientStatus.desktop
-                ] +
+                }\n\uD83D\uDCF1 **Mobile:** ${
+                    statusIcons[u.clientStatus.mobile] +
                     " " +
-                    u.clientStatus
-                        .desktop}\n\uD83D\uDCF1 **Mobile:** ${statusIcons[
                     u.clientStatus.mobile
-                ] +
-                    " " +
-                    u.clientStatus.mobile}`
+                }`
             );
         }
     });
@@ -1251,34 +1241,34 @@ const emojiSets = {
         url:
             "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@e456654119cc3a5f9bebb7bbd00512456f983d2d/svg/emoji_u",
         joiner: "_",
-        ext: ".svg"
+        ext: ".svg",
     },
     noto: {
         url: "gitcdn.xyz/repo/googlefonts/noto-emoji/master/svg/emoji_u",
         joiner: "_",
-        ext: ".svg"
+        ext: ".svg",
     },
     twemoji: {
         url: "https://twemoji.maxcdn.com/v/latest/svg/",
         joiner: "-",
-        ext: ".svg"
+        ext: ".svg",
     },
     mustd: {
         url:
             "https://cdn.jsdelivr.net/gh/Mstrodl/mutant-standard-mirror@eb06c291bb13eea305d92bcebbb308fc87a84d09/emoji/",
         joiner: "-",
-        ext: ".svg"
+        ext: ".svg",
     },
     apple: {
         url: "https://intrnl.github.io/assetsEmoji/AppleColor/emoji_u",
         joiner: "_",
-        ext: ".png"
+        ext: ".png",
     },
     facebook: {
         url: "https://intrnl.github.io/assetsEmoji/facebook/emoji_u",
         joiner: "_",
-        ext: ".png"
-    }
+        ext: ".png",
+    },
 };
 emojiSets["noto-old"] = emojiSets.blobs;
 emojiSets.mutant = emojiSets.mustd;
@@ -1289,12 +1279,12 @@ emojiSets.fb = emojiSets.facebook;
 
 const svg2png = require("svg2png");
 
-let jumbo = async function(ctx, msg, args) {
+let jumbo = async function (ctx, msg, args) {
     let emojiNames = await superagent
         .get("https://unpkg.com/emoji.json/emoji.json")
-        .then(x => x.body);
+        .then((x) => x.body);
     let temp = [];
-    emojiNames.map(x => (temp[x.char] = x.name.replace(/ /g, "_")));
+    emojiNames.map((x) => (temp[x.char] = x.name.replace(/ /g, "_")));
     emojiNames = temp;
     if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
         let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
@@ -1308,9 +1298,9 @@ let jumbo = async function(ctx, msg, args) {
                 image: {
                     url: `https://cdn.discordapp.com/emojis/${id}.${
                         animated ? "gif" : "png"
-                    }?v=1`
-                }
-            }
+                    }?v=1`,
+                },
+            },
         });
     } else {
         let pack = "twemoji";
@@ -1321,13 +1311,13 @@ let jumbo = async function(ctx, msg, args) {
             }
         }
         let emoji = Array.from(args)
-            .map(x => x.codePointAt().toString(16))
+            .map((x) => x.codePointAt().toString(16))
             .join(emojiSets[pack].joiner);
         let emojiurl = emojiSets[pack].url + emoji + emojiSets[pack].ext;
         superagent
             .get(emojiurl)
             .buffer(1)
-            .then(x => {
+            .then((x) => {
                 if (emojiSets[pack].ext == ".png") {
                     msg.channel.createMessage({
                         embed: {
@@ -1340,15 +1330,15 @@ let jumbo = async function(ctx, msg, args) {
                             } (${emoji.toUpperCase().replace(/[-_]/g, ", ")})`,
                             url: emojiurl,
                             image: {
-                                url: emojiurl
-                            }
-                        }
+                                url: emojiurl,
+                            },
+                        },
                     });
                 } else {
                     svg2png(x.body ? x.body : x.text, {
                         width: 512,
-                        height: 512
-                    }).then(y => {
+                        height: 512,
+                    }).then((y) => {
                         msg.channel.createMessage(
                             {
                                 embed: {
@@ -1363,19 +1353,19 @@ let jumbo = async function(ctx, msg, args) {
                                         .replace(/[-_]/g, ", ")})`,
                                     url: emojiurl,
                                     image: {
-                                        url: "attachment://emoji.png"
-                                    }
-                                }
+                                        url: "attachment://emoji.png",
+                                    },
+                                },
                             },
                             {
                                 file: y,
-                                name: "emoji.png"
+                                name: "emoji.png",
                             }
                         );
                     });
                 }
             })
-            .catch(e => {
+            .catch((e) => {
                 msg.channel.createMessage(
                     "Emote not found. The emoji set chosen might not have this emote as an image."
                 );
@@ -1383,7 +1373,7 @@ let jumbo = async function(ctx, msg, args) {
     }
 };
 
-let einfo = function(ctx, msg, args) {
+let einfo = function (ctx, msg, args) {
     if (/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/.test(args)) {
         let a = args.match(/<(a)?:([a-zA-Z0-9_*/-:]*):([0-9]*)>/);
         let animated = a[1] ? true : false;
@@ -1403,32 +1393,32 @@ let einfo = function(ctx, msg, args) {
                     {
                         name: "ID",
                         value: id,
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Full Code",
                         value: a[0].replace("<", "\\<").replace(">", "\\>"),
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Animated?",
                         value: animated,
-                        inline: true
+                        inline: true,
                     },
                     {
                         name: "Guild",
                         value: guild
                             ? `${guild.name} \`(${guild.id})\``
                             : "Not found",
-                        inline: true
-                    }
+                        inline: true,
+                    },
                 ],
                 thumbnail: {
                     url: `https://cdn.discordapp.com/emojis/${id}.${
                         animated ? "gif" : "png"
-                    }?v=1`
-                }
-            }
+                    }?v=1`,
+                },
+            },
         });
     } else {
         msg.channel.createMessage(
@@ -1533,9 +1523,9 @@ const langCodes = [
     "Vietnamese - vi",
     "Welsh - cy",
     "Xhosa - xh",
-    "Yiddish - yi"
+    "Yiddish - yi",
 ];
-let translate = async function(ctx, msg, args) {
+let translate = async function (ctx, msg, args) {
     args = ctx.utils.formatArgs(args);
 
     if (args[0] == "languages") {
@@ -1543,13 +1533,13 @@ let translate = async function(ctx, msg, args) {
             "Language",
             "Code",
             "Language",
-            "Code"
+            "Code",
         ]);
         let tbl2 = new ctx.utils.table([
             "Language",
             "Code",
             "Language",
-            "Code"
+            "Code",
         ]);
         let set1 = langCodes.slice(0, Math.ceil(langCodes.length / 2));
         let set2 = langCodes.slice(
@@ -1564,7 +1554,7 @@ let translate = async function(ctx, msg, args) {
                 val1[0] ? " " + val1[0] : "",
                 val1[1] ? " " + val1[1] : "",
                 val2[0] ? " " + val2[0] : "",
-                val2[1] ? " " + val2[1] : ""
+                val2[1] ? " " + val2[1] : "",
             ]);
         }
         for (let i = 0; i < set2.length; i = i + 2) {
@@ -1574,7 +1564,7 @@ let translate = async function(ctx, msg, args) {
                 val1[0] ? " " + val1[0] : "",
                 val1[1] ? " " + val1[1] : "",
                 val2[0] ? " " + val2[0] : "",
-                val2[1] ? " " + val2[1] : ""
+                val2[1] ? " " + val2[1] : "",
             ]);
         }
 
@@ -1588,10 +1578,10 @@ let translate = async function(ctx, msg, args) {
                         ctx.bot.user.id,
                         0x8060c0
                     ),
-                    description: `\`\`\`${tbl1.render()}\`\`\``
-                }
+                    description: `\`\`\`${tbl1.render()}\`\`\``,
+                },
             })
-            .then(_ => {
+            .then((_) => {
                 msg.channel.createMessage({
                     embed: {
                         title: "Valid language codes (2/2)",
@@ -1601,8 +1591,8 @@ let translate = async function(ctx, msg, args) {
                             ctx.bot.user.id,
                             0x8060c0
                         ),
-                        description: `\`\`\`${tbl2.render()}\`\`\``
-                    }
+                        description: `\`\`\`${tbl2.render()}\`\`\``,
+                    },
                 });
             });
         return;
@@ -1626,15 +1616,15 @@ let translate = async function(ctx, msg, args) {
                 lang1 != "auto" ? lang1 + "-" + lang2 : lang2
             )}&text=${encodeURIComponent(inp)}`
         )
-        .then(x => x.body.text.join(" | "))
-        .catch(e => e);
+        .then((x) => x.body.text.join(" | "))
+        .catch((e) => e);
 
     msg.channel.createMessage(
         `[${lang1} -> ${lang2}] \`${inp}\` translates to \`${out}\``
     );
 };
 
-let quote = async function(ctx, msg, args) {
+let quote = async function (ctx, msg, args) {
     args = args.split(" ");
     let cid = "";
     let id = args[0].split("|");
@@ -1655,7 +1645,7 @@ let quote = async function(ctx, msg, args) {
         const embed = {
             author: {
                 name: `${message.author.username}#${message.author.discriminator}`,
-                icon_url: message.author.avatarURL
+                icon_url: message.author.avatarURL,
             },
             description: message.content,
             color: ctx.utils.topColor(ctx, msg, message.author.id),
@@ -1663,13 +1653,13 @@ let quote = async function(ctx, msg, args) {
             fields: [
                 {
                     name: "Jump to",
-                    value: `https://canary.discordapp.com/channels/${msg.channel.guild.id}/${message.channel.id}/${message.id}`
-                }
-            ]
+                    value: `https://canary.discordapp.com/channels/${msg.channel.guild.id}/${message.channel.id}/${message.id}`,
+                },
+            ],
         };
         if (message.attachments.length > 0) {
             embed.image = {
-                url: message.attachments[0].url
+                url: message.attachments[0].url,
             };
         }
 
@@ -1678,10 +1668,10 @@ let quote = async function(ctx, msg, args) {
                 quote === ""
                     ? `Quoted by **${msg.author.username}#${msg.author.discriminator}**`
                     : `**${msg.author.username}#${msg.author.discriminator}:** ${quote}`,
-            embed: embed
+            embed: embed,
         });
 
-        msg.delete().catch(_ => {});
+        msg.delete().catch((_) => {});
     } catch (e) {
         msg.channel.createMessage(
             `<@${msg.author.id}> Message not found. Are you in the right channel?`
@@ -1689,7 +1679,7 @@ let quote = async function(ctx, msg, args) {
     }
 };
 
-let charinfo = async function(ctx, msg, args) {
+let charinfo = async function (ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage("Arguments required.");
         return;
@@ -1698,7 +1688,7 @@ let charinfo = async function(ctx, msg, args) {
     let out = ctx.utils.unilib
         .getNamesFromString(args)
         .map(
-            x =>
+            (x) =>
                 `\`\\u${x[0]}\`: ${x[1]} - ${String.fromCodePoint(
                     `0x${x[0]}`
                 )} \u2014 <http://www.fileformat.info/info/unicode/char/${
@@ -1725,7 +1715,7 @@ let charinfo = async function(ctx, msg, args) {
     }
 };
 
-let jump = async function(ctx, msg, args) {
+let jump = async function (ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage("Arguments required.");
         return;
@@ -1747,8 +1737,8 @@ let jump = async function(ctx, msg, args) {
         if (channel == false) {
             msg.channel
                 .getMessage(mid)
-                .then(_ => resolve(true))
-                .catch(_ => {
+                .then((_) => resolve(true))
+                .catch((_) => {
                     reject(
                         "Message not found. Be sure to append channel name or ID before the other ID, seperated with a space if its in another channel."
                     );
@@ -1763,13 +1753,13 @@ let jump = async function(ctx, msg, args) {
                     return;
                 }
                 test.getMessage(mid)
-                    .then(_ => resolve(true))
-                    .catch(_ => {
+                    .then((_) => resolve(true))
+                    .catch((_) => {
                         reject("Message was not found in channel.");
                     });
             } else if (!/[0-9]{17,21}/.test(channel)) {
                 let test = msg.channel.guild.channels.filter(
-                    c => c.name == channel
+                    (c) => c.name == channel
                 )[0];
                 if (!test) {
                     reject(
@@ -1778,11 +1768,11 @@ let jump = async function(ctx, msg, args) {
                     return;
                 }
                 test.getMessage(mid)
-                    .then(_ => {
+                    .then((_) => {
                         channel = test.id;
                         resolve(true);
                     })
-                    .catch(_ => {
+                    .catch((_) => {
                         reject("Message was not found in channel.");
                     });
             }
@@ -1790,17 +1780,17 @@ let jump = async function(ctx, msg, args) {
     });
 
     doChecks
-        .then(_ =>
+        .then((_) =>
             msg.channel.createMessage(
                 `https://discordapp.com/channels/${msg.channel.guild.id}/${
                     channel == false ? msg.channel.id : channel
                 }/${mid}`
             )
         )
-        .catch(e => msg.channel.createMessage(e));
+        .catch((e) => msg.channel.createMessage(e));
 };
 
-let readtxt = async function(ctx, msg, args) {
+let readtxt = async function (ctx, msg, args) {
     if (!args) {
         msg.channel.createMessage("Arguments required.");
         return;
@@ -1835,7 +1825,7 @@ module.exports = [
         func: avatar,
         usage: "[user]",
         group: "utils",
-        aliases: ["pfp"]
+        aliases: ["pfp"],
     },
     {
         name: "lookupinvite",
@@ -1843,7 +1833,7 @@ module.exports = [
         func: linvite,
         usage: "<invite>",
         group: "utils",
-        aliases: ["linvite"]
+        aliases: ["linvite"],
     },
     {
         name: "mods",
@@ -1854,7 +1844,7 @@ Mods are defined as members which have any of those permissions:
  - Manage Messages on the channel the command is coming from.
         `,
         func: mods,
-        group: "utils"
+        group: "utils",
     },
     /*{
         name: "binfo",
@@ -1868,21 +1858,21 @@ Mods are defined as members which have any of those permissions:
         desc: "Get info on a user.",
         func: uinfo,
         group: "utils",
-        aliases: ["userinfo", "user"]
+        aliases: ["userinfo", "user"],
     },
     {
         name: "sinfo",
         desc: "Displays info of a server",
         func: sinfo,
         group: "utils",
-        aliases: ["ginfo", "guildinfo", "serverinfo", "guild", "server"]
+        aliases: ["ginfo", "guildinfo", "serverinfo", "guild", "server"],
     },
     {
         name: "rinfo",
         desc: "Displays info of a role",
         func: rinfo,
         group: "utils",
-        aliases: ["roleinfo", "role"]
+        aliases: ["roleinfo", "role"],
     },
     {
         name: "cflake",
@@ -1905,42 +1895,42 @@ generated, not any other info or what type it is.
         `,
         func: cflake,
         group: "utils",
-        aliases: ["snowflake"]
+        aliases: ["snowflake"],
     },
     {
         name: "slist",
         desc: "Server list of servers HiddenPhox is in.",
         func: slist,
         group: "utils",
-        aliases: ["servers", "serverlist"]
+        aliases: ["servers", "serverlist"],
     },
     {
         name: "presence",
         desc: "Get presence/playing game of someone.",
         func: presence,
         group: "utils",
-        aliases: ["status"]
+        aliases: ["status"],
     },
     {
         name: "jumbo",
         desc: "Get the raw image of an emoji.",
         func: jumbo,
         group: "utils",
-        aliases: ["e", "emote", "emoji"]
+        aliases: ["e", "emote", "emoji"],
     },
     {
         name: "einfo",
         desc: "Get info of an emoji.",
         func: einfo,
         group: "utils",
-        aliases: ["emoteinfo", "emojiinfo"]
+        aliases: ["emoteinfo", "emojiinfo"],
     },
     {
         name: "translate",
         desc: "Translate text from one language to another.",
         func: translate,
         group: "utils",
-        aliases: ["tr"]
+        aliases: ["tr"],
     },
     {
         name: "quote",
@@ -1953,34 +1943,34 @@ Use \`channelid|messageid\` to crosschannel quote.
 If the bot has Manage Messages, it'll delete your regular command message.`,
         func: quote,
         group: "utils",
-        aliases: ["q"]
+        aliases: ["q"],
     },
     {
         name: "charinfo",
         desc: "Get information on a character or string of characters.",
         func: charinfo,
         group: "utils",
-        aliases: ["char", "character"]
+        aliases: ["char", "character"],
     },
     {
         name: "jump",
         desc: "Get jump URL based on ID.",
         func: jump,
         group: "utils",
-        aliases: ["jumpto"]
+        aliases: ["jumpto"],
     },
     {
         name: "emojis",
         desc: "List server emojis.",
         func: emotes,
         group: "utils",
-        aliases: ["emotes"]
+        aliases: ["emotes"],
     },
     {
         name: "readtxt",
         desc:
             "Takes a text file attachment from a message and uploads it to mystbin.",
         func: readtxt,
-        group: "utils"
-    }
+        group: "utils",
+    },
 ];

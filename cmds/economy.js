@@ -1,7 +1,7 @@
 const superagent = require("superagent");
 const sequelize = require("sequelize");
 
-let account = async function(ctx, msg, args) {
+async function account(ctx, msg, args) {
     if (msg.author.bot) {
         msg.channel.createMessage(`Bots cannot create accounts.`);
         return;
@@ -20,23 +20,23 @@ let account = async function(ctx, msg, args) {
             );
         }
     }
-};
+}
 
-let wallet = async function(ctx, msg, args) {
+async function wallet(ctx, msg, args) {
     let accounts = await ctx.db.models.econ.findAll();
 
-    let filter = function(m) {
+    function filter(m) {
         for (let i = 0; i < accounts.length; i++) {
             let acc = accounts[i];
             if (m.id == acc.id) return m;
         }
-    };
+    }
 
     ctx.utils
         .lookupUser(ctx, msg, args || msg.author.mention, filter)
-        .then(async u => {
+        .then(async (u) => {
             let wallet = await ctx.db.models.econ.findOne({
-                where: { id: u.id }
+                where: { id: u.id },
             });
             if (wallet) {
                 if (u.id == msg.author.id) {
@@ -54,9 +54,9 @@ let wallet = async function(ctx, msg, args) {
                 );
             }
         });
-};
+}
 
-let top = async function(ctx, msg, args) {
+async function top(ctx, msg, args) {
     if (args == "g" || args == "global" || !args) {
         let list = await ctx.db.models.econ.findAll();
 
@@ -79,13 +79,13 @@ let top = async function(ctx, msg, args) {
                 _list.addRow([
                     i + 1,
                     `${u.username}#${u.discriminator}`,
-                    `${list[i].currency}FC`
+                    `${list[i].currency}FC`,
                 ]);
             } else {
                 _list.addRow([
                     i + 1,
                     `Uncached User (${list[i].id})`,
-                    `${list[i].currency}FC`
+                    `${list[i].currency}FC`,
                 ]);
             }
         }
@@ -101,7 +101,7 @@ let top = async function(ctx, msg, args) {
 
         let list = await ctx.db.models.econ.findAll();
 
-        list = list.filter(u => msg.channel.guild.members.get(u.id));
+        list = list.filter((u) => msg.channel.guild.members.get(u.id));
 
         list = list.sort((a, b) => {
             if (a.currency < b.currency) {
@@ -121,7 +121,7 @@ let top = async function(ctx, msg, args) {
             _list.addRow([
                 i + 1,
                 `${u.user.username}#${u.user.discriminator}`,
-                `${list[i].currency}FC`
+                `${list[i].currency}FC`,
             ]);
         }
 
@@ -152,7 +152,7 @@ let top = async function(ctx, msg, args) {
                 _list.addRow([
                     i + 1,
                     `Uncached/Left Guild (${list[i].id})`,
-                    `${list[i].currency}FC`
+                    `${list[i].currency}FC`,
                 ]);
             }
         }
@@ -161,11 +161,11 @@ let top = async function(ctx, msg, args) {
             `__**Top 10 Taxbanks**__\`\`\`\n${_list.render()}\`\`\``
         );
     }
-};
+}
 
-let noreact = async function(ctx, msg, args) {
+async function noreact(ctx, msg, args) {
     let acc = await ctx.db.models.econ.findOne({
-        where: { id: msg.author.id }
+        where: { id: msg.author.id },
     });
     if (acc) {
         let state = !acc.noreact;
@@ -179,9 +179,9 @@ let noreact = async function(ctx, msg, args) {
     } else {
         msg.channel.createMessage("No account found.");
     }
-};
+}
 
-let donate = async function(ctx, msg, args) {
+async function donate(ctx, msg, args) {
     if (!args || isNaN(parseInt(args))) {
         msg.channel.createMessage("Arguments missing or not a number.");
         return;
@@ -193,7 +193,7 @@ let donate = async function(ctx, msg, args) {
     }
 
     let acc = await ctx.db.models.econ.findOne({
-        where: { id: msg.author.id }
+        where: { id: msg.author.id },
     });
     if (acc) {
         let value = Math.round(parseInt(args));
@@ -205,7 +205,7 @@ let donate = async function(ctx, msg, args) {
                 { where: { id: msg.author.id } }
             );
             let taxbank = await ctx.db.models.taxbanks.findOrCreate({
-                where: { id: msg.channel.guild.id }
+                where: { id: msg.channel.guild.id },
             });
             ctx.db.models.taxbanks.update(
                 { currency: taxbank[0].dataValues.currency + value },
@@ -214,8 +214,9 @@ let donate = async function(ctx, msg, args) {
             msg.channel.createMessage(
                 `**${msg.author.username}#${
                     msg.author.discriminator
-                }** has donated **${value}FC** to this server's taxbank. The taxbank is now ${taxbank[0]
-                    .dataValues.currency + value}FC.`
+                }** has donated **${value}FC** to this server's taxbank. The taxbank is now ${
+                    taxbank[0].dataValues.currency + value
+                }FC.`
             );
         } else {
             msg.channel.createMessage("lol no. you're not getting free money.");
@@ -223,7 +224,7 @@ let donate = async function(ctx, msg, args) {
     } else {
         msg.channel.createMessage("No account found.");
     }
-};
+}
 
 let semoji = [
     ":cherries:",
@@ -235,10 +236,10 @@ let semoji = [
     ":apple:",
     ":eyes:",
     ":hearts:",
-    ":money_with_wings:"
+    ":money_with_wings:",
 ];
 
-let slots = async function(ctx, msg, args) {
+async function slots(ctx, msg, args) {
     if (!args || isNaN(parseInt(args))) {
         msg.channel.createMessage("Arguments missing or not a number.");
         return;
@@ -256,7 +257,7 @@ let slots = async function(ctx, msg, args) {
     }
 
     let acc = await ctx.db.models.econ.findOne({
-        where: { id: msg.author.id }
+        where: { id: msg.author.id },
     });
     if (acc) {
         let value = Math.round(parseInt(args));
@@ -319,7 +320,7 @@ let slots = async function(ctx, msg, args) {
                 ctx.ratelimits.set(msg.author.id, rl);
             } else {
                 ctx.ratelimits.set(msg.author.id, {
-                    slots: new Date().getTime() + 15000
+                    slots: new Date().getTime() + 15000,
                 });
             }
 
@@ -328,11 +329,11 @@ let slots = async function(ctx, msg, args) {
     } else {
         msg.channel.createMessage("No account found.");
     }
-};
+}
 
-let daily = async function(ctx, msg, args) {
+async function daily(ctx, msg, args) {
     let acc = await ctx.db.models.econ.findOne({
-        where: { id: msg.author.id }
+        where: { id: msg.author.id },
     });
     if (acc) {
         let now = new Date().getTime();
@@ -360,11 +361,11 @@ let daily = async function(ctx, msg, args) {
             `You do not have an account, do \`${ctx.prefix}account\` to get an account.`
         );
     }
-};
+}
 
-let votereward = async function(ctx, msg, args) {
+async function votereward(ctx, msg, args) {
     let acc = await ctx.db.models.econ.findOne({
-        where: { id: msg.author.id }
+        where: { id: msg.author.id },
     });
     if (acc) {
         let now = new Date().getTime();
@@ -374,8 +375,8 @@ let votereward = async function(ctx, msg, args) {
                     `https://discordbots.org/api/bots/${ctx.bot.user.id}/check?userId=${msg.author.id}`
                 )
                 .set("Authorization", ctx.apikeys.dbl)
-                .then(x => x.body.voted)
-                .catch(e => {
+                .then((x) => x.body.voted)
+                .catch((e) => {
                     msg.channel.createMessage("An error occured.");
                     ctx.utils.logWarn(ctx, "[dbl:vote] " + e);
                 });
@@ -385,7 +386,7 @@ let votereward = async function(ctx, msg, args) {
                 ctx.db.models.econ.update(
                     {
                         currency: acc.currency + value,
-                        lastvote: now + 43200000
+                        lastvote: now + 43200000,
                     },
                     { where: { id: msg.author.id } }
                 );
@@ -411,9 +412,9 @@ let votereward = async function(ctx, msg, args) {
             `You do not have an account, do \`${ctx.prefix}account\` to get an account.`
         );
     }
-};
+}
 
-let transfer = async function(ctx, msg, args) {
+async function transfer(ctx, msg, args) {
     let owo = ctx.utils.formatArgs(args);
 
     if (!args || !owo[0]) {
@@ -425,15 +426,15 @@ let transfer = async function(ctx, msg, args) {
 
     let accounts = await ctx.db.models.econ.findAll();
 
-    let filter = function(m) {
+    function filter(m) {
         for (let i = 0; i < accounts.length; i++) {
             let acc = accounts[i];
             if (m.id == acc.id) return m;
         }
-    };
+    }
 
     let acc = await ctx.db.models.econ.findOne({
-        where: { id: msg.author.id }
+        where: { id: msg.author.id },
     });
     if (acc) {
         let u;
@@ -489,9 +490,10 @@ let transfer = async function(ctx, msg, args) {
                     msg.author.mention
                 }, you're about to send **${value}FC** to **${u.username}#${
                     u.discriminator
-                }**.\n\`\`\`diff\n- ${value}FC | transfer\n- ${tax}FC | 2.25% tax\n%%%%\n% ${value -
-                    tax}FC sent\`\`\`\n\nTo complete transaction, type \`${pin}\`, else type \`c\` or \`cancel\``,
-                async m => {
+                }**.\n\`\`\`diff\n- ${value}FC | transfer\n- ${tax}FC | 2.25% tax\n%%%%\n% ${
+                    value - tax
+                }FC sent\`\`\`\n\nTo complete transaction, type \`${pin}\`, else type \`c\` or \`cancel\``,
+                async (m) => {
                     if (m.content == pin) {
                         ctx.db.models.econ.update(
                             { currency: acc.currency - value },
@@ -509,7 +511,7 @@ let transfer = async function(ctx, msg, args) {
                             ctx.db.models.taxbanks.update(
                                 {
                                     currency:
-                                        taxbank[0].dataValues.currency + tax
+                                        taxbank[0].dataValues.currency + tax,
                                 },
                                 { where: { id: msg.channel.guild.id } }
                             );
@@ -543,10 +545,10 @@ let transfer = async function(ctx, msg, args) {
     } else {
         msg.channel.createMessage("No account found for sender.");
     }
-};
+}
 
 /* Start Steal Code Stuffs */
-let jail = async function(ctx, user) {
+async function jail(ctx, user) {
     let data = await ctx.db.models.econ.findOne({ where: { id: user.id } });
 
     await ctx.db.models.econ.update(
@@ -557,9 +559,9 @@ let jail = async function(ctx, user) {
         ctx,
         `[ECON] Jailed ${user.username}#${user.discriminator}.`
     );
-};
+}
 
-let grace = async function(ctx, user) {
+async function grace(ctx, user) {
     let data = await ctx.db.models.econ.findOne({ where: { id: user.id } });
 
     await ctx.db.models.econ.update(
@@ -570,9 +572,9 @@ let grace = async function(ctx, user) {
         ctx,
         `[ECON] Set grace period for ${user.username}#${user.discriminator}.`
     );
-};
+}
 
-let regen = async function(ctx, user) {
+async function regen(ctx, user) {
     let data = await ctx.db.models.econ.findOne({ where: { id: user.id } });
 
     await ctx.db.models.econ.update(
@@ -583,9 +585,9 @@ let regen = async function(ctx, user) {
         ctx,
         `[ECON] Starting regen for ${user.username}#${user.discriminator}.`
     );
-};
+}
 
-let takepoint = async function(ctx, user) {
+async function takepoint(ctx, user) {
     let data = await ctx.db.models.econ.findOne({ where: { id: user.id } });
 
     await ctx.db.models.econ.update(
@@ -599,9 +601,9 @@ let takepoint = async function(ctx, user) {
     if (data.points - 1 <= 0) {
         regen(ctx, user);
     }
-};
+}
 
-let steal = async function(ctx, msg, args) {
+async function steal(ctx, msg, args) {
     msg.channel.sendTyping();
 
     args = ctx.utils.formatArgs(args);
@@ -620,21 +622,21 @@ let steal = async function(ctx, msg, args) {
 
     let accounts = await ctx.db.models.econ.findAll();
 
-    let filter = function(m) {
+    function filter(m) {
         for (let i = 0; i < accounts.length; i++) {
             let acc = accounts[i];
             if (m.id == acc.id) return m;
         }
-    };
+    }
 
     ctx.utils
         .lookupUser(ctx, msg, user || "", filter)
-        .then(async u => {
+        .then(async (u) => {
             let tdata = await ctx.db.models.econ.findOne({
-                where: { id: u.id }
+                where: { id: u.id },
             });
             let udata = await ctx.db.models.econ.findOne({
-                where: { id: msg.author.id }
+                where: { id: msg.author.id },
             });
 
             let now = new Date().getTime();
@@ -725,7 +727,7 @@ let steal = async function(ctx, msg, args) {
                 await ctx.db.models.econ.update(
                     {
                         steals: sequelize.literal(`steals+1`),
-                        steal_succ: sequelize.literal(`steal_succ+1`)
+                        steal_succ: sequelize.literal(`steal_succ+1`),
                     },
                     { where: { id: msg.author.id } }
                 );
@@ -741,7 +743,7 @@ let steal = async function(ctx, msg, args) {
                 );
 
                 let taxbank = await ctx.db.models.taxbanks.findOrCreate({
-                    where: { id: msg.channel.guild.id }
+                    where: { id: msg.channel.guild.id },
                 });
                 await ctx.db.models.taxbanks.update(
                     { currency: sequelize.literal(`currency+${oof}`) },
@@ -754,7 +756,7 @@ let steal = async function(ctx, msg, args) {
                 await ctx.db.models.econ.update(
                     {
                         steals: sequelize.literal(`steals+1`),
-                        steal_fail: sequelize.literal(`steal_fail+1`)
+                        steal_fail: sequelize.literal(`steal_fail+1`),
                     },
                     { where: { id: msg.author.id } }
                 );
@@ -764,19 +766,19 @@ let steal = async function(ctx, msg, args) {
                 );
             }
         })
-        .catch(m => {
+        .catch((m) => {
             if (m == "No results." || m == "Canceled") {
                 msg.channel.createMessage(m);
             } else {
                 ctx.utils.logWarn(ctx, m.message);
             }
         });
-};
+}
 
-let sstate = async function(ctx, msg, args) {
+async function sstate(ctx, msg, args) {
     let accounts = await ctx.db.models.econ.findAll();
 
-    let filter = function(m) {
+    let filter = function (m) {
         for (let i = 0; i < accounts.length; i++) {
             let acc = accounts[i];
             if (m.id == acc.id) return m;
@@ -785,9 +787,9 @@ let sstate = async function(ctx, msg, args) {
 
     ctx.utils
         .lookupUser(ctx, msg, args || msg.author.id, filter)
-        .then(async u => {
+        .then(async (u) => {
             let data = await ctx.db.models.econ.findOne({
-                where: { id: u.id }
+                where: { id: u.id },
             });
             let now = new Date().getTime();
 
@@ -799,7 +801,7 @@ let sstate = async function(ctx, msg, args) {
             let out = [
                 `__Stealing state for **${u.username}#${u.discriminator}**__`,
                 `**Points:** ${data.points}`,
-                `\n**Cooldowns:**`
+                `\n**Cooldowns:**`,
             ];
 
             if (data.cd_jail > now) {
@@ -844,32 +846,32 @@ let sstate = async function(ctx, msg, args) {
 
             msg.channel.createMessage(out.join("\n"));
         })
-        .catch(m => {
+        .catch((m) => {
             if (m == "No results." || m == "Canceled") {
                 msg.channel.createMessage(m);
             } else {
                 ctx.utils.logWarn(ctx, m.message);
             }
         });
-};
+}
 /* End Steal Code Stuffs */
 
 /* Start Heist Code Stuffs */
-let startHeist = function(ctx, msg) {};
+function startHeist(ctx, msg) {}
 
-let heist = async function(ctx, msg, args) {
+async function heist(ctx, msg, args) {
     args = ctx.utils.formatArgs(args);
 
     let guild = args[0];
     let amt = args[1];
 
     let dbdata = await ctx.db.models.taxbanks.findOrCreate({
-        where: { id: msg.channel.guild.id }
+        where: { id: msg.channel.guild.id },
     });
     let data = {};
 
     let udata = await ctx.db.models.econ.findOne({
-        where: { id: msg.author.id }
+        where: { id: msg.author.id },
     });
 
     //get guild via lookup
@@ -889,10 +891,10 @@ let heist = async function(ctx, msg, args) {
     //  divide out money
     //  destroy collection
     //  apply cooldown and grace
-};
+}
 /* End Heist Code Stuffs */
 
-let fcstats = async function(ctx, msg, args) {
+async function fcstats(ctx, msg, args) {
     let data = await ctx.db.models.econ.findAll();
     let tdata = await ctx.db.models.taxbanks.findAll();
 
@@ -921,41 +923,41 @@ let fcstats = async function(ctx, msg, args) {
                 {
                     name: "Total PhoxCoins in circulation",
                     value: `${fc}FC`,
-                    inline: true
+                    inline: true,
                 },
                 { name: "Total Taxbanks", value: tdata.length, inline: true },
                 {
                     name: "Total PhoxCoins in taxbanks",
                     value: `${fct}FC`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Steal Successes",
                     value: `${succs}/${steals} (${Math.round(
-                        ((steals - succs) / steals) * 100
+                        ((steals - fails) / steals) * 100
                     )}%)`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Steal Fails",
                     value: `${fails}/${steals} (${Math.round(
-                        ((steals - fails) / steals) * 100
+                        ((steals - succs) / steals) * 100
                     )}%)`,
-                    inline: true
-                }
-            ]
-        }
+                    inline: true,
+                },
+            ],
+        },
     });
-};
+}
 
-let taxbank = async function(ctx, msg, args) {
+async function taxbank(ctx, msg, args) {
     if (!msg.channel.guild) {
         msg.channel.createMessage("Command can only be used in guilds.");
         return;
     }
 
     let data = await ctx.db.models.taxbanks.findOne({
-        where: { id: msg.channel.guild.id }
+        where: { id: msg.channel.guild.id },
     });
 
     if (!data) {
@@ -965,14 +967,14 @@ let taxbank = async function(ctx, msg, args) {
             `**${msg.channel.guild.name}**'s taxbank has **${data.currency}FC**.`
         );
     }
-};
+}
 
 module.exports = [
     {
         name: "account",
         desc: "Create a PhoxBank:tm: Account",
         func: account,
-        group: "economy"
+        group: "economy",
     },
     {
         name: "wallet",
@@ -980,40 +982,40 @@ module.exports = [
         func: wallet,
         group: "economy",
         usage: "[user]",
-        aliases: ["bal", "balance", "coins"]
+        aliases: ["bal", "balance", "coins"],
     },
     {
         name: "top",
         desc: "Get PhoxBank:tm: top balances",
         func: top,
         group: "economy",
-        usage: "[global, g, local, l, taxbanks, t]"
+        usage: "[global, g, local, l, taxbanks, t]",
     },
     {
         name: "hidecoins",
         desc: "Hide reacts when you get PhoxCoins",
         func: noreact,
-        group: "economy"
+        group: "economy",
     },
     {
         name: "donate",
         desc: "Donate PhoxCoins to the server's taxbank",
         func: donate,
         group: "economy",
-        usage: "<amount>"
+        usage: "<amount>",
     },
     {
         name: "slots",
         desc: 'Gamble away your "hard earned" PhoxCoins',
         func: slots,
         group: "economy",
-        usage: "<amount>"
+        usage: "<amount>",
     },
     {
         name: "daily",
         desc: "Get 10-100 daily PhoxCoins",
         func: daily,
-        group: "economy"
+        group: "economy",
     },
     /*{
         name: "votereward",
@@ -1028,7 +1030,7 @@ module.exports = [
         desc: "Send PhoxCoins to someone",
         func: transfer,
         group: "economy",
-        usage: "<user> <amount>"
+        usage: "<user> <amount>",
     },
     {
         name: "steal",
@@ -1046,7 +1048,7 @@ transferred from your wallet to the server's taxbank.
         `,
         func: steal,
         group: "economy",
-        usage: "<user> <amount>"
+        usage: "<user> <amount>",
     },
     {
         name: "stealstate",
@@ -1059,7 +1061,7 @@ With the command you can also look on cooldowns
 currently applied to you.
         `,
         func: sstate,
-        group: "economy"
+        group: "economy",
     },
     {
         name: "fcstats",
@@ -1073,7 +1075,7 @@ Show information such as:
         `,
         func: fcstats,
         group: "economy",
-        aliases: ["estats", "econstats"]
+        aliases: ["estats", "econstats"],
     },
     {
         name: "taxbank",
@@ -1087,6 +1089,6 @@ The only operation is to donate to a taxbank through the donate command.
         `,
         func: taxbank,
         group: "economy",
-        aliases: ["tb", "bank"]
-    }
+        aliases: ["tb", "bank"],
+    },
 ];
