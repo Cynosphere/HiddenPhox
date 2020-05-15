@@ -413,7 +413,7 @@ async function uinfo(ctx, msg, args) {
 
     if (msg.channel.guild && msg.channel.guild.members.get(user.id)) {
         user = msg.channel.guild.members.get(user.id);
-        const embed = {
+        let embed = {
             color: ctx.utils.topColor(ctx, msg, user.id),
             title: `User Info: \`${user.username}#${user.discriminator}\` ${
                 user.bot ? "<:boat:546212361472835584>" : ""
@@ -541,7 +541,7 @@ async function uinfo(ctx, msg, args) {
         const date = snowflake.substr(0, 42);
         const createdAt = parseInt(date, 2) + 1420070400000;
 
-        const embed = {
+        let embed = {
             color: 0x7289da,
 
             title: `User Info: \`${user.username}#${user.discriminator}\` ${
