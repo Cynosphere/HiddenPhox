@@ -534,7 +534,7 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
 
 utils.makeHaste = async function(ctx, msg, content, txt) {
     superagent
-        .post("https://mystb.in/documents")
+        .post("https://haste.soulja-boy-told.me/documents")
         .send(content)
         .then(res => {
             let key = res.body.key;
