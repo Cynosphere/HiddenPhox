@@ -2,7 +2,7 @@ const superagent = require("superagent");
 
 let utils = {};
 
-utils.awaitMessage = function(ctx, msg, display, callback, timeout) {
+utils.awaitMessage = function (ctx, msg, display, callback, timeout) {
     let dispMsg = msg.channel.createMessage(display);
     timeout = timeout ? timeout : 30000;
     if (!ctx.awaitMsgs.get(msg.channel.id)) {
@@ -13,14 +13,14 @@ utils.awaitMessage = function(ctx, msg, display, callback, timeout) {
     }
     ctx.awaitMsgs.get(msg.channel.id)[msg.id] = {
         time: msg.timestamp,
-        botmsg: dispMsg
+        botmsg: dispMsg,
     };
 
     let func;
 
     function regEvent() {
         return new Promise((resolve, reject) => {
-            func = function(msg2) {
+            func = function (msg2) {
                 if (msg2.author.id == msg.author.id) {
                     let response;
                     if (callback) {
@@ -47,7 +47,7 @@ utils.awaitMessage = function(ctx, msg, display, callback, timeout) {
     return regEvent();
 };
 
-utils.lookupUser = function(ctx, msg, str, filter) {
+utils.lookupUser = function (ctx, msg, str, filter) {
     return new Promise((resolve, reject) => {
         if (/[0-9]{17,21}/.test(str)) {
             resolve(
@@ -153,7 +153,7 @@ utils.lookupUser = function(ctx, msg, str, filter) {
                               " results, might want to refine your search."
                             : "") +
                         "\n\n[c] Cancel```",
-                    async m => {
+                    async (m) => {
                         let value = parseInt(m.content);
                         if (m.content == value) {
                             (
@@ -202,7 +202,7 @@ utils.lookupUser = function(ctx, msg, str, filter) {
     });
 };
 
-utils.lookupGuild = function(ctx, msg, str, filter) {
+utils.lookupGuild = function (ctx, msg, str, filter) {
     return new Promise((resolve, reject) => {
         if (/[0-9]{17,21}/.test(str)) {
             resolve(ctx.bot.guilds.get(str.match(/([0-9]{17,21})/)[1]));
@@ -247,7 +247,7 @@ utils.lookupGuild = function(ctx, msg, str, filter) {
                               " results, might want to refine your search."
                             : "") +
                         "\n\n[c] Cancel```",
-                    async m => {
+                    async (m) => {
                         let value = parseInt(m.content);
                         if (m.content == value) {
                             (
@@ -293,7 +293,7 @@ utils.lookupGuild = function(ctx, msg, str, filter) {
     });
 };
 
-utils.lookupRole = function(ctx, msg, str, filter) {
+utils.lookupRole = function (ctx, msg, str, filter) {
     return new Promise((resolve, reject) => {
         if (/[0-9]{17,21}/.test(str)) {
             resolve(msg.channel.guild.roles.get(str.match(/[0-9]{17,21}/)[0]));
@@ -337,7 +337,7 @@ utils.lookupRole = function(ctx, msg, str, filter) {
                               " results, might want to refine your search."
                             : "") +
                         "\n\n[c] Cancel```",
-                    async m => {
+                    async (m) => {
                         let value = parseInt(m.content);
                         if (m.content == value) {
                             (
@@ -397,7 +397,7 @@ function timeString() {
     );
 }
 
-utils.safeString = function(str, newlines = true) {
+utils.safeString = function (str, newlines = true) {
     let s = str ? str.toString() : "";
     s = s.replace(/`/g, "'");
     s = s.replace(/<@/g, "<@\u200b");
@@ -407,7 +407,7 @@ utils.safeString = function(str, newlines = true) {
     return s;
 };
 
-utils.logInfo = function(ctx, string) {
+utils.logInfo = function (ctx, string) {
     let time = timeString();
     string = utils.safeString(string);
     ctx.bot.createMessage(
@@ -416,7 +416,7 @@ utils.logInfo = function(ctx, string) {
     );
 };
 
-utils.logWarn = function(ctx, string) {
+utils.logWarn = function (ctx, string) {
     let time = timeString();
     string = utils.safeString(string);
     ctx.bot.createMessage(
@@ -425,7 +425,7 @@ utils.logWarn = function(ctx, string) {
     );
 };
 
-utils.logError = function(ctx, string) {
+utils.logError = function (ctx, string) {
     let time = timeString();
     string = utils.safeString(string);
     ctx.bot.createMessage(
@@ -434,7 +434,7 @@ utils.logError = function(ctx, string) {
     );
 };
 
-utils.remainingTime = function(inp) {
+utils.remainingTime = function (inp) {
     let s = parseInt(inp) / 1000;
     let d = parseInt(s / 86400);
     s = s % 86400;
@@ -454,13 +454,13 @@ utils.remainingTime = function(inp) {
 
 utils.formatTime = utils.remainingTime;
 
-utils.createEvent = function(client, type, func, ctx) {
+utils.createEvent = function (client, type, func, ctx) {
     const _func = func;
     func = (...args) => _func(...args, ctx);
     client.on(type, func);
 };
 
-utils.formatArgs = function(str) {
+utils.formatArgs = function (str) {
     return str.match(/\\?.|^$/g).reduce(
         (p, c) => {
             if (c === '"') {
@@ -477,18 +477,18 @@ utils.formatArgs = function(str) {
     ).a;
 };
 
-utils.topColor = function(ctx, msg, id, fallback = 0x7289da) {
+utils.topColor = function (ctx, msg, id, fallback = 0x7289da) {
     if (!msg.channel.guild) return fallback;
     let roles = msg.channel.guild.members
         .get(id)
-        .roles.map(r => msg.channel.guild.roles.get(r))
-        .filter(r => r.color);
+        .roles.map((r) => msg.channel.guild.roles.get(r))
+        .filter((r) => r.color);
     roles.sort((a, b) => b.position - a.position);
 
     return roles[0] ? roles[0].color : fallback;
 };
 
-utils.findLastImage = function(ctx, msg, gifcheck = false) {
+utils.findLastImage = function (ctx, msg, gifcheck = false) {
     return new Promise(async (resolve, reject) => {
         let msgs = await msg.channel.getMessages(20);
         let img = "";
@@ -498,7 +498,7 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
             if (m.attachments.length > 0) {
                 img = m.attachments[0].url;
                 if (gifcheck) {
-                    let type = await superagent.get(img).then(x => x.type);
+                    let type = await superagent.get(img).then((x) => x.type);
                     if (type == "image/gif") {
                         break;
                     }
@@ -514,7 +514,7 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
                     ? m.embeds[0].thumbnail.url
                     : m.embeds[0].image && m.embeds[0].image.url;
                 if (gifcheck) {
-                    let type = await superagent.get(img).then(x => x.type);
+                    let type = await superagent.get(img).then((x) => x.type);
                     if (type == "image/gif") {
                         break;
                     }
@@ -532,15 +532,17 @@ utils.findLastImage = function(ctx, msg, gifcheck = false) {
     });
 };
 
-utils.makeHaste = async function(ctx, msg, content, txt) {
+utils.makeHaste = async function (ctx, msg, content, txt) {
     superagent
         .post("https://haste.soulja-boy-told.me/documents")
         .send(content)
-        .then(res => {
+        .then((res) => {
             let key = res.body.key;
-            msg.channel.createMessage(`${txt}https://mystb.in/${key}.js`);
+            msg.channel.createMessage(
+                `${txt}https://haste.soulja-boy-told.me/${key}.js`
+            );
         })
-        .catch(e => {
+        .catch((e) => {
             msg.channel.createMessage(`Could not upload to Mystbin.`);
         });
 };
@@ -611,7 +613,7 @@ function hsvToInt(h, s, v) {
     return out;
 }
 
-utils.pastelize = function(str) {
+utils.pastelize = function (str) {
     let h = stringHash(str) - 5;
 
     let light = h % 3 == 0;
@@ -620,7 +622,7 @@ utils.pastelize = function(str) {
     return hsvToInt((h % 180) * 2, light ? 0.3 : 0.6, dark ? 0.6 : 1);
 };
 
-utils.toReadableTime = function(time) {
+utils.toReadableTime = function (time) {
     let seconds = time / 1000;
     let days = seconds / 60 / 60 / 24;
     let years = days / 365.25;
