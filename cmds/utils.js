@@ -646,8 +646,8 @@ async function sinfo(ctx, msg, args) {
 
     const guild = msg.channel.guild;
 
-    const bots = g.members.filter((u) => u.bot).length;
-    const everyone = g.roles.filter((x) => x.name == "@everyone")[0];
+    const bots = guild.members.filter((u) => u.bot).length;
+    const everyone = guild.roles.filter((x) => x.name == "@everyone")[0];
 
     const info = {
         color: ctx.utils.topColor(ctx, msg, ctx.bot.user.id),
