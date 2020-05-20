@@ -704,7 +704,7 @@ async function sinfo(ctx, msg, args) {
             {
                 name: "Region",
                 value:
-                    (flags[guild.region] || ":flag_black:") +
+                    (region_flags[guild.region] || ":flag_black:") +
                     " " +
                     (guild.region || "Unknown Region???"),
                 inline: true,
