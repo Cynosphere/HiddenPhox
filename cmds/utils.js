@@ -724,7 +724,7 @@ async function sinfo(ctx, msg, args) {
             {
                 name: "Emoji Count",
                 value: `${guild.emojis.length}/${
-                    emojiTiers[guild.premiumTier]
+                    emoji_tiers[guild.premiumTier]
                 } (${guild.emojis.filter((x) => x.animated).length} animated, ${
                     guild.emojis.filter((x) => x.managed).length
                 } managed)`,
