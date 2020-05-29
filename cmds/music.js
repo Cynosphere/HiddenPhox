@@ -287,7 +287,25 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .then((x) => setTimeout(() => x.delete(), 10000));
                 });
             } else {
-                conn.play(grabYTVideoURL(url), {
+                const vidUrl = await grabYTVideoURL(url);
+
+                if (!vidUrl)
+                    vidUrl = ytdl(url, {
+                        quality: "highestaudio",
+                        filter: "audioonly",
+                        highWaterMark: 1 << 25,
+                    });
+
+                if (!vidUrl) {
+                    msg.channel
+                        .createMessage(
+                            `:warning: Could not get video URL. Try another result if possible. (Avoid VEVO and " - Topic" channels)`
+                        )
+                        .then((x) => setTimeout(() => x.delete(), 10000));
+                    return;
+                }
+
+                conn.play(vidUrl, {
                     inlineVolume: true,
                     voiceDataTimeout: -1,
                 });
@@ -347,12 +365,30 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 });
             }
         } else {
+            const vidUrl = await grabYTVideoURL(url);
+
+            if (!vidUrl)
+                vidUrl = ytdl(url, {
+                    quality: "highestaudio",
+                    filter: "audioonly",
+                    highWaterMark: 1 << 25,
+                });
+
+            if (!vidUrl) {
+                msg.channel
+                    .createMessage(
+                        `:warning: Could not get video URL. Try another result if possible. (Avoid VEVO and " - Topic" channels)`
+                    )
+                    .then((x) => setTimeout(() => x.delete(), 10000));
+                return;
+            }
+
             ctx.bot
                 .joinVoiceChannel(id)
                 .then(async (conn) => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    conn.play(grabYTVideoURL(url), {
+                    conn.play(vidUrl, {
                         inlineVolume: true,
                         voiceDataTimeout: -1,
                     });
@@ -360,7 +396,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         if (err) {
                             msg.channel
                                 .createMessage(
-                                    `:warning: Could not add video: \`${err
+                                    `:warning: Could not get metadata: \`${err
                                         .toString()
                                         .replace("Error: ", "")}\``
                                 )
