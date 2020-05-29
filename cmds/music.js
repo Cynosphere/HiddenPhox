@@ -287,7 +287,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .then((x) => setTimeout(() => x.delete(), 10000));
                 });
             } else {
-                const vidUrl = await grabYTVideoURL(url);
+                let vidUrl = await grabYTVideoURL(url);
 
                 if (!vidUrl)
                     vidUrl = ytdl(url, {
@@ -365,7 +365,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 });
             }
         } else {
-            const vidUrl = await grabYTVideoURL(url);
+            let vidUrl = await grabYTVideoURL(url);
 
             if (!vidUrl)
                 vidUrl = ytdl(url, {
