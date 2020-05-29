@@ -289,13 +289,6 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             } else {
                 let vidUrl = await grabYTVideoURL(url);
 
-                if (!vidUrl)
-                    vidUrl = ytdl(url, {
-                        quality: "highestaudio",
-                        filter: "audioonly",
-                        highWaterMark: 1 << 25,
-                    });
-
                 if (!vidUrl) {
                     msg.channel
                         .createMessage(
@@ -366,13 +359,6 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             }
         } else {
             let vidUrl = await grabYTVideoURL(url);
-
-            if (!vidUrl)
-                vidUrl = ytdl(url, {
-                    quality: "highestaudio",
-                    filter: "audioonly",
-                    highWaterMark: 1 << 25,
-                });
 
             if (!vidUrl) {
                 msg.channel
