@@ -13,12 +13,30 @@ const mp3regex = /^(https?:\/\/)?.*\..*\/.+\.(mp3|ogg|flac|wav|webm|mp4|mov|mkv)
 const scregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/.+$/;
 const scplregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/(sets\/.+|likes|tracks)$/;
 
-/*async function grabYTVideoURL(ctx, url) {
-    let vid = await superagent.get(url).then(x => x.text);
+const useragents = [
+    "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; /1586022601; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1003.1 Safari/535.19 Awesomium/1.7.4.2",
+    "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; Valve Steam GameOverlay/1586022601; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
+    "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.142 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.142 Safari/537.36",
+    "Mozilla/5.0 (Nintendo Switch; WifiWebAuthApplet) AppleWebKit/601.6 (KHTML, like Gecko) NF/4.0.0.10.14 NintendoBrowser/5.1.0.17806",
+    "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0",
+];
+
+async function grabYTVideoURL(url) {
+    let vid = await superagent
+        .get(url)
+        .set(
+            "User-Agent",
+            useragents[Math.floor(Math.random() * useragents.length)]
+        )
+        .then((x) => x.text);
+
     let data = JSON.parse(
         vid
             .match(
-                /<script >var ytplayer = ytplayer \|\| \{\};ytplayer\.config = (.+)ytplayer\.load = function\(\) {yt\.player\.Application\.create\("player-api", ytplayer\.config\);ytplayer\.config\.loaded = true;};\(function\(\) {if \(!!window\.yt && yt\.player && yt\.player\.Application\) {ytplayer\.load\(\);}}\(\)\);<\/script>/
+                /<script >var ytplayer = ytplayer \|\| {};ytplayer\.config = (.*?);ytplayer\.load/
             )[1]
             .replace(/\\\\/g, "＼")
             .replace(/\\/g, "")
@@ -28,11 +46,11 @@ const scplregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/(sets\/
     );
 
     return data.adaptiveFormats
-        .filter(x => x.mimeType.startsWith("audio/"))
+        .filter((x) => x.mimeType.startsWith("audio/"))
         .sort((a, b) => {
             return a.bitrate < b.bitrate ? 1 : a.bitrate > b.bitrate ? -1 : 0;
         })[0].url;
-}*/
+}
 
 // https://stackoverflow.com/a/12646864 § "Updating to ES6 / ECMAScript 2015"
 // wow im using comments wtf is wrong with me
@@ -47,7 +65,7 @@ function createEndFunction(id, url, type, msg, ctx) {
     if (ctx.vc.get(id).evntEnd) return;
     ctx.vc.get(id).queue = ctx.vc.get(id).queue ? ctx.vc.get(id).queue : [];
 
-    ctx.vc.get(id).evntEnd = function() {
+    ctx.vc.get(id).evntEnd = function () {
         if (!ctx.vc.get(id)) return;
         if (ctx.vc.get(id).queue.length > 0) {
             let item = ctx.vc.get(id).queue[0];
@@ -58,14 +76,14 @@ function createEndFunction(id, url, type, msg, ctx) {
         } else {
             let conn = ctx.vc.get(id);
             if (!conn) return;
-            setTimeout(_ => {
+            setTimeout((_) => {
                 conn.disconnect();
                 if (ctx.vc.get(id).iwastoldtoleave === false) {
                     msg.channel
                         .createMessage(
                             ":musical_note: Queue is empty, leaving voice channel."
                         )
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                 }
                 /*conn.removeListener("error", e =>
                     ctx.utils.logWarn(ctx, `[music] error catching: ${e}`)
@@ -97,14 +115,14 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
     const baseURL = `https://www.googleapis.com/youtube/v3/playlistItems?key=${ctx.apikeys.google}&part=snippet&playlistId=${plid}&maxResults=50`;
     let req = await superagent
         .get(baseURL)
-        .catch(e =>
+        .catch((e) =>
             msg.channel
                 .createMessage(
                     `:warning: Could not get playlist: \`${e
                         .toString()
                         .replace("Error: ", "")}\``
                 )
-                .then(x => setTimeout(() => x.delete(), 10000))
+                .then((x) => setTimeout(() => x.delete(), 10000))
         );
     let data = req.body.items;
 
@@ -114,14 +132,14 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
         for (let i = 0; i < pages; i++) {
             let page = await superagent
                 .get(`${baseURL}&pageToken=${pageToken}`)
-                .catch(e =>
+                .catch((e) =>
                     msg.channel
                         .createMessage(
                             `:warning: Could not get playlist: \`${e
                                 .toString()
                                 .replace("Error: ", "")}\``
                         )
-                        .then(x => setTimeout(() => x.delete(), 10000))
+                        .then((x) => setTimeout(() => x.delete(), 10000))
                 );
             if (page.body.nextPageToken) pageToken = page.body.nextPageToken;
             let items = page.body.items;
@@ -135,11 +153,11 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
         embed: {
             title: "<a:typing:493087964742549515> Processing playlist...",
             description: `Processing ${data.length} items.`,
-            color: 0xff80c0
-        }
+            color: 0xff80c0,
+        },
     });
     for (const item in data) {
-        setTimeout(_ => {
+        setTimeout((_) => {
             doMusicThingsOk(
                 msg.member.voiceState.channelID,
                 "https://youtu.be/" + data[item].snippet.resourceId.videoId,
@@ -156,9 +174,9 @@ async function doPlaylistThingsOk(ctx, msg, url, shuffle) {
                         title:
                             "<:ms_tick:503341995348066313> Processed playlist",
                         description: `Done processing!`,
-                        color: 0xff80c0
-                    }
-                }).then(x => setTimeout(() => x.delete(), 10000));
+                        color: 0xff80c0,
+                    },
+                }).then((x) => setTimeout(() => x.delete(), 10000));
             }
         }, item * 1500);
     }
@@ -169,21 +187,21 @@ async function doSCPlaylistThingsOk(ctx, msg, url) {
         .get(
             `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
         )
-        .then(x => x.redirects[0]);
+        .then((x) => x.redirects[0]);
 
     const tracks = await superagent
         .get(`${playlistURL}&limit=5000`)
-        .then(x => (Array.isArray(x.body) ? x.body : x.body.tracks));
+        .then((x) => (Array.isArray(x.body) ? x.body : x.body.tracks));
 
     let out = await msg.channel.createMessage({
         embed: {
             title: "<a:typing:493087964742549515> Processing playlist...",
             description: `Processing ${tracks.length} items.`,
-            color: 0xff80c0
-        }
+            color: 0xff80c0,
+        },
     });
     for (const item in tracks) {
-        setTimeout(_ => {
+        setTimeout((_) => {
             doMusicThingsOk(
                 msg.member.voiceState.channelID,
                 tracks[item].permalink_url,
@@ -200,9 +218,9 @@ async function doSCPlaylistThingsOk(ctx, msg, url) {
                         title:
                             "<:ms_tick:503341995348066313> Processed playlist",
                         description: `Done processing!`,
-                        color: 0xff80c0
-                    }
-                }).then(x => setTimeout(() => x.delete(), 10000));
+                        color: 0xff80c0,
+                    },
+                }).then((x) => setTimeout(() => x.delete(), 10000));
             }
         }, item * 1500);
     }
@@ -214,7 +232,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             let conn = ctx.vc.get(id);
             if (!conn) return;
             if (conn.playing) {
-                ytdl.getInfo(url, {}, function(err, info) {
+                ytdl.getInfo(url, {}, function (err, info) {
                     if (err) {
                         msg.channel
                             .createMessage(
@@ -222,7 +240,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                     .toString()
                                     .replace("Error: ", "")}\``
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                         return;
                     }
                     ctx.vc.get(msg.member.voiceState.channelID).queue.push({
@@ -230,7 +248,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         type: "yt",
                         title: info.title,
                         len: info.length_seconds * 1000,
-                        addedBy: addedBy
+                        addedBy: addedBy,
                     });
                     if (playlist) return;
                     msg.channel
@@ -243,7 +261,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                         value: info.title
                                             ? `[${info.title}](${url})`
                                             : url,
-                                        inline: true
+                                        inline: true,
                                     },
                                     {
                                         name: "Length",
@@ -252,35 +270,28 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                                   info.length_seconds * 1000
                                               )
                                             : "Unknown",
-                                        inline: true
+                                        inline: true,
                                     },
                                     {
                                         name: "Added By",
                                         value: `<@${addedBy}>`,
-                                        inline: true
-                                    }
+                                        inline: true,
+                                    },
                                 ],
                                 color: 0x80ffc0,
                                 thumbnail: {
-                                    url: info.thumbnail_url
-                                }
-                            }
+                                    url: info.thumbnail_url,
+                                },
+                            },
                         })
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                 });
             } else {
-                conn.play(
-                    ytdl(url, {
-                        quality: "highestaudio",
-                        filter: "audioonly",
-                        highWaterMark: 1 << 25
-                    }),
-                    {
-                        inlineVolume: true,
-                        voiceDataTimeout: -1
-                    }
-                );
-                ytdl.getInfo(url, {}, function(err, info) {
+                conn.play(grabYTVideoURL(url), {
+                    inlineVolume: true,
+                    voiceDataTimeout: -1,
+                });
+                ytdl.getInfo(url, {}, function (err, info) {
                     if (err) {
                         msg.channel
                             .createMessage(
@@ -288,7 +299,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                     .toString()
                                     .replace("Error: ", "")}\``
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                         return;
                     }
                     msg.channel.createMessage({
@@ -300,7 +311,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                     value: info.title
                                         ? `[${info.title}](${url})`
                                         : url,
-                                    inline: true
+                                    inline: true,
                                 },
                                 {
                                     name: "Length",
@@ -309,24 +320,24 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                               info.length_seconds * 1000
                                           )
                                         : "Unknown",
-                                    inline: true
+                                    inline: true,
                                 },
                                 {
                                     name: "Added By",
                                     value: `<@${addedBy}>`,
-                                    inline: true
-                                }
+                                    inline: true,
+                                },
                             ],
                             color: 0x80c0ff,
                             thumbnail: {
-                                url: info.thumbnail_url
-                            }
-                        }
+                                url: info.thumbnail_url,
+                            },
+                        },
                     });
                     conn.np = {
                         title: info.title,
                         addedBy: addedBy,
-                        thumb: info.thumbnail_url
+                        thumb: info.thumbnail_url,
                     };
                     conn.len = info.length_seconds
                         ? info.length_seconds * 1000
@@ -338,21 +349,14 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
         } else {
             ctx.bot
                 .joinVoiceChannel(id)
-                .then(async conn => {
+                .then(async (conn) => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    conn.play(
-                        ytdl(url, {
-                            quality: "highestaudio",
-                            filter: "audioonly",
-                            highWaterMark: 1 << 25
-                        }),
-                        {
-                            inlineVolume: true,
-                            voiceDataTimeout: -1
-                        }
-                    );
-                    ytdl.getInfo(url, {}, function(err, info) {
+                    conn.play(grabYTVideoURL(url), {
+                        inlineVolume: true,
+                        voiceDataTimeout: -1,
+                    });
+                    ytdl.getInfo(url, {}, function (err, info) {
                         if (err) {
                             msg.channel
                                 .createMessage(
@@ -360,7 +364,9 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                         .toString()
                                         .replace("Error: ", "")}\``
                                 )
-                                .then(x => setTimeout(() => x.delete(), 10000));
+                                .then((x) =>
+                                    setTimeout(() => x.delete(), 10000)
+                                );
                             return;
                         }
                         if (info == null || info.title == null) {
@@ -371,26 +377,26 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                         {
                                             name: "Title",
                                             value: url,
-                                            inline: true
+                                            inline: true,
                                         },
                                         {
                                             name: "Length",
                                             value: ctx.utils.remainingTime(
                                                 info.length_seconds * 1000
                                             ),
-                                            inline: true
+                                            inline: true,
                                         },
                                         {
                                             name: "Added By",
                                             value: `<@${addedBy}>`,
-                                            inline: true
-                                        }
+                                            inline: true,
+                                        },
                                     ],
                                     color: 0x80c0ff,
                                     thumbnail: {
-                                        url: info.thumbnail_url
-                                    }
-                                }
+                                        url: info.thumbnail_url,
+                                    },
+                                },
                             });
                             if (conn) conn.np = url;
                         } else {
@@ -401,31 +407,31 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                         {
                                             name: "Title",
                                             value: `[${info.title}](${url})`,
-                                            inline: true
+                                            inline: true,
                                         },
                                         {
                                             name: "Length",
                                             value: ctx.utils.remainingTime(
                                                 info.length_seconds * 1000
                                             ),
-                                            inline: true
+                                            inline: true,
                                         },
                                         {
                                             name: "Added By",
                                             value: `<@${addedBy}>`,
-                                            inline: true
-                                        }
+                                            inline: true,
+                                        },
                                     ],
                                     color: 0x80c0ff,
                                     thumbnail: {
-                                        url: info.thumbnail_url
-                                    }
-                                }
+                                        url: info.thumbnail_url,
+                                    },
+                                },
                             });
                             conn.np = {
                                 title: info.title,
                                 addedBy: addedBy,
-                                thumb: info.thumbnail_url
+                                thumb: info.thumbnail_url,
                             };
                             conn.len = info.length_seconds * 1000;
                             conn.start = Date.now();
@@ -434,7 +440,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     });
                     createEndFunction(id, url, type, msg, ctx);
                 })
-                .catch(e =>
+                .catch((e) =>
                     msg.channel.createMessage(
                         `An error occured when joining: \`\`\`\n${e}\n\`\`\``
                     )
@@ -451,27 +457,27 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     .get(
                         `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                     )
-                    .then(x => x.body)
-                    .catch(e =>
+                    .then((x) => x.body)
+                    .catch((e) =>
                         msg.channel
                             .createMessage(
                                 `Error getting track:\n\`\`\`\n${e}\n\`\`\``
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000))
+                            .then((x) => setTimeout(() => x.delete(), 10000))
                     );
 
                 let formatURL = info.media.transcodings
-                    .filter(x => !x.snipped)
-                    .filter(x => x.format.protocol == "progressive")[0].url;
+                    .filter((x) => !x.snipped)
+                    .filter((x) => x.format.protocol == "progressive")[0].url;
                 let streamURL = await superagent
                     .get(`${formatURL}?client_id=${scCID}`)
-                    .then(x => x.body.url)
-                    .catch(e =>
+                    .then((x) => x.body.url)
+                    .catch((e) =>
                         msg.channel
                             .createMessage(
                                 `Error getting track:\n\`\`\`\n${e}\n\`\`\``
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000))
+                            .then((x) => setTimeout(() => x.delete(), 10000))
                     );
 
                 if (!streamURL) {
@@ -479,7 +485,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .createMessage(
                             `:warning: No usable URL was found. May possibly be region locked or paywalled (ex: Soundcloud GO exclusive)`
                         )
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                     return;
                 }
 
@@ -488,7 +494,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     type: "sc",
                     title: info.title,
                     len: info.full_duration,
-                    addedBy: addedBy
+                    addedBy: addedBy,
                 });
                 if (playlist) return;
                 msg.channel
@@ -499,53 +505,53 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 {
                                     name: "Title",
                                     value: `[${info.title}](${url})`,
-                                    inline: true
+                                    inline: true,
                                 },
                                 {
                                     name: "Length",
                                     value: ctx.utils.remainingTime(
                                         info.duration
                                     ),
-                                    inline: true
+                                    inline: true,
                                 },
                                 {
                                     name: "Added By",
                                     value: `<@${addedBy}>`,
-                                    inline: true
-                                }
+                                    inline: true,
+                                },
                             ],
                             color: 0x80ffc0,
                             thumbnail: {
-                                url: info.artwork_url
-                            }
-                        }
+                                url: info.artwork_url,
+                            },
+                        },
                     })
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             } else {
                 let info = await superagent
                     .get(
                         `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                     )
-                    .then(x => x.body)
-                    .catch(e =>
+                    .then((x) => x.body)
+                    .catch((e) =>
                         msg.channel
                             .createMessage(
                                 `Error getting track:\n\`\`\`\n${e}\n\`\`\``
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000))
+                            .then((x) => setTimeout(() => x.delete(), 10000))
                     );
                 let formatURL = info.media.transcodings
-                    .filter(x => !x.snipped)
-                    .filter(x => x.format.protocol == "progressive")[0].url;
+                    .filter((x) => !x.snipped)
+                    .filter((x) => x.format.protocol == "progressive")[0].url;
                 let streamURL = await superagent
                     .get(`${formatURL}?client_id=${scCID}`)
-                    .then(x => x.body.url)
-                    .catch(e =>
+                    .then((x) => x.body.url)
+                    .catch((e) =>
                         msg.channel
                             .createMessage(
                                 `Error getting track:\n\`\`\`\n${e}\n\`\`\``
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000))
+                            .then((x) => setTimeout(() => x.delete(), 10000))
                     );
 
                 if (!streamURL) {
@@ -553,7 +559,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .createMessage(
                             `:warning: No usable URL was found. May possibly be region locked or paywalled (ex: Soundcloud GO exclusive)`
                         )
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                     return;
                 }
                 msg.channel.createMessage({
@@ -563,30 +569,30 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             {
                                 name: "Title",
                                 value: `[${info.title}](${url})`,
-                                inline: true
+                                inline: true,
                             },
                             {
                                 name: "Length",
                                 value: ctx.utils.remainingTime(
                                     info.full_duration
                                 ),
-                                inline: true
+                                inline: true,
                             },
                             {
                                 name: "Added By",
                                 value: `<@${addedBy}>`,
-                                inline: true
-                            }
+                                inline: true,
+                            },
                         ],
                         color: 0x80c0ff,
                         thumbnail: {
-                            url: info.artwork_url
-                        }
-                    }
+                            url: info.artwork_url,
+                        },
+                    },
                 });
                 conn.np = {
                     title: info.title,
-                    addedBy: addedBy
+                    addedBy: addedBy,
                 };
                 conn.len = info.fullduration;
                 conn.start = Date.now();
@@ -594,39 +600,44 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
 
                 conn.play(streamURL, {
                     inlineVolume: true,
-                    voiceDataTimeout: -1
+                    voiceDataTimeout: -1,
                 });
             }
         } else {
             ctx.bot
                 .joinVoiceChannel(id)
-                .then(async conn => {
+                .then(async (conn) => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
                     let info = await superagent
                         .get(
                             `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                         )
-                        .then(x => x.body)
-                        .catch(e =>
+                        .then((x) => x.body)
+                        .catch((e) =>
                             msg.channel
                                 .createMessage(
                                     `Error getting track:\n\`\`\`\n${e}\n\`\`\``
                                 )
-                                .then(x => setTimeout(() => x.delete(), 10000))
+                                .then((x) =>
+                                    setTimeout(() => x.delete(), 10000)
+                                )
                         );
                     let formatURL = info.media.transcodings
-                        .filter(x => !x.snipped)
-                        .filter(x => x.format.protocol == "progressive")[0].url;
+                        .filter((x) => !x.snipped)
+                        .filter((x) => x.format.protocol == "progressive")[0]
+                        .url;
                     let streamURL = await superagent
                         .get(`${formatURL}?client_id=${scCID}`)
-                        .then(x => x.body.url)
-                        .catch(e =>
+                        .then((x) => x.body.url)
+                        .catch((e) =>
                             msg.channel
                                 .createMessage(
                                     `Error getting track:\n\`\`\`\n${e}\n\`\`\``
                                 )
-                                .then(x => setTimeout(() => x.delete(), 10000))
+                                .then((x) =>
+                                    setTimeout(() => x.delete(), 10000)
+                                )
                         );
 
                     if (!streamURL) {
@@ -634,7 +645,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             .createMessage(
                                 `:warning: No usable URL was found. May possibly be region locked or paywalled (ex: Soundcloud GO exclusive)`
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                         return;
                     }
                     msg.channel.createMessage({
@@ -644,30 +655,30 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 {
                                     name: "Title",
                                     value: `[${info.title}](${url})`,
-                                    inline: true
+                                    inline: true,
                                 },
                                 {
                                     name: "Length",
                                     value: ctx.utils.remainingTime(
                                         info.full_duration
                                     ),
-                                    inline: true
+                                    inline: true,
                                 },
                                 {
                                     name: "Added By",
                                     value: `<@${addedBy}>`,
-                                    inline: true
-                                }
+                                    inline: true,
+                                },
                             ],
                             color: 0x80c0ff,
                             thumbnail: {
-                                url: info.artwork_url
-                            }
-                        }
+                                url: info.artwork_url,
+                            },
+                        },
                     });
                     conn.np = {
                         title: info.title,
-                        addedBy: addedBy
+                        addedBy: addedBy,
                     };
                     conn.len = info.full_duration;
                     conn.start = Date.now();
@@ -675,11 +686,11 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
 
                     conn.play(streamURL, {
                         inlineVolume: true,
-                        voiceDataTimeout: -1
+                        voiceDataTimeout: -1,
                     });
                     createEndFunction(id, url, type, msg, ctx);
                 })
-                .catch(e =>
+                .catch((e) =>
                     msg.channel.createMessage(
                         `An error occured when joining: \`\`\`\n${e}\n\`\`\``
                     )
@@ -690,7 +701,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             let conn = ctx.vc.get(id);
             if (conn.playing) {
                 try {
-                    probe(url, function(e, data) {
+                    probe(url, function (e, data) {
                         let title = url;
                         let stream = false;
 
@@ -735,7 +746,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 ? Math.floor(data.format.duration) * 1000
                                 : 0,
                             addedBy: addedBy,
-                            stream: stream
+                            stream: stream,
                         });
                         msg.channel
                             .createMessage({
@@ -745,7 +756,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                         {
                                             name: "Title",
                                             value: title,
-                                            inline: true
+                                            inline: true,
                                         },
                                         {
                                             name: "Length",
@@ -758,23 +769,23 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                                       ) * 1000
                                                     : 0
                                             ),
-                                            inline: true
+                                            inline: true,
                                         },
                                         {
                                             name: "Added By",
                                             value: `<@${addedBy}>`,
-                                            inline: true
-                                        }
+                                            inline: true,
+                                        },
                                     ],
-                                    color: 0x80ffc0
-                                }
+                                    color: 0x80ffc0,
+                                },
                             })
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                     });
                 } catch (e) {
                     msg.channel
                         .createMessage(`An error occured: \`\`\`\n${e}\n\`\`\``)
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                     ctx.utils.logWarn(
                         ctx,
                         "[ffprobe] ffprobe machine :b:roke: " + e
@@ -784,9 +795,9 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 try {
                     conn.play(url, {
                         inlineVolume: true,
-                        voiceDataTimeout: -1
+                        voiceDataTimeout: -1,
                     });
-                    probe(url, function(e, data) {
+                    probe(url, function (e, data) {
                         let title = url;
                         let stream = false;
 
@@ -823,7 +834,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                     {
                                         name: "Title",
                                         value: `[${title}](${url})`,
-                                        inline: true
+                                        inline: true,
                                     },
                                     {
                                         name: "Length",
@@ -836,22 +847,22 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                                   ) * 1000
                                                 : 0
                                         ),
-                                        inline: true
+                                        inline: true,
                                     },
                                     {
                                         name: "Added By",
                                         value: `<@${addedBy}>`,
-                                        inline: true
-                                    }
+                                        inline: true,
+                                    },
                                 ],
-                                color: 0x80c0ff
-                            }
+                                color: 0x80c0ff,
+                            },
                         });
                         conn.np = {
                             url: url,
                             title: title,
                             addedBy: addedBy,
-                            stream: stream
+                            stream: stream,
                         };
                         conn.len = stream
                             ? 0
@@ -864,7 +875,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 } catch (e) {
                     msg.channel
                         .createMessage(`An error occured: \`\`\`\n${e}\n\`\`\``)
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                     ctx.utils.logWarn(
                         ctx,
                         "[ffprobe] ffprobe machine :b:roke: " + e
@@ -874,15 +885,15 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
         } else {
             ctx.bot
                 .joinVoiceChannel(id)
-                .then(conn => {
+                .then((conn) => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
                     try {
                         conn.play(url, {
                             inlineVolume: true,
-                            voiceDataTimeout: -1
+                            voiceDataTimeout: -1,
                         });
-                        probe(url, function(e, data) {
+                        probe(url, function (e, data) {
                             let title = url;
                             let stream = false;
 
@@ -919,7 +930,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                         {
                                             name: "Title",
                                             value: `[${title}](${url})`,
-                                            inline: true
+                                            inline: true,
                                         },
                                         {
                                             name: "Length",
@@ -932,22 +943,22 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                                       ) * 1000
                                                     : 0
                                             ),
-                                            inline: true
+                                            inline: true,
                                         },
                                         {
                                             name: "Added By",
                                             value: `<@${addedBy}>`,
-                                            inline: true
-                                        }
+                                            inline: true,
+                                        },
                                     ],
-                                    color: 0x80c0ff
-                                }
+                                    color: 0x80c0ff,
+                                },
                             });
                             conn.np = {
                                 url: url,
                                 title: title,
                                 addedBy: addedBy,
-                                stream: stream
+                                stream: stream,
                             };
                             conn.len = stream
                                 ? 0
@@ -963,14 +974,14 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             .createMessage(
                                 `An error occured: \`\`\`\n${e}\n\`\`\``
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                         ctx.utils.logWarn(
                             ctx,
                             "[ffprobe] ffprobe machine :b:roke: " + e
                         );
                     }
                 })
-                .catch(e =>
+                .catch((e) =>
                     msg.channel.createMessage(
                         `An error occured when joining: \`\`\`\n${e}\n\`\`\``
                     )
@@ -983,7 +994,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
     }
 }
 
-let doSearchThingsOk = async function(id, str, msg, ctx) {
+let doSearchThingsOk = async function (id, str, msg, ctx) {
     let req = await superagent.get(
         `https://www.googleapis.com/youtube/v3/search?key=${
             ctx.apikeys.google
@@ -1007,7 +1018,7 @@ let doSearchThingsOk = async function(id, str, msg, ctx) {
         ctx,
         msg,
         m,
-        async _msg => {
+        async (_msg) => {
             let value = parseInt(_msg.content);
             if (_msg.content == value) {
                 (
@@ -1049,7 +1060,7 @@ let doSearchThingsOk = async function(id, str, msg, ctx) {
     );
 };
 
-let doQueueRemovalThingsOk = async function(ctx, msg, data) {
+let doQueueRemovalThingsOk = async function (ctx, msg, data) {
     let m = "Please type a number to choose your selection\n```ini\n";
 
     for (let i = 0; i < data.length; i++) {
@@ -1062,7 +1073,7 @@ let doQueueRemovalThingsOk = async function(ctx, msg, data) {
         ctx,
         msg,
         m,
-        async _msg => {
+        async (_msg) => {
             let value = parseInt(_msg.content);
             if (_msg.content == value) {
                 (
@@ -1081,10 +1092,10 @@ let doQueueRemovalThingsOk = async function(ctx, msg, data) {
                     .createMessage(
                         `<:ms_cross:503341994974773250> Removed \`${torem.title}\` from queue.`
                     )
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
                 ctx.vc.get(msg.member.voiceState.channelID).queue = ctx.vc
                     .get(msg.member.voiceState.channelID)
-                    .queue.filter(x => x.url !== torem.url);
+                    .queue.filter((x) => x.url !== torem.url);
             } else {
                 (
                     await ctx.awaitMsgs.get(msg.channel.id)[msg.id].botmsg
@@ -1104,7 +1115,7 @@ let doQueueRemovalThingsOk = async function(ctx, msg, data) {
     );
 };
 
-let func = function(ctx, msg, args) {
+let func = function (ctx, msg, args) {
     if (!msg.channel.guild) {
         msg.channel.createMessage("This command can only be used in servers.");
         return;
@@ -1170,12 +1181,12 @@ let func = function(ctx, msg, args) {
             } else {
                 msg.channel
                     .createMessage("Not a playlist")
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             }
         } else {
             msg.channel
                 .createMessage("You are not in a voice channel.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "leave" || cmd == "l" || cmd == "stop") {
         if (msg.member.voiceState && msg.member.voiceState.channelID) {
@@ -1185,7 +1196,7 @@ let func = function(ctx, msg, args) {
                     if (msg.member.permission.has("manageMessages")) {
                         msg.channel
                             .createMessage("ok bye :wave:")
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                         conn.queue = {};
                         conn.iwastoldtoleave = true;
                         conn.stopPlaying();
@@ -1198,7 +1209,7 @@ let func = function(ctx, msg, args) {
                     ) {
                         msg.channel
                             .createMessage("ok bye :wave:")
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                         conn.queue = {};
                         conn.iwastoldtoleave = true;
                         conn.stopPlaying();
@@ -1210,12 +1221,12 @@ let func = function(ctx, msg, args) {
                             .createMessage(
                                 `Skips locked, cannot leave, you do not have Manage Messages nor is the queue empty.`
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                     }
                 } else {
                     msg.channel
                         .createMessage("ok bye :wave:")
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                     conn.queue = {};
                     conn.iwastoldtoleave = true;
                     conn.stopPlaying();
@@ -1226,13 +1237,13 @@ let func = function(ctx, msg, args) {
                     .createMessage(
                         "No voice connection found, brute forcing disconnect."
                     )
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
                 ctx.bot.leaveVoiceChannel(msg.member.voiceState.channelID);
             }
         } else {
             msg.channel
                 .createMessage("You or the bot isn't in a voice channel.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "queue" || cmd == "q") {
         if (
@@ -1275,11 +1286,11 @@ let func = function(ctx, msg, args) {
                             : ""
                     }\`\`\``
                 )
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         } else {
             msg.channel
                 .createMessage("The bot isn't in a voice channel.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "skip" || cmd == "s") {
         if (
@@ -1307,7 +1318,7 @@ let func = function(ctx, msg, args) {
         } else {
             msg.channel
                 .createMessage("You or the bot isn't in a voice channel.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "np") {
         if (cargs) {
@@ -1321,7 +1332,7 @@ let func = function(ctx, msg, args) {
 
                 if (conn.np.stream) {
                     try {
-                        probe(conn.np.url, function(e, data) {
+                        probe(conn.np.url, function (e, data) {
                             msg.channel
                                 .createMessage({
                                     embed: {
@@ -1340,7 +1351,7 @@ let func = function(ctx, msg, args) {
                                                               "Icy-Name"
                                                           ]
                                                 }]`,
-                                                inline: true
+                                                inline: true,
                                             },
                                             {
                                                 name: "Remaining Time",
@@ -1349,28 +1360,30 @@ let func = function(ctx, msg, args) {
                                                 )}/${ctx.utils.remainingTime(
                                                     0
                                                 )}`,
-                                                inline: true
+                                                inline: true,
                                             },
                                             {
                                                 name: "Added By",
                                                 value: `<@${conn.np.addedBy}>`,
-                                                inline: true
-                                            }
+                                                inline: true,
+                                            },
                                         ],
                                         color: 0x80c0ff,
                                         thumbnail: {
-                                            url: conn.np.thumb
-                                        }
-                                    }
+                                            url: conn.np.thumb,
+                                        },
+                                    },
                                 })
-                                .then(x => setTimeout(() => x.delete(), 10000));
+                                .then((x) =>
+                                    setTimeout(() => x.delete(), 10000)
+                                );
                         });
                     } catch (e) {
                         msg.channel
                             .createMessage(
                                 `An error occured: \`\`\`\n${e}\n\`\`\``
                             )
-                            .then(x => setTimeout(() => x.delete(), 10000));
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                         ctx.utils.logWarn(
                             ctx,
                             "[ffprobe] ffprobe machine :b:roke: " + e
@@ -1385,7 +1398,7 @@ let func = function(ctx, msg, args) {
                                     {
                                         name: "Title",
                                         value: conn.np.title,
-                                        inline: true
+                                        inline: true,
                                     },
                                     {
                                         name: "Remaining Time",
@@ -1394,26 +1407,26 @@ let func = function(ctx, msg, args) {
                                         )}/${ctx.utils.remainingTime(
                                             conn.len
                                         )}`,
-                                        inline: true
+                                        inline: true,
                                     },
                                     {
                                         name: "Added By",
                                         value: `<@${conn.np.addedBy}>`,
-                                        inline: true
-                                    }
+                                        inline: true,
+                                    },
                                 ],
                                 color: 0x80c0ff,
                                 thumbnail: {
-                                    url: conn.np.thumb
-                                }
-                            }
+                                    url: conn.np.thumb,
+                                },
+                            },
                         })
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                 }
             } else {
                 msg.channel
                     .createMessage("You or the bot isn't in a voice channel.")
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             }
         }
     } else if (cmd == "volume" || cmd == "v") {
@@ -1429,26 +1442,27 @@ let func = function(ctx, msg, args) {
                     conn.setVolume(vol / 100);
                     msg.channel
                         .createMessage(`:musical_note: Set volume to ${vol}.`)
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                 } else {
                     msg.channel
                         .createMessage(
                             `Volume not a number or not in the range of 1-150.`
                         )
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                 }
             } else {
                 msg.channel
                     .createMessage(
-                        `:musical_note: Current Volume: **${conn.volume *
-                            100}**`
+                        `:musical_note: Current Volume: **${
+                            conn.volume * 100
+                        }**`
                     )
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             }
         } else {
             msg.channel
                 .createMessage("You are not in a voice channel.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "pause") {
         if (
@@ -1460,7 +1474,7 @@ let func = function(ctx, msg, args) {
             if (conn.np.stream) {
                 msg.channel
                     .createMessage("Cannot pause streams.")
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
                 return;
             }
             if (conn.paused) {
@@ -1468,19 +1482,19 @@ let func = function(ctx, msg, args) {
                 conn.start = conn.__oldStart - conn.__paused + Date.now();
                 msg.channel
                     .createMessage(":arrow_forward: Resumed.")
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             } else {
                 conn.pause();
                 conn.__paused = Date.now();
                 conn.__oldStart = conn.start;
                 msg.channel
                     .createMessage(":pause_button: Paused.")
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             }
         } else {
             msg.channel
                 .createMessage("You are not in a voice channel.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "queuerem" || cmd == "qr") {
         if (
@@ -1492,24 +1506,24 @@ let func = function(ctx, msg, args) {
             if (msg.member.permission.has("manageMessages")) {
                 doQueueRemovalThingsOk(ctx, msg, conn.queue);
             } else if (
-                conn.queue.filter(x => x.addedBy == msg.member.id).length > 0
+                conn.queue.filter((x) => x.addedBy == msg.member.id).length > 0
             ) {
                 doQueueRemovalThingsOk(
                     ctx,
                     msg,
-                    conn.queue.filter(x => x.addedBy == msg.member.id)
+                    conn.queue.filter((x) => x.addedBy == msg.member.id)
                 );
             } else {
                 msg.channel
                     .createMessage(
                         "You do not have `Manage Messages` permission, nor have added anything to queue recently."
                     )
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             }
         } else {
             msg.channel
                 .createMessage("You are not in a voice channel.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "lock" || cmd == "\uD83D\uDD12") {
         if (
@@ -1522,26 +1536,26 @@ let func = function(ctx, msg, args) {
                 if (conn.skiplocked == true) {
                     msg.channel
                         .createMessage("Already locked.")
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                     return;
                 }
                 msg.channel
                     .createMessage(
                         ":lock: Skips and queue are now locked to users with manage messages or the person who queued the song.\n<:blankboi:393555375389016065> Run `hf!music unlock` to return to open it back up."
                     )
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
                 conn.skiplocked = true;
             } else {
                 msg.channel
                     .createMessage(
                         "You do not have `Manage Messages` permission."
                     )
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             }
         } else {
             msg.channel
                 .createMessage("You or the bot isn't in a voice channel.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "unlock" || cmd == "\uD83D\uDD13") {
         if (
@@ -1554,26 +1568,26 @@ let func = function(ctx, msg, args) {
                 if (conn.skiplocked == false) {
                     msg.channel
                         .createMessage("Already unlocked.")
-                        .then(x => setTimeout(() => x.delete(), 10000));
+                        .then((x) => setTimeout(() => x.delete(), 10000));
                     return;
                 }
                 msg.channel
                     .createMessage(
                         ":unlock: Skips and queue are now open to all!"
                     )
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
                 conn.skiplocked = false;
             } else {
                 msg.channel
                     .createMessage(
                         "You do not have `Manage Messages` permission."
                     )
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             }
         } else {
             msg.channel
                 .createMessage("You or the bot isn't in a voice channel.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else if (cmd == "forceurl") {
         if (ctx.elevated.includes(msg.author.id)) {
@@ -1589,12 +1603,12 @@ let func = function(ctx, msg, args) {
             } else {
                 msg.channel
                     .createMessage("You or the bot isn't in a voice channel.")
-                    .then(x => setTimeout(() => x.delete(), 10000));
+                    .then((x) => setTimeout(() => x.delete(), 10000));
             }
         } else {
             msg.channel
                 .createMessage("No\n\nSent from my iPhone.")
-                .then(x => setTimeout(() => x.delete(), 10000));
+                .then((x) => setTimeout(() => x.delete(), 10000));
         }
     } else {
         msg.channel.createMessage(
@@ -1622,5 +1636,5 @@ module.exports = {
     `,
     func: func,
     group: "music",
-    aliases: ["m"]
+    aliases: ["m"],
 };
