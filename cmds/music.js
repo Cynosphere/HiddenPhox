@@ -13,7 +13,7 @@ const mp3regex = /^(https?:\/\/)?.*\..*\/.+\.(mp3|ogg|flac|wav|webm|mp4|mov|mkv)
 const scregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/.+$/;
 const scplregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/(sets\/.+|likes|tracks)$/;
 
-const useragents = [
+/*const useragents = [
     "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; /1586022601; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1003.1 Safari/535.19 Awesomium/1.7.4.2",
     "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; Valve Steam GameOverlay/1586022601; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
@@ -50,7 +50,7 @@ async function grabYTVideoURL(url) {
         .sort((a, b) => {
             return a.bitrate < b.bitrate ? 1 : a.bitrate > b.bitrate ? -1 : 0;
         })[0].url;
-}
+}*/
 
 // https://stackoverflow.com/a/12646864 § "Updating to ES6 / ECMAScript 2015"
 // wow im using comments wtf is wrong with me
@@ -287,48 +287,46 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         .then((x) => setTimeout(() => x.delete(), 10000));
                 });
             } else {
-                let vidUrl = await grabYTVideoURL(url);
+                conn.play(
+                    ytdl(url, {
+                        quality: "highestaudio",
+                        filter: "audioonly",
+                        highWaterMark: 1 << 25,
+                    }),
+                    {
+                        inlineVolume: true,
+                        voiceDataTimeout: -1,
+                    }
+                );
 
-                if (!vidUrl) {
+                let info = await ytdl.getInfo(url, {}).catch((err) => {
                     msg.channel
                         .createMessage(
-                            `:warning: Could not get video URL. Try another result if possible. (Avoid VEVO and " - Topic" channels)`
+                            `:warning: Could not get metadata: \`${err
+                                .toString()
+                                .replace("Error: ", "")}\``
                         )
                         .then((x) => setTimeout(() => x.delete(), 10000));
-                    return;
-                }
-
-                conn.play(vidUrl, {
-                    inlineVolume: true,
-                    voiceDataTimeout: -1,
                 });
-                ytdl.getInfo(url, {}, function (err, info) {
-                    if (err) {
-                        msg.channel
-                            .createMessage(
-                                `:warning: Could not play video: \`${err
-                                    .toString()
-                                    .replace("Error: ", "")}\``
-                            )
-                            .then((x) => setTimeout(() => x.delete(), 10000));
-                        return;
-                    }
+
+                if (info) {
                     msg.channel.createMessage({
                         embed: {
                             title: `:musical_note: Now Playing`,
                             fields: [
                                 {
                                     name: "Title",
-                                    value: info.title
+                                    value: info.videoDetails.title
                                         ? `[${info.title}](${url})`
                                         : url,
                                     inline: true,
                                 },
                                 {
                                     name: "Length",
-                                    value: info.length_seconds
+                                    value: info.videoDetails.lengthSeconds
                                         ? ctx.utils.remainingTime(
-                                              info.length_seconds * 1000
+                                              info.videoDetails.lengthSeconds *
+                                                  1000
                                           )
                                         : "Unknown",
                                     inline: true,
@@ -346,120 +344,85 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         },
                     });
                     conn.np = {
-                        title: info.title,
+                        title: info.videoDetails.title,
                         addedBy: addedBy,
                         thumb: info.thumbnail_url,
                     };
-                    conn.len = info.length_seconds
-                        ? info.length_seconds * 1000
+                    conn.len = info.videoDetails.lengthSeconds
+                        ? info.videoDetails.lengthSeconds * 1000
                         : 0;
                     conn.start = Date.now();
                     conn.end = Date.now() + conn.len;
-                });
+                }
             }
         } else {
-            let vidUrl = await grabYTVideoURL(url);
-
-            if (!vidUrl) {
-                msg.channel
-                    .createMessage(
-                        `:warning: Could not get video URL. Try another result if possible. (Avoid VEVO and " - Topic" channels)`
-                    )
-                    .then((x) => setTimeout(() => x.delete(), 10000));
-                return;
-            }
-
             ctx.bot
                 .joinVoiceChannel(id)
                 .then(async (conn) => {
                     ctx.vc.set(id, conn);
                     ctx.vc.get(id).iwastoldtoleave = false;
-                    conn.play(vidUrl, {
-                        inlineVolume: true,
-                        voiceDataTimeout: -1,
-                    });
-                    ytdl.getInfo(url, {}, function (err, info) {
-                        if (err) {
-                            msg.channel
-                                .createMessage(
-                                    `:warning: Could not get metadata: \`${err
-                                        .toString()
-                                        .replace("Error: ", "")}\``
-                                )
-                                .then((x) =>
-                                    setTimeout(() => x.delete(), 10000)
-                                );
-                            return;
+
+                    conn.play(
+                        ytdl(url, {
+                            quality: "highestaudio",
+                            filter: "audioonly",
+                            highWaterMark: 1 << 25,
+                        }),
+                        {
+                            inlineVolume: true,
+                            voiceDataTimeout: -1,
                         }
-                        if (info == null || info.title == null) {
-                            msg.channel.createMessage({
-                                embed: {
-                                    title: `:musical_note: Now Playing`,
-                                    fields: [
-                                        {
-                                            name: "Title",
-                                            value: url,
-                                            inline: true,
-                                        },
-                                        {
-                                            name: "Length",
-                                            value: ctx.utils.remainingTime(
-                                                info.length_seconds * 1000
-                                            ),
-                                            inline: true,
-                                        },
-                                        {
-                                            name: "Added By",
-                                            value: `<@${addedBy}>`,
-                                            inline: true,
-                                        },
-                                    ],
-                                    color: 0x80c0ff,
-                                    thumbnail: {
-                                        url: info.thumbnail_url,
-                                    },
-                                },
-                            });
-                            if (conn) conn.np = url;
-                        } else {
-                            msg.channel.createMessage({
-                                embed: {
-                                    title: `:musical_note: Now Playing`,
-                                    fields: [
-                                        {
-                                            name: "Title",
-                                            value: `[${info.title}](${url})`,
-                                            inline: true,
-                                        },
-                                        {
-                                            name: "Length",
-                                            value: ctx.utils.remainingTime(
-                                                info.length_seconds * 1000
-                                            ),
-                                            inline: true,
-                                        },
-                                        {
-                                            name: "Added By",
-                                            value: `<@${addedBy}>`,
-                                            inline: true,
-                                        },
-                                    ],
-                                    color: 0x80c0ff,
-                                    thumbnail: {
-                                        url: info.thumbnail_url,
-                                    },
-                                },
-                            });
-                            conn.np = {
-                                title: info.title,
-                                addedBy: addedBy,
-                                thumb: info.thumbnail_url,
-                            };
-                            conn.len = info.length_seconds * 1000;
-                            conn.start = Date.now();
-                            conn.end = Date.now() + conn.len;
-                        }
+                    );
+
+                    let info = await ytdl.getInfo(url, {}).catch((err) => {
+                        msg.channel
+                            .createMessage(
+                                `:warning: Could not get metadata: \`${err
+                                    .toString()
+                                    .replace("Error: ", "")}\``
+                            )
+                            .then((x) => setTimeout(() => x.delete(), 10000));
                     });
+
+                    if (info) {
+                        msg.channel.createMessage({
+                            embed: {
+                                title: `:musical_note: Now Playing`,
+                                fields: [
+                                    {
+                                        name: "Title",
+                                        value: `[${info.videoDetails.title}](${url})`,
+                                        inline: true,
+                                    },
+                                    {
+                                        name: "Length",
+                                        value: ctx.utils.remainingTime(
+                                            info.videoDetails.lengthSeconds *
+                                                1000
+                                        ),
+                                        inline: true,
+                                    },
+                                    {
+                                        name: "Added By",
+                                        value: `<@${addedBy}>`,
+                                        inline: true,
+                                    },
+                                ],
+                                color: 0x80c0ff,
+                                thumbnail: {
+                                    url: info.thumbnail_url,
+                                },
+                            },
+                        });
+                        conn.np = {
+                            title: info.videoDetails.title,
+                            addedBy: addedBy,
+                            thumb: info.thumbnail_url,
+                        };
+                        conn.len = info.videoDetails.lengthSeconds * 1000;
+                        conn.start = Date.now();
+                        conn.end = Date.now() + conn.len;
+                    }
                     createEndFunction(id, url, type, msg, ctx);
                 })
                 .catch((e) =>
