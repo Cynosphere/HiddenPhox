@@ -170,11 +170,6 @@ const capeUrlRegex = /--cape="(.+?)" /;
 
 async function namemc(ctx, msg, args) {
     let data;
-    if (uuidRegex.test(args)) {
-        data = await namemcLib.getProfileFromUUID(args);
-    } else {
-        data = await namemcLib.getProfileFromName(args);
-    }
 
     let capeUrl = "http://s.optifine.net";
 
@@ -182,6 +177,12 @@ async function namemc(ctx, msg, args) {
         let a = args.match(capeUrlRegex);
         capeUrl = a[1];
         args = args.replace(capeUrlRegex, "");
+    }
+
+    if (uuidRegex.test(args)) {
+        data = await namemcLib.getProfileFromUUID(args);
+    } else {
+        data = await namemcLib.getProfileFromName(args);
     }
 
     if (!data) {
