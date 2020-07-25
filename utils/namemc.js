@@ -3,27 +3,27 @@ const { drawSkin3D } = require("./namemc-renderer.js");
 
 let cache = {};
 
-async function getProfileFromUUID(uuid) {
+async function getProfileFromUUID(uuid, capeUrl) {
     uuid = uuid.replace(/\-/g, "");
 
     let history = await superagent
         .get(`https://api.mojang.com/user/profiles/${uuid}/names`)
-        .then(x => x.body);
+        .then((x) => x.body);
     let username = history[history.length - 1].name;
 
     let skinData = await superagent
         .get(
             `https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`
         )
-        .then(x =>
+        .then((x) =>
             JSON.parse(Buffer.from(x.body.properties[0].value, "base64"))
         );
 
     let ofCape = false;
     await superagent
-        .get(`http://s.optifine.net/capes/${username}.png`)
-        .then(x => (ofCape = true))
-        .catch(e => (ofCape = false));
+        .get(`${capeUrl}/capes/${username}.png`)
+        .then((x) => (ofCape = true))
+        .catch((e) => (ofCape = false));
 
     let out = {
         username: username,
@@ -32,14 +32,14 @@ async function getProfileFromUUID(uuid) {
         skinData: {
             skin: skinData.textures.SKIN.url,
             cape: ofCape
-                ? `http://s.optifine.net/capes/${username}.png`
+                ? `http://${capeUrl}/capes/${username}.png`
                 : skinData.textures.CAPE
                 ? skinData.textures.CAPE.url
                 : null,
             model: skinData.textures.SKIN.metadata
                 ? skinData.textures.SKIN.metadata.model
-                : null
-        }
+                : null,
+        },
     };
 
     cache[uuid] = out;
@@ -47,33 +47,33 @@ async function getProfileFromUUID(uuid) {
     return out;
 }
 
-async function getProfileFromName(name) {
+async function getProfileFromName(name, capeUrl) {
     let uuid = await superagent
         .get(`https://api.mojang.com/users/profiles/minecraft/${name}`)
-        .then(x => x.body.id);
+        .then((x) => x.body.id);
     if (!uuid) {
         uuid = await superagent
             .get(`https://api.mojang.com/users/profiles/minecraft/${name}?at=0`)
-            .then(x => x.body.id);
+            .then((x) => x.body.id);
     }
     if (!uuid) return;
 
-    return await getProfileFromUUID(uuid);
+    return await getProfileFromUUID(uuid, capeUrl);
 }
 
-async function renderPlayerModelFromUUID(uuid) {
+async function renderPlayerModelFromUUID(uuid, capeUrl) {
     let playerData;
     if (cache[uuid]) {
         playerData = cache[uuid];
     } else {
-        playerData = getProfileFromUUID(uuid);
+        playerData = getProfileFromUUID(uuid, capeUrl);
     }
 
     let front = await drawSkin3D(
         playerData.skinData.model == "slim",
         playerData.skinData.skin,
         playerData.skinData.cape || null
-    ).then(x => x);
+    ).then((x) => x);
     let back = await drawSkin3D(
         playerData.skinData.model == "slim",
         playerData.skinData.skin,
@@ -81,11 +81,11 @@ async function renderPlayerModelFromUUID(uuid) {
         false,
         false,
         -210
-    ).then(x => x);
+    ).then((x) => x);
 
     return {
         front: await front,
-        back: await back
+        back: await back,
     };
 }
 
@@ -115,5 +115,5 @@ async function renderPlayerModelFromUUID(uuid) {
 module.exports = {
     getProfileFromUUID,
     getProfileFromName,
-    renderPlayerModelFromUUID
+    renderPlayerModelFromUUID,
 };

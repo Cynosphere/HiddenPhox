@@ -6,13 +6,13 @@ const superagent = require("superagent");
 let scol = {
     green: "<:online:493173082421461002>",
     yellow: "<:idle:493173082006093836>",
-    red: "<:dnd:493173082261815307>"
+    red: "<:dnd:493173082261815307>",
 };
 
 let stxt = {
     green: "No Issues",
     yellow: "Some Issues",
-    red: "**Offline/Unavaliable**"
+    red: "**Offline/Unavaliable**",
 };
 
 async function mcstatus(ctx, msg, args) {
@@ -34,67 +34,67 @@ async function mcstatus(ctx, msg, args) {
                     value: `${scol[status["minecraft.net"]]} ${
                         stxt[status["minecraft.net"]]
                     }`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Mojang Site",
                     value: `${scol[status["mojang.com"]]} ${
                         stxt[status["mojang.com"]]
                     }`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Session Server (MC)",
                     value: `${scol[status["session.minecraft.net"]]} ${
                         stxt[status["session.minecraft.net"]]
                     }`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Session Server (Mojang)",
                     value: `${scol[status["sessionserver.mojang.com"]]} ${
                         stxt[status["sessionserver.mojang.com"]]
                     }`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Skins",
                     value: `${scol[status["textures.minecraft.net"]]} ${
                         stxt[status["textures.minecraft.net"]]
                     }`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "API",
                     value: `${scol[status["api.mojang.com"]]} ${
                         stxt[status["api.mojang.com"]]
                     }`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Mojang Accounts",
                     value: `${scol[status["account.mojang.com"]]} ${
                         stxt[status["account.mojang.com"]]
                     }`,
-                    inline: true
+                    inline: true,
                 },
                 {
                     name: "Auth Server",
                     value: `${scol[status["authserver.mojang.com"]]} ${
                         stxt[status["authserver.mojang.com"]]
                     }`,
-                    inline: true
-                }
-            ]
-        }
+                    inline: true,
+                },
+            ],
+        },
     });
 }
 
-let mcserver = async function(ctx, msg, args) {
+let mcserver = async function (ctx, msg, args) {
     args = args.split(" ")[0]; //ignore all other inputs
     let data = await superagent
         .get(`https://api.mcsrvstat.us/1/${args}`)
-        .then(x => x.body);
+        .then((x) => x.body);
 
     let e = {
         title: `Minecraft Server: \`${args}\``,
@@ -104,18 +104,18 @@ let mcserver = async function(ctx, msg, args) {
                 value: data.offline
                     ? "<:offline:493173082253426688> Offline"
                     : "<:online:493173082421461002> Online",
-                inline: true
-            }
+                inline: true,
+            },
         ],
         thumbnail: {
-            url: "attachment://icon.png"
+            url: "attachment://icon.png",
         },
-        footer: { text: "Powered by mcsrvstat.us" }
+        footer: { text: "Powered by mcsrvstat.us" },
     };
 
     let img = {
         file: fs.readFileSync(`${__dirname}/../img/noicon.png`),
-        name: "icon.png"
+        name: "icon.png",
     };
 
     if (!data.offline) {
@@ -123,36 +123,36 @@ let mcserver = async function(ctx, msg, args) {
         e.fields.push({
             name: "MOTD",
             value: data.motd.clean.join("\n"),
-            inline: true
+            inline: true,
         });
         e.fields.push({
             name: "Players",
             value: `${data.players.online}/${data.players.max}`,
-            inline: true
+            inline: true,
         });
         if (data.version)
             e.fields.push({
                 name: "Version",
                 value: data.version,
-                inline: true
+                inline: true,
             });
         if (data.software)
             e.fields.push({
                 name: "Server Type",
                 value: data.software,
-                inline: true
+                inline: true,
             });
         if (data.plugins && data.plugins.names)
             e.fields.push({
                 name: "Plugins",
                 value: data.plugins.names.length + " plugins",
-                inline: true
+                inline: true,
             });
         if (data.mods && data.mods.names)
             e.fields.push({
                 name: "Mods",
                 value: data.mods.names.length + " mods",
-                inline: true
+                inline: true,
             });
         if (data.icon) {
             img.file = Buffer.from(
@@ -166,6 +166,7 @@ let mcserver = async function(ctx, msg, args) {
 };
 
 const uuidRegex = /[a-fA-F0-9]{8}\-?[a-fA-F0-9]{4}\-?[a-fA-F0-9]{4}\-?[a-fA-F0-9]{4}\-?[a-fA-F0-9]{12}/;
+const capeUrlRegex = /--cape="(.+?)" /;
 
 async function namemc(ctx, msg, args) {
     let data;
@@ -173,6 +174,14 @@ async function namemc(ctx, msg, args) {
         data = await namemcLib.getProfileFromUUID(args);
     } else {
         data = await namemcLib.getProfileFromName(args);
+    }
+
+    let capeUrl = "http://s.optifine.net";
+
+    if (capeUrlRegex.test(args)) {
+        let a = args.match(capeUrlRegex);
+        capeUrl = a[1];
+        args = args.replace(capeUrlRegex, "");
     }
 
     if (!data) {
@@ -188,18 +197,26 @@ async function namemc(ctx, msg, args) {
         nameHistory.push(
             `${parseInt(i) + 1}. ${name.name.replace(/_/g, "\\_")}${
                 date
-                    ? ` - ${date
-                          .getUTCDate()
+                    ? ` - ${date.getUTCDate().toString().padStart(2, "0")}/${(
+                          date.getUTCMonth() + 1
+                      )
                           .toString()
-                          .padStart(2, "0")}/${(date.getUTCMonth() + 1)
-                          .toString()
-                          .padStart(2, "0")}/${date.getUTCFullYear()} @ ${date
+                          .padStart(
+                              2,
+                              "0"
+                          )}/${date.getUTCFullYear()} @ ${date
                           .getUTCHours()
                           .toString()
-                          .padStart(2, "0")}:${date
+                          .padStart(
+                              2,
+                              "0"
+                          )}:${date
                           .getUTCMinutes()
                           .toString()
-                          .padStart(2, "0")}:${date
+                          .padStart(
+                              2,
+                              "0"
+                          )}:${date
                           .getUTCSeconds()
                           .toString()
                           .padStart(2, "0")}`
@@ -210,7 +227,7 @@ async function namemc(ctx, msg, args) {
 
     nameHistory.reverse();
 
-    let renders = await namemcLib.renderPlayerModelFromUUID(data.uuid);
+    let renders = await namemcLib.renderPlayerModelFromUUID(data.uuid, capeUrl);
     let outImg = new jimp(1200, 800);
     let front = await jimp.read(renders.front);
     let back = await jimp.read(renders.back);
@@ -223,9 +240,9 @@ async function namemc(ctx, msg, args) {
         title: data.username.replace(/_/g, "\\_"),
         fields: [
             { name: "UUID", value: data.uuid },
-            { name: "Name History", value: nameHistory.join("\n") }
+            { name: "Name History", value: nameHistory.join("\n") },
         ],
-        image: { url: "attachment://render.png" }
+        image: { url: "attachment://render.png" },
     };
 
     msg.channel.createMessage(
@@ -240,20 +257,20 @@ module.exports = [
         desc: "Minecraft Server Status",
         func: mcstatus,
         usage: "",
-        group: "minecraft"
+        group: "minecraft",
     },
     {
         name: "mcserver",
         desc: "Query a Minecraft server",
         func: mcserver,
         usage: "[ip]",
-        group: "minecraft"
+        group: "minecraft",
     },
     {
         name: "namemc",
         desc: "Get a player's NameMC profile.",
         func: namemc,
         usage: "[username or uuid]",
-        group: "minecraft"
-    }
+        group: "minecraft",
+    },
 ];
