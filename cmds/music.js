@@ -3,8 +3,8 @@ const ytdl = require("ytdl-core");
 const probe = require("node-ffprobe");
 const superagent = require("superagent");
 
-//taken from soundcloud api calls
-const scCID = "yWtLrWgbk6DE8CH8YTIqcZkRQkOuI2iE";
+//taken from mediaplayer
+const scCID = "2e0e541854cbabd873d647c1d45f79e8";
 
 const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 const plregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
