@@ -30,7 +30,7 @@
         "google-images": "^2.1.0",
         "html-entities": "^1.2.1",
         "jimp": "^0.9.0",
-        "jpeg-js": "^0.3.4",
+        "jpeg-js": "^0.4.0",
         "node-ffprobe": "^3.0.0",
         "node-opus": "^0.3.3",
         "pngjs2": "^2.0.0",
