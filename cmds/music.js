@@ -4,7 +4,7 @@ const probe = require("node-ffprobe");
 const superagent = require("superagent");
 
 //taken from soundcloud api calls
-const scCID = "PgKFRG98vbasF0IWR0AuZ09A4TgDnwk1";
+const scCID = "yWtLrWgbk6DE8CH8YTIqcZkRQkOuI2iE";
 
 const ytregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 const plregex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/playlist\?list=(.+)$/;
