@@ -126,8 +126,13 @@ let mcserver = async function (ctx, msg, args) {
             inline: true,
         });
         e.fields.push({
-            name: "Players",
-            value: `${data.players.online}/${data.players.max}`,
+            name:
+                "Players" + data.players.list
+                    ? ` (${data.players.online}/${data.players.max})`
+                    : "",
+            value: data.players.list
+                ? data.players.list.join(", ")
+                : `${data.players.online}/${data.players.max}`,
             inline: true,
         });
         if (data.version)
