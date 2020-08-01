@@ -13,7 +13,7 @@ const mp3regex = /^(https?:\/\/)?.*\..*\/.+\.(mp3|ogg|flac|wav|webm|mp4|mov|mkv)
 const scregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/.+$/;
 const scplregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/(sets\/.+|likes|tracks)$/;
 
-/*const useragents = [
+const useragents = [
     "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; /1586022601; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1003.1 Safari/535.19 Awesomium/1.7.4.2",
     "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US; Valve Steam GameOverlay/1586022601; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36",
@@ -24,7 +24,7 @@ const scplregex = /^((https?:\/\/)?(www\.|m\.)?soundcloud\.com\/|sc:).+\/(sets\/
     "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0",
 ];
 
-async function grabYTVideoURL(url) {
+/*async function grabYTVideoURL(url) {
     let vid = await superagent
         .get(url)
         .set(
@@ -186,6 +186,10 @@ async function doSCPlaylistThingsOk(ctx, msg, url) {
     let playlistURL = await superagent
         .get(
             `https://api.soundcloud.com/resolve.json?url=${url}&client_id=${scCID}`
+        )
+        .set(
+            "User-Agent",
+            useragents[Math.floor(Math.random() * useragents.length)]
         )
         .then((x) => x.redirects[0]);
 
@@ -442,6 +446,12 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     .get(
                         `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                     )
+                    .set(
+                        "User-Agent",
+                        useragents[
+                            Math.floor(Math.random() * useragents.length)
+                        ]
+                    )
                     .then((x) => x.body)
                     .catch((e) =>
                         msg.channel
@@ -516,6 +526,12 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                 let info = await superagent
                     .get(
                         `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
+                    )
+                    .set(
+                        "User-Agent",
+                        useragents[
+                            Math.floor(Math.random() * useragents.length)
+                        ]
                     )
                     .then((x) => x.body)
                     .catch((e) =>
@@ -597,6 +613,12 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     let info = await superagent
                         .get(
                             `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
+                        )
+                        .set(
+                            "User-Agent",
+                            useragents[
+                                Math.floor(Math.random() * useragents.length)
+                            ]
                         )
                         .then((x) => x.body)
                         .catch((e) =>
