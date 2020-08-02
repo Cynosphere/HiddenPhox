@@ -467,7 +467,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     url: url,
                     type: "sc",
                     title: info.title,
-                    len: info.full_duration,
+                    len: info.duration,
                     addedBy: addedBy,
                 });
                 if (playlist) return;
@@ -532,9 +532,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             },
                             {
                                 name: "Length",
-                                value: ctx.utils.remainingTime(
-                                    info.full_duration
-                                ),
+                                value: ctx.utils.remainingTime(info.duration),
                                 inline: true,
                             },
                             {
@@ -601,7 +599,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                 {
                                     name: "Length",
                                     value: ctx.utils.remainingTime(
-                                        info.full_duration
+                                        info.duration
                                     ),
                                     inline: true,
                                 },
@@ -621,7 +619,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                         title: info.title,
                         addedBy: addedBy,
                     };
-                    conn.len = info.full_duration;
+                    conn.len = info.duration;
                     conn.start = Date.now();
                     conn.end = Date.now() + conn.len;
 
