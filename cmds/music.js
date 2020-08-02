@@ -461,9 +461,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             .then((x) => setTimeout(() => x.delete(), 10000))
                     );
 
-                let formatURL = info.media.transcodings
-                    .filter((x) => !x.snipped)
-                    .filter((x) => x.format.protocol == "progressive")[0].url;
+                let formatURL = info.stream_url;
                 let streamURL = await superagent
                     .get(`${formatURL}?client_id=${scCID}`)
                     .then((x) => x.body.url)
@@ -541,9 +539,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             )
                             .then((x) => setTimeout(() => x.delete(), 10000))
                     );
-                let formatURL = info.media.transcodings
-                    .filter((x) => !x.snipped)
-                    .filter((x) => x.format.protocol == "progressive")[0].url;
+                let formatURL = info.stream_url;
                 let streamURL = await superagent
                     .get(`${formatURL}?client_id=${scCID}`)
                     .then((x) => x.body.url)
@@ -630,10 +626,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                     setTimeout(() => x.delete(), 10000)
                                 )
                         );
-                    let formatURL = info.media.transcodings
-                        .filter((x) => !x.snipped)
-                        .filter((x) => x.format.protocol == "progressive")[0]
-                        .url;
+                    let formatURL = info.stream_url;
                     let streamURL = await superagent
                         .get(`${formatURL}?client_id=${scCID}`)
                         .then((x) => x.body.url)
