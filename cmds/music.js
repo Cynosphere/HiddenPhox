@@ -444,7 +444,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             if (conn.playing) {
                 let info = await superagent
                     .get(
-                        `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
+                        `https://api.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                     )
                     .set(
                         "User-Agent",
@@ -525,7 +525,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
             } else {
                 let info = await superagent
                     .get(
-                        `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
+                        `https://api.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                     )
                     .set(
                         "User-Agent",
@@ -612,7 +612,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                     ctx.vc.get(id).iwastoldtoleave = false;
                     let info = await superagent
                         .get(
-                            `https://api-v2.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
+                            `https://api.soundcloud.com/resolve?url=${url}&client_id=${scCID}`
                         )
                         .set(
                             "User-Agent",
