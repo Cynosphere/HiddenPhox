@@ -461,26 +461,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             .then((x) => setTimeout(() => x.delete(), 10000))
                     );
 
-                let formatURL = info.stream_url;
-                let streamURL = await superagent
-                    .get(`${formatURL}?client_id=${scCID}`)
-                    .then((x) => x.body.url)
-                    .catch((e) =>
-                        msg.channel
-                            .createMessage(
-                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                            )
-                            .then((x) => setTimeout(() => x.delete(), 10000))
-                    );
-
-                if (!streamURL) {
-                    msg.channel
-                        .createMessage(
-                            `:warning: No usable URL was found. May possibly be region locked or paywalled (ex: Soundcloud GO exclusive)`
-                        )
-                        .then((x) => setTimeout(() => x.delete(), 10000));
-                    return;
-                }
+                let streamURL = `${info.stream_url}?client_id=${scCID}`;
 
                 ctx.vc.get(msg.member.voiceState.channelID).queue.push({
                     url: url,
@@ -539,26 +520,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                             )
                             .then((x) => setTimeout(() => x.delete(), 10000))
                     );
-                let formatURL = info.stream_url;
-                let streamURL = await superagent
-                    .get(`${formatURL}?client_id=${scCID}`)
-                    .then((x) => x.body.url)
-                    .catch((e) =>
-                        msg.channel
-                            .createMessage(
-                                `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                            )
-                            .then((x) => setTimeout(() => x.delete(), 10000))
-                    );
-
-                if (!streamURL) {
-                    msg.channel
-                        .createMessage(
-                            `:warning: No usable URL was found. May possibly be region locked or paywalled (ex: Soundcloud GO exclusive)`
-                        )
-                        .then((x) => setTimeout(() => x.delete(), 10000));
-                    return;
-                }
+                let streamURL = `${info.stream_url}?client_id=${scCID}`;
                 msg.channel.createMessage({
                     embed: {
                         title: `:musical_note: Now Playing`,
@@ -626,28 +588,7 @@ async function doMusicThingsOk(id, url, type, msg, ctx, addedBy, playlist) {
                                     setTimeout(() => x.delete(), 10000)
                                 )
                         );
-                    let formatURL = info.stream_url;
-                    let streamURL = await superagent
-                        .get(`${formatURL}?client_id=${scCID}`)
-                        .then((x) => x.body.url)
-                        .catch((e) =>
-                            msg.channel
-                                .createMessage(
-                                    `Error getting track:\n\`\`\`\n${e}\n\`\`\``
-                                )
-                                .then((x) =>
-                                    setTimeout(() => x.delete(), 10000)
-                                )
-                        );
-
-                    if (!streamURL) {
-                        msg.channel
-                            .createMessage(
-                                `:warning: No usable URL was found. May possibly be region locked or paywalled (ex: Soundcloud GO exclusive)`
-                            )
-                            .then((x) => setTimeout(() => x.delete(), 10000));
-                        return;
-                    }
+                    let streamURL = `${info.stream_url}?client_id=${scCID}`;
                     msg.channel.createMessage({
                         embed: {
                             title: `:musical_note: Now Playing`,
