@@ -71,7 +71,7 @@ let messageUpdate = async function (msg, oldMsg, ctx) {
     }
 };
 
-let reactionAdd = async function (msg, emoji, uid, ctx) {
+let reactionAdd = async function (msg, emoji, user, ctx) {
     if (!msg.channel.guild) return;
     if ((await isLoggingEnabled(ctx, msg)) === true) {
         let log = await getLogChannel(ctx, msg);
@@ -90,7 +90,7 @@ let reactionAdd = async function (msg, emoji, uid, ctx) {
                             : emoji.name,
                         inline: true,
                     },
-                    { name: "User", value: `<@${uid}>`, inline: true },
+                    { name: "User", value: `<@${user.id}>`, inline: true },
                 ],
                 thumbnail: {
                     url: emoji.id

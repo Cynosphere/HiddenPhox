@@ -17,7 +17,7 @@ async function getBearer(ctx) {
                 "https://api.twitter.com/oauth2/token?grant_type=client_credentials"
             )
             .set("Authorization", `Basic ${twiKey}`)
-            .then(x => x.body.access_token);
+            .then((x) => x.body.access_token);
 
         resolve(token);
     });
@@ -39,8 +39,8 @@ async function getTweetImages(ctx, snowflake, msg) {
                 "User-Agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0"
             )
-            .then(x => x.body)
-            .catch(e => reject(e));
+            .then((x) => x.body)
+            .catch((e) => reject(e));
 
         if (quoted > 0 && !tweet.is_quote_status) {
             quoted = 0;
@@ -53,7 +53,7 @@ async function getTweetImages(ctx, snowflake, msg) {
                 .createMessage(
                     `Quoted Tweet: https://twitter.com/i/status/${tweet.quoted_status_id_str}`
                 )
-                .then(async x => {
+                .then(async (x) => {
                     x.addReaction("\u274c");
                     twimg_embeds[x.id] = msg.id;
 
@@ -63,7 +63,7 @@ async function getTweetImages(ctx, snowflake, msg) {
                         msg
                     );
                     if (imgs && imgs.length > 0) {
-                        msg.channel.createMessage(imgs.join("\n")).then(m => {
+                        msg.channel.createMessage(imgs.join("\n")).then((m) => {
                             m.addReaction("\u274c");
                             twimg_embeds[m.id] = msg.id;
                         });
@@ -83,15 +83,15 @@ async function getTweetImages(ctx, snowflake, msg) {
                             description: `[Twitter Video/GIF File](${
                                 vid.video_info.variants.length > 1
                                     ? vid.video_info.variants
-                                          .filter(x => x.bitrate)
+                                          .filter((x) => x.bitrate)
                                           .sort(
                                               (a, b) => b.bitrate - a.bitrate
                                           )[0].url
                                     : vid.video_info.variants[0].url
-                            })`
-                        }
+                            })`,
+                        },
                     })
-                    .then(m => {
+                    .then((m) => {
                         m.addReaction("\u274c");
                         twimg_embeds[m.id] = msg.id;
                     });
@@ -109,12 +109,12 @@ async function getTweetImages(ctx, snowflake, msg) {
     });
 }
 
-let twimg = async function(msg, ctx) {
+let twimg = async function (msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
 
     let data = await ctx.db.models.sdata.findOrCreate({
-        where: { id: msg.channel.guild.id }
+        where: { id: msg.channel.guild.id },
     });
 
     if (msg.author.id == ctx.bot.user.id) return;
@@ -125,13 +125,13 @@ let twimg = async function(msg, ctx) {
     if (enabled) {
         let url = msg.content.match(twitterurl);
         if (!url) return;
-        url = url.map(x => (x.startsWith(" ") ? x.substring(1) : x))[0];
+        url = url.map((x) => (x.startsWith(" ") ? x.substring(1) : x))[0];
 
         let id = url.match(/[0-9]{17,21}$/)[0];
         let imgs = await getTweetImages(ctx, id, msg);
 
         if (imgs.length > 0) {
-            msg.channel.createMessage(imgs.join("\n")).then(m => {
+            msg.channel.createMessage(imgs.join("\n")).then((m) => {
                 m.addReaction("\u274c");
                 twimg_embeds[m.id] = msg.id;
             });
@@ -149,8 +149,8 @@ async function getMastoImages(ctx, url, msg) {
         let post = await superagent
             .get(url)
             .set("Accept", "application/activity+json")
-            .then(x => x.body)
-            .catch(e => reject(e));
+            .then((x) => x.body)
+            .catch((e) => reject(e));
         if (post.attachment.length > 0 && !post.sensitive) {
             let vids = [];
 
@@ -181,11 +181,11 @@ async function getMastoImages(ctx, url, msg) {
                         embed: {
                             title: "Video/GIF URLs",
                             description: vids
-                                .map(x => `- [bloop](${x})`)
-                                .join("\n")
-                        }
+                                .map((x) => `- [bloop](${x})`)
+                                .join("\n"),
+                        },
                     })
-                    .then(m => {
+                    .then((m) => {
                         m.addReaction("\u274c");
                         twimg_embeds[m.id] = msg.id;
                     });
@@ -202,12 +202,12 @@ async function getMastoImages(ctx, url, msg) {
     });
 }
 
-let fediimg = async function(msg, ctx) {
+let fediimg = async function (msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
 
     let data = await ctx.db.models.sdata.findOrCreate({
-        where: { id: msg.channel.guild.id }
+        where: { id: msg.channel.guild.id },
     });
 
     if (msg.author.id == ctx.bot.user.id) return;
@@ -225,7 +225,7 @@ let fediimg = async function(msg, ctx) {
         let imgs = await getMastoImages(ctx, url, msg);
 
         if (imgs.length > 0) {
-            msg.channel.createMessage(imgs.join("\n")).then(m => {
+            msg.channel.createMessage(imgs.join("\n")).then((m) => {
                 m.addReaction("\u274c");
                 twimg_embeds[m.id] = msg.id;
             });
@@ -237,12 +237,12 @@ let fediimg = async function(msg, ctx) {
 const plurl = /(?:\s|^)https?:\/\/([^:\/\s]+)\/(notes|objects|notice)\/([a-zA-Z0-9-_/]*)/;
 const pluser = /^https?:\/\/([^:\/\s]+)\/users\/([a-zA-Z0-9-_/]*)$/;
 
-let plembed = async function(msg, ctx) {
+let plembed = async function (msg, ctx) {
     if (!msg) return;
     if (!msg.channel.guild) return;
 
     let data = await ctx.db.models.sdata.findOrCreate({
-        where: { id: msg.channel.guild.id }
+        where: { id: msg.channel.guild.id },
     });
 
     if (msg.author.id == ctx.bot.user.id) return;
@@ -260,18 +260,18 @@ let plembed = async function(msg, ctx) {
     let post = await superagent
         .get(url)
         .set("Accept", "application/activity+json")
-        .then(x => x.body);
+        .then((x) => x.body);
 
     let authorData = await superagent
         .get(post.attributedTo)
         .set("Accept", "application/activity+json")
-        .then(x => x.body);
+        .then((x) => x.body);
 
     if (post.object && (post.object.id || post.object.url)) {
         post = await superagent
             .get(post.object.id ? post.object.id : post.object.url)
             .set("Accept", "application/activity+json")
-            .then(x => x.body);
+            .then((x) => x.body);
     }
 
     let uninst = post.attributedTo.match(pluser);
@@ -284,14 +284,14 @@ let plembed = async function(msg, ctx) {
                 true,
                 { suppress: true }
             )
-            .catch(_ => {}); //just in case
+            .catch((_) => {}); //just in case
     }
 
     msg.channel.createMessage({
         embed: {
             author: {
                 name: authorData.name,
-                url: authorData.url
+                url: authorData.url,
             },
             title: `${authorData.name} (@${authorData.preferredUsername}@${uninst[1]})`,
             url: url,
@@ -315,36 +315,36 @@ let plembed = async function(msg, ctx) {
                       )
             }`,
             thumbnail: {
-                url: authorData.icon.url
+                url: authorData.icon.url,
             },
             image: {
                 url: post.sensitive
                     ? ""
                     : post.attachment && post.attachment.length > 0
                     ? post.attachment[0].url
-                    : ""
+                    : "",
             },
-            color: 0x282c37
-        }
+            color: 0x282c37,
+        },
     });
     if (post.attachment && post.attachment.length > 1) {
         msg.channel.createMessage(
             post.attachment
                 .splice(1)
-                .map(x => x.url)
+                .map((x) => x.url)
                 .join("\n")
         );
     }
 };
 
-async function twimgDelete(msg, emote, uid, ctx) {
+async function twimgDelete(msg, emote, user, ctx) {
     if (twimg_embeds[msg.id] !== undefined) {
         const m = await msg.channel.getMessage(twimg_embeds[msg.id]);
 
         if (
-            (m.author.id == uid ||
-                (msg.channel.permissionsOf(uid).has("manageMessages") &&
-                    uid != ctx.bot.user.id)) &&
+            (m.author.id == user.id ||
+                (msg.channel.permissionsOf(user.id).has("manageMessages") &&
+                    user.id != ctx.bot.user.id)) &&
             emote.name == "\u274c"
         ) {
             msg.delete();
@@ -357,21 +357,21 @@ module.exports = [
     {
         event: "messageCreate",
         name: "twimg",
-        func: twimg
+        func: twimg,
     },
     {
         event: "messageCreate",
         name: "fediimg",
-        func: fediimg
+        func: fediimg,
     },
     {
         event: "messageCreate",
         name: "plembed",
-        func: plembed
+        func: plembed,
     },
     {
         event: "messageReactionAdd",
         name: "twimgDelete",
-        func: twimgDelete
-    }
+        func: twimgDelete,
+    },
 ];
