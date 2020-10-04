@@ -2,7 +2,7 @@ const Eris = require("eris");
 const config = require("./config.json");
 const client = new Eris(config.token, {
     defaultImageFormat: "png",
-    defaultImageSize: 1024
+    defaultImageSize: 1024,
     /*intents: [
         "GUILDS",
         //"GUILD_MEMBERS",
@@ -28,7 +28,7 @@ ctx.bot = client;
 ctx.libs = {
     eris: Eris,
     sequelize: sequelize,
-    superagent: superagent
+    superagent: superagent,
 };
 
 ctx.utils = require("./utils.js");
@@ -41,8 +41,8 @@ ctx.db = new sequelize("database", "username", "password", {
     // SQLite only
     storage: "database.sqlite",
     define: {
-        freezeTableName: true
-    }
+        freezeTableName: true,
+    },
 });
 
 let initDB = require("./utils/databases.js");
@@ -67,7 +67,7 @@ client.on("ready", () => {
     console.log("HiddenPhox Instance Loaded.");
     console.log("Logged in as: " + client.user.username);
 
-    client.getDMChannel(ctx.ownerid).then(c => {
+    client.getDMChannel(ctx.ownerid).then((c) => {
         c.createMessage(":white_check_mark: Loaded HiddenPhox.");
     });
 
@@ -103,7 +103,7 @@ client.on("ready", () => {
     }
 });
 
-client.on("guildCreate", function(guild) {
+client.on("guildCreate", function (guild) {
     let bots = 0;
     for (const m of guild.members.values()) if (m.bot) ++bots;
 
@@ -149,7 +149,7 @@ client.on("guildCreate", function(guild) {
     }
 });
 
-client.on("guildDelete", function(guild) {
+client.on("guildDelete", function (guild) {
     /*if (ctx.apikeys.dbots)
         superagent
             .post(`https://bots.discord.pw/api/bots/${ctx.bot.user.id}/stats`)
@@ -200,7 +200,7 @@ for (const file of cmdDir) {
     }
 }
 
-let createEvent = function(client, event, ctx) {
+let createEvent = function (client, event, ctx) {
     const eventName = event.event + "|" + event.name;
 
     if (event.event == "timer") {
@@ -249,7 +249,7 @@ async function commandHandler(msg) {
         let sdata = {};
         if (msg.channel.guild) {
             sdata = await ctx.db.models.sdata.findOrCreate({
-                where: { id: msg.channel.guild.id }
+                where: { id: msg.channel.guild.id },
             });
         }
 
@@ -267,7 +267,7 @@ async function commandHandler(msg) {
         let prefix3 = msg.channel.guild ? sdata[0].dataValues.prefix : ""; //guild
         let prefix4 = await ctx.db.models.udata
             .findOrCreate({ where: { id: msg.author.id } })
-            .then(x => x[0].dataValues.prefix); //personal
+            .then((x) => x[0].dataValues.prefix); //personal
         let hasRan = false;
         let content = msg.content;
 
@@ -314,12 +314,16 @@ async function commandHandler(msg) {
                         }) ran command '${cmd2} ${
                             cmd2 == prefix + "eval"
                                 ? "<eval redacted>"
-                                : args2
+                                : cmd2 == prefix + "exec"
+                                ? "<exec redacted>"
+                                : `${args2
                                       .join(" ")
                                       .split("")
                                       .splice(0, 50)
-                                      .join("")
-                        }${args2.join(" ").length > 50 ? "..." : ""}' in '#${
+                                      .join("")}${
+                                      args2.join(" ").length > 50 ? "..." : ""
+                                  }`
+                        }' in '#${
                             msg.channel.name ? msg.channel.name : msg.channel.id
                         }' on '${
                             msg.channel.guild ? msg.channel.guild.name : "DMs"
@@ -361,7 +365,7 @@ async function commandHandler(msg) {
                     cmd ==
                         prefix +
                             c.aliases.find(
-                                a => a == cmd.replace(prefix, "")
+                                (a) => a == cmd.replace(prefix, "")
                             )) &&
                 !hasRan
             ) {
@@ -426,7 +430,7 @@ async function commandHandler(msg) {
 
 client.on("messageCreate", commandHandler);
 
-client.on("messageUpdate", msg => {
+client.on("messageUpdate", (msg) => {
     let oneday = Date.now() - 86400000;
     if (msg.timestamp > oneday && !msg.hasRan) {
         commandHandler(msg);
@@ -447,7 +451,7 @@ process.on("unhandledRejection", (err, origin) => {
     }
 });
 
-client.on("error", err => {
+client.on("error", (err) => {
     console.log(`Error: '${err.message}'`);
     if (err.message.length > 1900) {
         ctx.utils.makeHaste(
@@ -467,9 +471,9 @@ var readline = require("readline");
 var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-    terminal: false
+    terminal: false,
 });
 
-rl.on("line", function(line) {
+rl.on("line", function (line) {
     console.log(eval(line));
 });
