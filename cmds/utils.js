@@ -846,11 +846,11 @@ async function emotes(ctx, msg, args) {
         fields: [],
     };
 
-    const emojis = [];
-    for (const emote of msg.channel.guild.emojis.values()) {
-        const hasRole = false;
+    let emojis = [];
+    for (let emote of msg.channel.guild.emojis.values()) {
+        let hasRole = false;
 
-        for (const role of emote.roles.values()) {
+        for (let role of emote.roles.values()) {
             if (
                 msg.channel.guild.members
                     .get(ctx.bot.user.id)
@@ -869,15 +869,15 @@ async function emotes(ctx, msg, args) {
         return a < b ? 1 : a > b ? -1 : 0;
     });
 
-    const tmp = [];
-    for (const emote of emojis.values()) {
+    let tmp = [];
+    for (let emote of emojis.values()) {
         tmp.push(emote.replace(/:(.*?):/, ":_:"));
     }
     emojis = tmp;
     delete tmp;
 
-    const index = 0;
-    for (const i = 0; i < emojis.length; i += 25) {
+    let index = 0;
+    for (let i = 0; i < emojis.length; i += 25) {
         embed.fields.push({
             name: `${25 * index + 1} - ${25 * (index + 1)}`,
             value: emojis.slice(25 * index, 25 * (index + 1)).join(" "),
