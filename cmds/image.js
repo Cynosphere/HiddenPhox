@@ -17,23 +17,23 @@ async function imageCallback(ctx, msg, args, callback, ...cbargs) {
         let { filename, out } = await callback.apply(this, [
             msg,
             args,
-            ...cbargs
+            ...cbargs,
         ]);
         if (filename && out)
             msg.channel.createMessage("", {
                 name: filename,
-                file: out
+                file: out,
             });
     } else if (msg.attachments.length > 0) {
         let { filename, out } = await callback.apply(this, [
             msg,
             msg.attachments[0].url,
-            ...cbargs
+            ...cbargs,
         ]);
         if (filename && out)
             msg.channel.createMessage("", {
                 name: filename,
-                file: out
+                file: out,
             });
     } else if (/[0-9]{17,21}/.test(args)) {
         let u = await ctx.utils.lookupUser(ctx, msg, args);
@@ -42,17 +42,18 @@ async function imageCallback(ctx, msg, args, callback, ...cbargs) {
                 ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${
                       u.avatar.startsWith("a_") ? "gif" : "png"
                   }?size=1024`
-                : `https://cdn.discordapp.com/embed/avatars/${u.discriminator %
-                      5}.png`;
+                : `https://cdn.discordapp.com/embed/avatars/${
+                      u.discriminator % 5
+                  }.png`;
         let { filename, out } = await callback.apply(this, [
             msg,
             url,
-            ...cbargs
+            ...cbargs,
         ]);
         if (filename && out)
             msg.channel.createMessage("", {
                 name: filename,
-                file: out
+                file: out,
             });
     } else {
         try {
@@ -60,12 +61,12 @@ async function imageCallback(ctx, msg, args, callback, ...cbargs) {
             let { filename, out } = await callback.apply(this, [
                 msg,
                 img,
-                ...cbargs
+                ...cbargs,
             ]);
             if (filename && out)
                 msg.channel.createMessage("", {
                     name: filename,
-                    file: out
+                    file: out,
                 });
         } catch (e) {
             msg.channel.createMessage(
@@ -181,7 +182,7 @@ async function _flop(msg, url) {
 
 async function imgfuck(msg, url) {
     let failed = false;
-    let i = await jimp.read(url).catch(e => {
+    let i = await jimp.read(url).catch((e) => {
         msg.channel.createMessage(
             `:warning: An error occurred reading image: \`${e}\``
         );
@@ -192,7 +193,7 @@ async function imgfuck(msg, url) {
 
     msg.channel.createMessage("", {
         name: "glitch.jpg",
-        file: Buffer.from(imgfkr.processBuffer(img), "base64")
+        file: Buffer.from(imgfkr.processBuffer(img), "base64"),
     });
 }
 
@@ -212,7 +213,7 @@ async function giffuck(msg, url) {
             let frame = inp.frames[f];
             let img = frame.bitmap;
 
-            let i = await jimpAsync(img).catch(e => {
+            let i = await jimpAsync(img).catch((e) => {
                 m.edit(`:warning: An error occurred reading image: \`${e}\``);
                 failed = true;
             });
@@ -232,7 +233,7 @@ async function giffuck(msg, url) {
         );
         return new Promise((resolve, reject) => {
             let opt = {
-                stdio: [0, "pipe", "ignore"]
+                stdio: [0, "pipe", "ignore"],
             };
             //now where could my pipe be?
             for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
@@ -252,30 +253,30 @@ async function giffuck(msg, url) {
 
             let out = [];
 
-            im.stdout.on("data", c => {
+            im.stdout.on("data", (c) => {
                 out.push(c);
             });
 
-            im.stdout.on("end", _ => {
+            im.stdout.on("end", (_) => {
                 resolve(Buffer.concat(out));
             });
         });
     }
 
-    superagent.get(url).then(img => {
-        GifUtil.read(img.body).then(async inp => {
+    superagent.get(url).then((img) => {
+        GifUtil.read(img.body).then(async (inp) => {
             let m = await msg.channel.createMessage(
                 "<a:typing:493087964742549515> Please wait, glitching in progress."
             );
 
-            var outframes = await glitchFrames(m, inp).catch(e => {
+            var outframes = await glitchFrames(m, inp).catch((e) => {
                 m.edit(
                     `:warning: An error occurred extracting frames: \`${e}\``
                 );
                 failed = true;
             });
             if (failed) return;
-            var gif = await makeTheGif(m, outframes).catch(e => {
+            var gif = await makeTheGif(m, outframes).catch((e) => {
                 m.edit(`:warning: An error occurred creating gif: \`${e}\``);
                 failed = true;
             });
@@ -290,7 +291,7 @@ async function giffuck(msg, url) {
                         : "",
                     { name: "glitch.gif", file: gif }
                 )
-                .then(_ => m.delete());
+                .then((_) => m.delete());
         });
     });
 
@@ -307,7 +308,7 @@ async function i2gg(msg, url, avatar = false) {
             );
             var outframes = [];
 
-            var img = await jimp.read(inp).catch(e => {
+            var img = await jimp.read(inp).catch((e) => {
                 m.edit(`:warning: An error occurred reading image: \`${e}\``);
                 failed = true;
             });
@@ -332,7 +333,7 @@ async function i2gg(msg, url, avatar = false) {
         );
         return new Promise((resolve, reject) => {
             let opt = {
-                stdio: [0, "pipe", "ignore"]
+                stdio: [0, "pipe", "ignore"],
             };
             //now where could my pipe be?
             for (let f = 0; f < frames.length; f++) opt.stdio.push("pipe");
@@ -350,11 +351,11 @@ async function i2gg(msg, url, avatar = false) {
 
             let out = [];
 
-            im.stdout.on("data", c => {
+            im.stdout.on("data", (c) => {
                 out.push(c);
             });
 
-            im.stdout.on("end", _ => {
+            im.stdout.on("end", (_) => {
                 resolve(Buffer.concat(out));
             });
         });
@@ -364,12 +365,12 @@ async function i2gg(msg, url, avatar = false) {
         "<a:typing:493087964742549515> Please wait, glitching in progress."
     );
 
-    var frames = await glitchImageXTimes(m, url).catch(e => {
+    var frames = await glitchImageXTimes(m, url).catch((e) => {
         m.edit(`:warning: An error occurred making frames: \`${e}\``);
         failed = true;
     });
     if (failed) return;
-    var out = await makeTheGif(m, frames).catch(e => {
+    var out = await makeTheGif(m, frames).catch((e) => {
         m.edit(`:warning: An error occurred creating gif: \`${e}\``);
         failed = true;
     });
@@ -380,7 +381,7 @@ async function i2gg(msg, url, avatar = false) {
     );
     msg.channel
         .createMessage("", { name: "img2glitch.gif", file: out })
-        .then(_ => m.delete());
+        .then((_) => m.delete());
 
     return { filename: null, out: null };
 }
@@ -389,12 +390,10 @@ async function _jpeg(msg, url) {
     let img = await superagent
         .get(url)
         .buffer()
-        .then(x => x.body);
-    let out = await sharp(img)
-        .jpeg({ quality: 1 })
-        .toBuffer();
+        .then((x) => x.body);
+    let out = await sharp(img).jpeg({ quality: 1 }).toBuffer();
 
-    msg.channel.createMessage("", { file: out, name: "jpeg.jpg" });
+    return { out: out, filename: "jpeg.jpg" };
 }
 
 const hooh = (ctx, msg, args) => imageCallback(ctx, msg, args, mirror, 1);
@@ -512,30 +511,13 @@ function orly(ctx, msg, args) {
     let img = Math.floor(Math.random() * 40) + 1;
     let theme = Math.floor(Math.random() * 16) + 1;
 
-    title = title
-        .split("")
-        .splice(0, 41)
-        .join("");
-    top = top
-        ? top
-              .split("")
-              .splice(0, 61)
-              .join("")
-        : "";
-    text = text
-        .split("")
-        .splice(0, 26)
-        .join("");
+    title = title.split("").splice(0, 41).join("");
+    top = top ? top.split("").splice(0, 61).join("") : "";
+    text = text.split("").splice(0, 26).join("");
 
     author = author
-        ? author
-              .split("")
-              .splice(0, 26)
-              .join("")
-        : msg.author.username
-              .split("")
-              .splice(0, 26)
-              .join("");
+        ? author.split("").splice(0, 26).join("")
+        : msg.author.username.split("").splice(0, 26).join("");
 
     if (!title || !text) {
         msg.channel.createMessage(
@@ -552,11 +534,11 @@ function orly(ctx, msg, args) {
             )}&image_code=${img}&theme=${theme}&guide_text=${encodeURIComponent(
                 text
             )}&guide_text_placement=bottom_right`
-        ).then(im => {
+        ).then((im) => {
             im.getBuffer(jimp.MIME_PNG, (e, f) => {
                 msg.channel.createMessage("", {
                     name: "orly.png",
-                    file: f
+                    file: f,
                 });
             });
         });
@@ -585,7 +567,7 @@ function colsquare(ctx, msg, args) {
 
         msg.channel.createMessage(`\`\`\`${out}\`\`\``, {
             name: "colors.png",
-            file: f
+            file: f,
         });
     });
 }
@@ -603,33 +585,33 @@ async function color(ctx, msg, args) {
                         {
                             name: "Hex",
                             value: c2c(`#${col}`, "hex"),
-                            inline: true
+                            inline: true,
                         },
                         {
                             name: "RGB",
                             value: c2c(`#${col}`, "rgb"),
-                            inline: true
+                            inline: true,
                         },
                         {
                             name: "HSL",
                             value: c2c(`#${col}`, "hsl"),
-                            inline: true
+                            inline: true,
                         },
                         {
                             name: "HSV",
                             value: c2c(`#${col}`, "hsv"),
-                            inline: true
+                            inline: true,
                         },
                         {
                             name: "Integer",
                             value: parseInt(`0x${col}`),
-                            inline: true
-                        }
+                            inline: true,
+                        },
                     ],
                     thumbnail: {
-                        url: `attachment://${col}.png`
-                    }
-                }
+                        url: `attachment://${col}.png`,
+                    },
+                },
             },
             { name: `${col}.png`, file: img }
         );
@@ -689,7 +671,7 @@ async function color(ctx, msg, args) {
 }
 
 function rolegrid(ctx, msg, args) {
-    let roles = msg.channel.guild.roles.filter(x => x.color != 0);
+    let roles = msg.channel.guild.roles.filter((x) => x.color != 0);
     roles.sort((a, b) => b.position - a.position);
     let offset = Math.floor(Math.sqrt(roles.length));
 
@@ -714,7 +696,7 @@ function rolegrid(ctx, msg, args) {
             `Displaying ${roles.length}/${msg.channel.guild.roles.size} roles.`,
             {
                 name: "rolegrid.png",
-                file: f
+                file: f,
             }
         );
     });
@@ -727,44 +709,44 @@ module.exports = [
         name: "hooh",
         desc: "Mirror bottom to top",
         func: hooh,
-        group: "image"
+        group: "image",
     },
     {
         name: "haah",
         desc: "Mirror right half of an image to the left",
         func: haah,
-        group: "image"
+        group: "image",
     },
     {
         name: "woow",
         desc: "Mirror top to bottom",
         func: woow,
-        group: "image"
+        group: "image",
     },
     {
         name: "waaw",
         desc: "Mirror left half of an image to the right",
         func: waaw,
-        group: "image"
+        group: "image",
     },
 
     {
         name: "flip",
         desc: "Flip an image horizontally",
         func: flip,
-        group: "image"
+        group: "image",
     },
     {
         name: "flop",
         desc: "Flip an image vertically",
         func: flop,
-        group: "image"
+        group: "image",
     },
     {
         name: "invert",
         desc: "Invert an image's colors",
         func: invert,
-        group: "image"
+        group: "image",
     },
     {
         name: "glitch",
@@ -777,7 +759,7 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         func: glitch,
         group: "image",
         usage: "[url or attachment]",
-        aliases: ["imgfkr", "imgfuck"]
+        aliases: ["imgfkr", "imgfuck"],
     },
     {
         name: "gglitch",
@@ -785,7 +767,7 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         func: gglitch,
         group: "image",
         usage: "[url or attachment]",
-        aliases: ["giffkr", "giffuck"]
+        aliases: ["giffkr", "giffuck"],
     },
     {
         name: "img2gglitch",
@@ -794,7 +776,7 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         func: img2glitch,
         group: "image",
         usage: "[url or attachment]",
-        aliases: ["i2gg"]
+        aliases: ["i2gg"],
     },
     {
         name: "jpeg",
@@ -802,7 +784,7 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         func: jpeg,
         group: "image",
         usage: "[url or attachment]",
-        aliases: ["nmj", "needsmorejpeg"]
+        aliases: ["nmj", "needsmorejpeg"],
     },
 
     //templates
@@ -810,25 +792,25 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         name: "rover",
         desc: "HE",
         func: rover,
-        group: "image"
+        group: "image",
     },
     {
         name: "carson",
         desc: "CallMeCarson Reacts",
         func: carson,
-        group: "image"
+        group: "image",
     },
     {
         name: "watermark",
         desc: "Add a bunch of watermarks to an image",
         func: watermark,
-        group: "image"
+        group: "image",
     },
     {
         name: "toolbars",
         desc: "Add a bunch of toolbars to an image",
         func: toolbars,
-        group: "image"
+        group: "image",
     },
 
     //one off
@@ -837,14 +819,15 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         desc: "Creates an O'Riley parody book cover.",
         func: orly,
         group: "image",
-        usage: '"title" "bottom text" "top text" (optional) "author" (optional)'
+        usage:
+            '"title" "bottom text" "top text" (optional) "author" (optional)',
     },
 
     {
         name: "colsquare",
         desc: "Creates a square of 64 random colors.",
         func: colsquare,
-        group: "image"
+        group: "image",
     },
     {
         name: "color",
@@ -852,13 +835,13 @@ Based off of [imgfkr](https://github.com/mikedotalmond/imgfkr-twitterbot)
         func: color,
         group: "image",
         usage: "[rgb or hex]",
-        aliases: ["col"]
+        aliases: ["col"],
     },
     {
         name: "rolegrid",
         desc:
             "Creates a grid of all the role colors. Highest position to lowest.",
         func: rolegrid,
-        group: "image"
-    }
+        group: "image",
+    },
 ];
